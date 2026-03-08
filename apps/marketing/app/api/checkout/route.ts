@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-    apiVersion: "2026-02-25.clover",
-});
+let _stripe: Stripe | null = null;
+function getStripe() {
+    if (!_stripe) {
+        const key = process.env.STRIPE_SECRET_KEY;
+        if (!key) throw new Error("STRIPE_SECRET_KEY not set");
+        _stripe = new Stripe(key, { apiVersion: "2026-02-25.clover" as Stripe.LatestApiVersion });
+    }
+    return _stripe;
+}
 
 // Map plan + interval → Stripe Price ID from env vars
 const PRICE_MAP: Record<string, string | undefined> = {
@@ -17,6 +23,7 @@ const PRICE_MAP: Record<string, string | undefined> = {
 
 export async function POST(req: NextRequest) {
     try {
+        const stripe = getStripe();
         const { plan, interval } = await req.json();
         const key = `${plan}-${interval}`;
         const priceId = PRICE_MAP[key];

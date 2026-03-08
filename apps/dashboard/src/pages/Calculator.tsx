@@ -405,7 +405,7 @@ export default function Calculator() {
     }
 
     // ─── Contact Picker Step ───
-    if (saveStep === "contact") {
+    if (saveStep === "contact" || saveStep === "saving") {
         return (
             <div className="calc-page">
                 <div className="calc-contact-step">
