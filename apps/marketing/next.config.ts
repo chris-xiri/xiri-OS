@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async rewrites() {
+    return [
+      {
+        source: "/app/:path*",
+        destination: `${process.env.DASHBOARD_URL || "https://xiri-os-dashboard.vercel.app"}/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

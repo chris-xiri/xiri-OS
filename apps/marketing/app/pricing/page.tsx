@@ -337,7 +337,7 @@ export default function PricingPage() {
                                     </a>
                                 ) : (
                                     <a
-                                        href="https://os.xiri.ai/app/login?mode=signup"
+                                        href="/app/login?mode=signup"
                                         className={`btn ${plan.featured ? "btn-primary" : "btn-secondary"}`}
                                         style={{ width: "100%" }}
                                     >
@@ -580,7 +580,7 @@ export default function PricingPage() {
                         }}
                     >
                         <a
-                            href="https://os.xiri.ai/app/login?mode=signup"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{ fontSize: "1.0625rem", padding: "1rem 2.5rem" }}
                         >

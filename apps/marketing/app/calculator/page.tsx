@@ -151,7 +151,7 @@ export default function CalculatorPage() {
                 </a>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
                     <a href="/pricing" className="btn btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>View Pricing</a>
-                    <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>Start Free Trial</a>
+                    <a href="/app/login?mode=signup" className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>Start Free Trial</a>
                 </div>
             </header>
 
@@ -705,7 +705,7 @@ export default function CalculatorPage() {
                                             Create a free account to manage bids, contacts, and send branded proposals — 14-day Bid Plus trial included.
                                         </p>
                                         <a
-                                            href="https://os.xiri.ai/app/login?mode=signup"
+                                            href="/app/login?mode=signup"
                                             className="btn btn-primary"
                                             style={{ width: "100%", fontSize: "0.875rem", padding: "0.75rem" }}
                                         >
@@ -734,7 +734,7 @@ export default function CalculatorPage() {
                         <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: "0.5rem 0 1rem" }}>
                             xiriOS turns estimates into professional PDF proposals, tracks leads, and manages your cleaning business.
                         </p>
-                        <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", fontSize: "0.875rem" }}>
+                        <a href="/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", fontSize: "0.875rem" }}>
                             Start 14-Day Free Trial
                         </a>
                     </div>

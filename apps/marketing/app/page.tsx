@@ -56,7 +56,7 @@ export default function Home() {
                 flexWrap: "wrap",
               }}
             >
-              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
+              <a href="/app/login?mode=signup" className="btn btn-primary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
                 Start Free Trial
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -300,17 +300,17 @@ export default function Home() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "1rem",
-              maxWidth: "1200px",
+              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+              gap: "1.5rem",
+              maxWidth: "900px",
               margin: "0 auto",
             }}
           >
-            {/* Bid */}
+            {/* Bid — Free */}
             <div className="card" style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ marginBottom: "1.5rem" }}>
                 <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Bid</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Win jobs with professional bids</p>
+                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Get started with professional bids</p>
               </div>
               <div style={{ marginBottom: "1.5rem" }}>
                 <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>Free</span>
@@ -319,7 +319,7 @@ export default function Home() {
                 </div>
               </div>
               <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
-                {["1 user", "Unlimited bids & proposals", "PDF proposal generation", "CRM — up to 10 contacts", "Mobile app (PWA)"].map((f) => (
+                {["1 user", "3 bids", "5 contacts", "PDF proposal generation", "Mobile app (PWA)"].map((f) => (
                   <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
                     <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
                       <path d="M4.5 9l3 3 6-6" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -328,61 +328,32 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+              <a href="/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
                 Get Started Free
               </a>
             </div>
 
-            {/* Grow */}
-            <div className="card" style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Grow</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Add invoicing & a small team</p>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>$39</span>
-                <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>
-                <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                  $31/mo billed annually
-                </div>
-              </div>
-              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
-                {["Up to 3 users", "Everything in Bid", "Invoicing & payments", "Full CRM & lead management", "Email support"].map((f) => (
-                  <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
-                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
-                      <path d="M4.5 9l3 3 6-6" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
-                Start Free Trial
-              </a>
-            </div>
-
-            {/* Pro — Featured */}
+            {/* Bid Plus — Featured */}
             <div className="card card-featured" style={{ display: "flex", flexDirection: "column" }}>
               <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Pro</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Full operations for growing teams</p>
+                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Bid Plus</h3>
+                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Full bidding power for growing businesses</p>
               </div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>$79</span>
+                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>$29</span>
                 <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>
                 <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                  $63/mo billed annually
+                  14-day free trial · $23/mo billed annually
                 </div>
               </div>
               <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
                 {[
-                  "Up to 10 users",
-                  "Everything in Grow",
-                  "Scheduling & recurring jobs",
-                  "Timekeeping with GPS geofence",
-                  "Checklists & task management",
-                  "QuickBooks integration",
-                  "Priority support",
+                  "Up to 3 users",
+                  "Unlimited bids & proposals",
+                  "Unlimited contacts",
+                  "Custom tasks & scope",
+                  "Full CRM & lead management",
+                  "Email support",
                 ].map((f) => (
                   <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
                     <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
@@ -392,45 +363,45 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
-                Start Free Trial
+              <a href="/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+                Start 14-Day Free Trial
               </a>
             </div>
+          </div>
 
-            {/* Business */}
-            <div className="card" style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Business</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Scale with full visibility</p>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>$119</span>
-                <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>
-                <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                  $95/mo billed annually
+          {/* Coming Soon Plans */}
+          <div style={{ marginTop: "3rem", textAlign: "center" }}>
+            <p style={{ color: "#8b92b3", fontSize: "0.875rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
+              Coming Soon
+            </p>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(3, 1fr)",
+                gap: "1rem",
+                maxWidth: "900px",
+                margin: "0 auto",
+              }}
+            >
+              {[
+                { name: "Grow", price: "$39/mo", desc: "Invoicing, payments & team management" },
+                { name: "Pro", price: "$79/mo", desc: "Scheduling, timekeeping & full operations" },
+                { name: "Business", price: "$119/mo", desc: "Inspections, client portal & job costing" },
+              ].map((plan) => (
+                <div
+                  key={plan.name}
+                  className="card"
+                  style={{
+                    opacity: 0.5,
+                    textAlign: "center",
+                    padding: "1.5rem",
+                  }}
+                >
+                  <h4 style={{ color: "white", fontSize: "1rem", marginBottom: "0.25rem" }}>{plan.name}</h4>
+                  <div style={{ fontFamily: "var(--font-outfit)", fontSize: "1.25rem", fontWeight: 700, color: "#00d4aa", marginBottom: "0.5rem" }}>{plan.price}</div>
+                  <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: 0 }}>{plan.desc}</p>
                 </div>
-              </div>
-              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
-                {[
-                  "Up to 25 users",
-                  "Everything in Pro",
-                  "Inspections & quality scores",
-                  "Client portal",
-                  "Job costing & profitability",
-                  "Work orders",
-                  "Dedicated account manager",
-                ].map((f) => (
-                  <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
-                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
-                      <path d="M4.5 9l3 3 6-6" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
-                Start Free Trial
-              </a>
+              ))}
             </div>
           </div>
 
