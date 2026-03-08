@@ -65,7 +65,7 @@ function PlaceholderPage({ title }: { title: string }) {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename="/app">
         <Toaster
           position="top-right"
           toastOptions={{
