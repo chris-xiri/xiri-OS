@@ -24,10 +24,9 @@ const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", curren
 
 /**
  * Public-facing calculator (no auth required).
- * Renders the full calculator UI but replaces the save-as-bid flow with a signup CTA.
+ * Uses the exact same CSS class names as Calculator.tsx so styles apply identically.
  */
 export default function PublicCalculator() {
-    // Calculator state
     const [inputs, setInputs] = useState<CalculatorInputs>({ ...DEFAULT_INPUTS });
     const [selectedState, setSelectedState] = useState("");
     const [roomScopes, setRoomScopes] = useState<RoomScope[]>(() => getDefaultRooms("office", DEFAULT_INPUTS.sqft));
@@ -36,34 +35,23 @@ export default function PublicCalculator() {
     const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
     const [newCustomTask, setNewCustomTask] = useState<string>("");
 
-    // Results
     const results = useMemo(() => calculate(inputs, roomScopes), [inputs, roomScopes]);
+    const isOneOff = inputs.frequency === "once";
 
-    // Total room sqft
-    const totalRoomSqft = useMemo(
-        () => roomScopes.reduce((sum, r) => sum + (r.sqft || 0), 0),
-        [roomScopes]
-    );
+    const update = (patch: Partial<CalculatorInputs>) => {
+        setInputs((prev) => ({ ...prev, ...patch }));
+    };
 
-    const updateInput = <K extends keyof CalculatorInputs>(key: K, value: CalculatorInputs[K]) => {
-        setInputs((prev) => {
-            const next = { ...prev, [key]: value };
-            if (key === "buildingTypeId") {
-                const newRooms = getDefaultRooms(value as string, prev.sqft);
-                setRoomScopes(newRooms);
-            }
-            if (key === "sqft") {
-                const sqft = value as number;
-                setRoomScopes((prev) => {
-                    const totalOld = prev.reduce((s, r) => s + (r.sqft || 0), 0);
-                    if (totalOld === 0) return prev;
-                    return prev.map((r) => ({
-                        ...r,
-                        sqft: Math.round(((r.sqft || 0) / totalOld) * sqft),
-                    }));
-                });
-            }
-            return next;
+    const handleBuildingTypeChange = (id: string) => {
+        update({ buildingTypeId: id });
+        setRoomScopes(getDefaultRooms(id, inputs.sqft));
+    };
+
+    const redistributeRoomSqft = (newSqft: number) => {
+        setRoomScopes((prev) => {
+            const totalOld = prev.reduce((s, r) => s + (r.sqft || 0), 0);
+            if (totalOld === 0) return prev;
+            return prev.map((r) => ({ ...r, sqft: Math.round(((r.sqft || 0) / totalOld) * newSqft) }));
         });
     };
 
@@ -71,7 +59,7 @@ export default function PublicCalculator() {
         setSelectedState(code);
         if (code) {
             const defaults = getStateDefaults(code);
-            if (defaults) setInputs((prev) => ({ ...prev, ...defaults }));
+            if (defaults) update(defaults);
         }
     };
 
@@ -85,23 +73,11 @@ export default function PublicCalculator() {
         );
     };
 
-    const addCustomTask = (roomId: string) => {
-        if (!newCustomTask.trim()) return;
-        const newTask: CustomTask = { id: `custom_${Date.now()}`, name: newCustomTask.trim() };
+    const setTaskFrequency = (roomId: string, taskId: string, freq: string) => {
         setRoomScopes((prev) =>
             prev.map((r) => {
                 if (r.id !== roomId) return r;
-                return { ...r, customTasks: [...(r.customTasks || []), newTask] };
-            })
-        );
-        setNewCustomTask("");
-    };
-
-    const removeCustomTask = (roomId: string, taskId: string) => {
-        setRoomScopes((prev) =>
-            prev.map((r) => {
-                if (r.id !== roomId) return r;
-                return { ...r, customTasks: (r.customTasks || []).filter((t) => t.id !== taskId) };
+                return { ...r, taskFrequencies: { ...(r.taskFrequencies || {}), [taskId]: freq } };
             })
         );
     };
@@ -124,34 +100,35 @@ export default function PublicCalculator() {
         setRoomScopes((prev) => prev.filter((r) => r.id !== roomId));
     };
 
-    const updateRoomSqft = (roomId: string, sqft: number) => {
-        setRoomScopes((prev) =>
-            prev.map((r) => (r.id === roomId ? { ...r, sqft } : r))
-        );
-    };
-
     const updateRoomName = (roomId: string, name: string) => {
-        setRoomScopes((prev) =>
-            prev.map((r) => (r.id === roomId ? { ...r, customName: name } : r))
-        );
+        setRoomScopes((prev) => prev.map((r) => (r.id === roomId ? { ...r, customName: name } : r)));
     };
 
-    const updateTaskFrequency = (roomId: string, taskId: string, freq: string) => {
+    const addCustomTask = (roomId: string, name: string) => {
+        if (!name.trim()) return;
+        const ct: CustomTask = { id: `custom_${Date.now()}`, name: name.trim() };
         setRoomScopes((prev) =>
             prev.map((r) => {
                 if (r.id !== roomId) return r;
-                return { ...r, taskFrequencies: { ...(r.taskFrequencies || {}), [taskId]: freq } };
+                return { ...r, customTasks: [...(r.customTasks || []), ct] };
+            })
+        );
+        setNewCustomTask("");
+    };
+
+    const removeCustomTask = (roomId: string, taskId: string) => {
+        setRoomScopes((prev) =>
+            prev.map((r) => {
+                if (r.id !== roomId) return r;
+                return { ...r, customTasks: (r.customTasks || []).filter((t) => t.id !== taskId) };
             })
         );
     };
 
-    const freqOptions = getTaskFrequencyOptions(inputs.frequency);
-
     // ─── RENDER ───
-
     return (
         <div className="calc-page" style={{ background: "#0c0f1a", minHeight: "100vh" }}>
-            {/* Header */}
+            {/* Header with branding + auth links */}
             <div className="calc-header" style={{ padding: "2rem 2rem 0" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1200, margin: "0 auto" }}>
                     <div>
@@ -159,10 +136,8 @@ export default function PublicCalculator() {
                             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#00d4aa", display: "inline-block" }} />
                             <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "white" }}>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
                         </a>
-                        <h1 style={{ color: "white", fontSize: "1.5rem", fontWeight: 700, margin: 0 }}>Janitorial Bid Calculator</h1>
-                        <p style={{ color: "#8b92b3", fontSize: "0.875rem", margin: "0.25rem 0 0" }}>
-                            Professional cleaning estimates powered by ISSA 612 standards
-                        </p>
+                        <h1>Janitorial Bid Calculator</h1>
+                        <p className="calc-subtitle">Professional cleaning estimates powered by ISSA 612 standards</p>
                     </div>
                     <div style={{ display: "flex", gap: "0.75rem" }}>
                         <a href="/app/login" className="calc-btn calc-btn-secondary" style={{ textDecoration: "none", fontSize: "0.875rem" }}>Sign In</a>
@@ -171,188 +146,177 @@ export default function PublicCalculator() {
                 </div>
             </div>
 
-            {/* Two-column layout */}
             <div className="calc-layout" style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem" }}>
                 {/* Left: Inputs */}
                 <div className="calc-inputs">
                     {/* Building Type */}
-                    <div className="calc-section">
-                        <h3 className="calc-section-title">Building Type</h3>
-                        <div className="calc-grid-3">
+                    <section className="calc-section">
+                        <h3>Building Type</h3>
+                        <div className="calc-building-grid">
                             {BUILDING_TYPES.filter((b) => b.popular).map((bt) => (
                                 <button
                                     key={bt.id}
-                                    className={`calc-chip ${inputs.buildingTypeId === bt.id ? "active" : ""}`}
-                                    onClick={() => updateInput("buildingTypeId", bt.id)}
+                                    className={`calc-building-btn ${inputs.buildingTypeId === bt.id ? "active" : ""}`}
+                                    onClick={() => handleBuildingTypeChange(bt.id)}
+                                    style={{ cursor: "pointer" }}
                                 >
-                                    <span className="calc-chip-icon">{bt.icon}</span>
-                                    <span>{bt.name}</span>
+                                    <span className="calc-building-icon">{bt.icon}</span>
+                                    <span className="calc-building-name">{bt.name}</span>
                                 </button>
                             ))}
                         </div>
-                        <details style={{ marginTop: "0.75rem" }}>
-                            <summary style={{ color: "#8b92b3", fontSize: "0.8125rem", cursor: "pointer" }}>More building types</summary>
-                            <div className="calc-grid-3" style={{ marginTop: "0.5rem" }}>
+                        <details className="calc-advanced">
+                            <summary>More building types</summary>
+                            <div className="calc-building-grid" style={{ marginTop: "0.5rem" }}>
                                 {BUILDING_TYPES.filter((b) => !b.popular).map((bt) => (
                                     <button
                                         key={bt.id}
-                                        className={`calc-chip ${inputs.buildingTypeId === bt.id ? "active" : ""}`}
-                                        onClick={() => updateInput("buildingTypeId", bt.id)}
+                                        className={`calc-building-btn ${inputs.buildingTypeId === bt.id ? "active" : ""}`}
+                                        onClick={() => handleBuildingTypeChange(bt.id)}
+                                        style={{ cursor: "pointer" }}
                                     >
-                                        <span className="calc-chip-icon">{bt.icon}</span>
-                                        <span>{bt.name}</span>
+                                        <span className="calc-building-icon">{bt.icon}</span>
+                                        <span className="calc-building-name">{bt.name}</span>
                                     </button>
                                 ))}
                             </div>
                         </details>
-                    </div>
+                    </section>
 
                     {/* Square Footage & Frequency */}
-                    <div className="calc-section">
-                        <div className="calc-row-2">
-                            <div className="form-group">
-                                <label>Total Square Footage</label>
-                                <input
-                                    type="number"
-                                    value={inputs.sqft || ""}
-                                    onChange={(e) => updateInput("sqft", parseInt(e.target.value) || 0)}
-                                    placeholder="e.g. 10000"
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label>Cleaning Frequency</label>
-                                <select
-                                    value={inputs.frequency}
-                                    onChange={(e) => updateInput("frequency", e.target.value as Frequency)}
+                    <section className="calc-section">
+                        <h3>Size & Frequency</h3>
+                        <div className="form-group">
+                            <label>Square Footage</label>
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                value={inputs.sqft === 0 ? "" : inputs.sqft.toLocaleString()}
+                                onChange={(e) => {
+                                    const raw = e.target.value.replace(/[^0-9]/g, "");
+                                    const newSqft = raw === "" ? 0 : Number(raw);
+                                    update({ sqft: newSqft });
+                                    if (newSqft > 0) redistributeRoomSqft(newSqft);
+                                }}
+                                onBlur={() => {
+                                    if (inputs.sqft < 100) {
+                                        update({ sqft: 100 });
+                                        redistributeRoomSqft(100);
+                                    }
+                                }}
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Cleaning Frequency</label>
+                            <div className="calc-freq-strip">
+                                <button
+                                    className={`calc-freq-pill calc-freq-once ${inputs.frequency === "once" ? "active" : ""}`}
+                                    onClick={() => update({ frequency: "once" as Frequency })}
                                 >
-                                    {FREQUENCIES.map((f) => (
-                                        <option key={f.value} value={f.value}>{f.label}</option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* State */}
-                    <div className="calc-section">
-                        <h3 className="calc-section-title">Location (Optional)</h3>
-                        <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
-                            <option value="">Select state for recommended rates</option>
-                            {STATES.map((s) => (
-                                <option key={s.code} value={s.code}>{s.name}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    {/* Room Scopes */}
-                    <div className="calc-section">
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <h3 className="calc-section-title" style={{ margin: 0 }}>Rooms & Scope</h3>
-                            <button className="calc-btn-text" onClick={() => setShowAddRoom(!showAddRoom)}>+ Add Room</button>
-                        </div>
-
-                        {totalRoomSqft > 0 && totalRoomSqft !== inputs.sqft && (
-                            <div className="calc-warning" style={{ marginTop: "0.5rem" }}>
-                                Room total ({totalRoomSqft.toLocaleString()} sqft) ≠ building total ({inputs.sqft.toLocaleString()} sqft)
-                                <button className="calc-btn-text" onClick={() => updateInput("sqft", totalRoomSqft)} style={{ marginLeft: "0.5rem" }}>
-                                    Sync
+                                    One-Time
                                 </button>
-                            </div>
-                        )}
-
-                        {showAddRoom && (
-                            <div className="calc-add-room-grid" style={{ marginTop: "0.75rem" }}>
-                                {ROOM_TYPES.map((rt) => (
-                                    <button key={rt.id} className="calc-chip" onClick={() => addRoom(rt.id)}>
-                                        <span className="calc-chip-icon">{rt.icon}</span>
-                                        <span>{rt.name}</span>
+                                <div className="calc-freq-divider" />
+                                {FREQUENCIES.filter(f => f.group === "recurring").map((f) => (
+                                    <button
+                                        key={f.value}
+                                        className={`calc-freq-pill ${inputs.frequency === f.value ? "active" : ""}`}
+                                        onClick={() => update({ frequency: f.value })}
+                                        title={f.label}
+                                    >
+                                        {f.value}x
                                     </button>
                                 ))}
                             </div>
-                        )}
+                            <span className="calc-freq-hint">
+                                {isOneOff ? "Single visit (deep clean, post-construction, etc.)" : `${FREQUENCIES.find(f => f.value === inputs.frequency)?.label || ""} — recurring`}
+                            </span>
+                        </div>
+                    </section>
 
-                        <div className="calc-rooms" style={{ marginTop: "0.75rem" }}>
+                    {/* Room-Based Cleaning Scope */}
+                    <section className="calc-section">
+                        <div className="calc-scope-header">
+                            <h3>Cleaning Scope</h3>
+                            <span className="calc-scope-badge">{roomScopes.length} room{roomScopes.length !== 1 ? "s" : ""}</span>
+                        </div>
+
+                        <div className="calc-room-list">
                             {roomScopes.map((room) => {
-                                const roomType = ROOM_TYPES.find((rt) => rt.id === room.roomTypeId);
+                                const rt = ROOM_TYPES.find((r) => r.id === room.roomTypeId);
                                 const isExpanded = expandedRoom === room.id;
+                                const roomName = room.customName || rt?.name || "Room";
+                                const roomIcon = rt?.icon || "📦";
                                 return (
-                                    <div key={room.id} className="calc-room-card">
-                                        <div
-                                            className="calc-room-header"
-                                            onClick={() => setExpandedRoom(isExpanded ? null : room.id)}
-                                            style={{ cursor: "pointer" }}
-                                        >
-                                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                                <span>{roomType?.icon || "📦"}</span>
-                                                <span style={{ fontWeight: 600, color: "white" }}>
-                                                    {room.customName || roomType?.name || "Room"}
-                                                </span>
-                                                <span style={{ color: "#8b92b3", fontSize: "0.8125rem" }}>
-                                                    {room.sqft?.toLocaleString()} sqft · {room.tasks.length} tasks
-                                                </span>
-                                            </div>
-                                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                                                <button
-                                                    className="calc-btn-icon"
-                                                    onClick={(e) => { e.stopPropagation(); removeRoom(room.id); }}
-                                                    title="Remove room"
-                                                >
-                                                    ✕
-                                                </button>
-                                                <span style={{ color: "#8b92b3", transform: isExpanded ? "rotate(180deg)" : "none", transition: "transform 200ms" }}>▾</span>
-                                            </div>
+                                    <div key={room.id} className={`calc-room-card ${isExpanded ? "expanded" : ""}`}>
+                                        <div className="calc-room-header" onClick={() => setExpandedRoom(isExpanded ? null : room.id)} style={{ cursor: "pointer" }}>
+                                            <span className="calc-room-icon">{roomIcon}</span>
+                                            {room.roomTypeId === "custom" ? (
+                                                <input
+                                                    className="calc-room-name-input"
+                                                    value={room.customName || ""}
+                                                    onChange={(e) => updateRoomName(room.id, e.target.value)}
+                                                    placeholder="Room name…"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+                                            ) : (
+                                                <span className="calc-room-name">{roomName}</span>
+                                            )}
+                                            <input
+                                                className="calc-room-sqft-input"
+                                                type="text"
+                                                inputMode="numeric"
+                                                value={room.sqft ? room.sqft.toLocaleString() : ""}
+                                                onChange={(e) => {
+                                                    const raw = e.target.value.replace(/[^0-9]/g, "");
+                                                    const val = parseInt(raw) || 0;
+                                                    setRoomScopes((prev) =>
+                                                        prev.map((r) => r.id === room.id ? { ...r, sqft: val || undefined } : r)
+                                                    );
+                                                }}
+                                                placeholder="sqft"
+                                                onClick={(e) => e.stopPropagation()}
+                                                title="Square footage for this area"
+                                            />
+                                            <span className="calc-room-count">{room.tasks.length + (room.customTasks?.length || 0)} tasks</span>
+                                            <button
+                                                className="calc-room-remove"
+                                                onClick={(e) => { e.stopPropagation(); removeRoom(room.id); }}
+                                                title="Remove room"
+                                                style={{ cursor: "pointer" }}
+                                            >
+                                                ✕
+                                            </button>
+                                            <span className="calc-room-chevron">{isExpanded ? "▾" : "▸"}</span>
                                         </div>
-
                                         {isExpanded && (
-                                            <div className="calc-room-body">
-                                                <div className="calc-row-2" style={{ marginBottom: "1rem" }}>
-                                                    <div className="form-group">
-                                                        <label>Room Name</label>
-                                                        <input
-                                                            value={room.customName || roomType?.name || ""}
-                                                            onChange={(e) => updateRoomName(room.id, e.target.value)}
-                                                        />
-                                                    </div>
-                                                    <div className="form-group">
-                                                        <label>Square Footage</label>
-                                                        <input
-                                                            type="number"
-                                                            value={room.sqft || ""}
-                                                            onChange={(e) => updateRoomSqft(room.id, parseInt(e.target.value) || 0)}
-                                                        />
-                                                    </div>
-                                                </div>
-
-                                                {TASK_CATEGORIES.map((cat) => {
+                                            <div className="calc-room-tasks">
+                                                {TASK_CATEGORIES.filter((cat) => rt?.relevantCategories?.includes(cat.id) ?? true).map((cat) => {
                                                     const tasksInCat = CLEANING_TASKS.filter((t) => t.category === cat.id);
                                                     if (tasksInCat.length === 0) return null;
                                                     return (
-                                                        <div key={cat.id} style={{ marginBottom: "0.75rem" }}>
-                                                            <div style={{ color: "#8b92b3", fontSize: "0.75rem", fontWeight: 600, textTransform: "uppercase", marginBottom: "0.375rem" }}>
-                                                                {cat.icon} {cat.label}
-                                                            </div>
+                                                        <div key={cat.id} className="calc-room-cat">
+                                                            <div className="calc-room-cat-label">{cat.icon} {cat.label}</div>
                                                             {tasksInCat.map((task) => {
-                                                                const isOn = room.tasks.includes(task.id);
-                                                                const resolved = resolveTaskFrequency(task.recommendedFrequency || "max", inputs.frequency);
-                                                                const currentFreq = room.taskFrequencies?.[task.id] || resolved;
+                                                                const resolvedFreq = resolveTaskFrequency(task.recommendedFrequency, inputs.frequency);
+                                                                const opts = getTaskFrequencyOptions(inputs.frequency);
                                                                 return (
-                                                                    <div key={task.id} className="calc-task-row">
-                                                                        <label className="calc-task-check">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                checked={isOn}
-                                                                                onChange={() => toggleRoomTask(room.id, task.id)}
-                                                                            />
-                                                                            <span>{task.name}</span>
-                                                                        </label>
-                                                                        {isOn && (
+                                                                    <div key={task.id} className="calc-room-task-item">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            checked={room.tasks.includes(task.id)}
+                                                                            onChange={() => toggleRoomTask(room.id, task.id)}
+                                                                            style={{ cursor: "pointer" }}
+                                                                        />
+                                                                        <span className="calc-task-label">{task.name}</span>
+                                                                        {room.tasks.includes(task.id) && (
                                                                             <select
                                                                                 className="calc-task-freq"
-                                                                                value={currentFreq}
-                                                                                onChange={(e) => updateTaskFrequency(room.id, task.id, e.target.value)}
+                                                                                value={room.taskFrequencies?.[task.id] || resolvedFreq}
+                                                                                onChange={(e) => setTaskFrequency(room.id, task.id, e.target.value)}
+                                                                                onClick={(e) => e.stopPropagation()}
                                                                             >
-                                                                                {freqOptions.map((f) => (
-                                                                                    <option key={f.value} value={f.value}>{f.label}</option>
+                                                                                {opts.map((opt) => (
+                                                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
                                                                                 ))}
                                                                             </select>
                                                                         )}
@@ -364,23 +328,42 @@ export default function PublicCalculator() {
                                                 })}
 
                                                 {/* Custom tasks */}
-                                                {(room.customTasks || []).map((ct) => (
-                                                    <div key={ct.id} className="calc-task-row">
-                                                        <span style={{ color: "#c4c9e0" }}>📝 {ct.name}</span>
-                                                        <button className="calc-btn-icon" onClick={() => removeCustomTask(room.id, ct.id)}>✕</button>
+                                                {(room.customTasks?.length || 0) > 0 && (
+                                                    <div className="calc-room-cat">
+                                                        <div className="calc-room-cat-label">📝 Custom Tasks</div>
+                                                        {room.customTasks!.map((ct) => (
+                                                            <div key={ct.id} className="calc-room-task-item">
+                                                                <span className="calc-custom-dot">●</span>
+                                                                <span className="calc-task-label">{ct.name}</span>
+                                                                <button
+                                                                    className="calc-task-reset"
+                                                                    onClick={() => removeCustomTask(room.id, ct.id)}
+                                                                    title="Remove task"
+                                                                >✕</button>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                                <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                                                )}
+
+                                                {/* Add custom task input */}
+                                                <div className="calc-add-custom-task">
                                                     <input
-                                                        placeholder="Add custom task..."
+                                                        className="calc-custom-task-input"
                                                         value={newCustomTask}
                                                         onChange={(e) => setNewCustomTask(e.target.value)}
-                                                        onKeyDown={(e) => e.key === "Enter" && addCustomTask(room.id)}
-                                                        style={{ flex: 1 }}
+                                                        placeholder="＋ Add custom task…"
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === "Enter" && newCustomTask.trim()) {
+                                                                addCustomTask(room.id, newCustomTask);
+                                                            }
+                                                        }}
                                                     />
-                                                    <button className="calc-btn calc-btn-secondary" onClick={() => addCustomTask(room.id)} style={{ padding: "0.375rem 0.75rem", fontSize: "0.8125rem" }}>
-                                                        Add
-                                                    </button>
+                                                    {newCustomTask.trim() && (
+                                                        <button
+                                                            className="calc-custom-task-add-btn"
+                                                            onClick={() => addCustomTask(room.id, newCustomTask)}
+                                                        >Add</button>
+                                                    )}
                                                 </div>
                                             </div>
                                         )}
@@ -388,135 +371,208 @@ export default function PublicCalculator() {
                                 );
                             })}
                         </div>
-                    </div>
 
-                    {/* Financials */}
-                    <details className="calc-section">
-                        <summary className="calc-section-title" style={{ cursor: "pointer" }}>Financial Settings</summary>
-                        <div style={{ marginTop: "1rem" }}>
-                            <div className="calc-row-2">
-                                <div className="form-group">
-                                    <label>Wage Rate ($/hr)</label>
-                                    <input type="number" step="0.5" value={inputs.wageRate} onChange={(e) => updateInput("wageRate", parseFloat(e.target.value) || 0)} />
+                        {/* Sqft total indicator */}
+                        {(() => {
+                            const roomSum = roomScopes.reduce((s, r) => s + (r.sqft || 0), 0);
+                            const diff = inputs.sqft - roomSum;
+                            const isMatch = Math.abs(diff) < 2;
+                            return (
+                                <div className="calc-sqft-total" style={{ color: isMatch ? "#6b7294" : diff > 0 ? "#f0ad4e" : "#e74c3c" }}>
+                                    <span>Room total: {roomSum.toLocaleString()} / {inputs.sqft.toLocaleString()} sqft</span>
+                                    {!isMatch && <span style={{ fontSize: "0.65rem", marginLeft: 4 }}>({diff > 0 ? `${diff.toLocaleString()} unallocated` : `${Math.abs(diff).toLocaleString()} over`})</span>}
                                 </div>
-                                <div className="form-group">
-                                    <label>Payroll Tax %</label>
-                                    <input type="number" step="0.5" value={inputs.payrollTaxPercent} onChange={(e) => updateInput("payrollTaxPercent", parseFloat(e.target.value) || 0)} />
+                            );
+                        })()}
+
+                        {/* Add Room */}
+                        {showAddRoom ? (
+                            <div className="calc-add-room-picker">
+                                <div className="calc-add-room-grid">
+                                    {ROOM_TYPES.map((rt) => (
+                                        <button
+                                            key={rt.id}
+                                            className="calc-add-room-btn"
+                                            onClick={() => addRoom(rt.id)}
+                                            style={{ cursor: "pointer" }}
+                                        >
+                                            <span>{rt.icon}</span>
+                                            <span>{rt.name}</span>
+                                        </button>
+                                    ))}
                                 </div>
+                                <button className="calc-add-room-cancel" onClick={() => setShowAddRoom(false)} style={{ cursor: "pointer" }}>Cancel</button>
                             </div>
-                            <div className="calc-row-2">
+                        ) : (
+                            <button className="calc-add-room-trigger" onClick={() => setShowAddRoom(true)} style={{ cursor: "pointer" }}>
+                                ＋ Add Room / Area
+                            </button>
+                        )}
+                    </section>
+
+                    {/* Location & Financials */}
+                    <section className="calc-section calc-section-details">
+                        <details className="calc-financials-collapsible">
+                            <summary className="calc-financials-summary">
+                                <h3>Location & Financials</h3>
+                                <span className="calc-financials-preview">
+                                    {selectedState ? `📍 ${STATES.find(s => s.code === selectedState)?.name || selectedState}` : "📍 No state selected"} · ${inputs.wageRate}/hr · {inputs.payrollTaxPercent}% payroll · {inputs.overheadPercent}% overhead · {inputs.profitPercent}% profit
+                                </span>
+                            </summary>
+                            <div className="calc-financials-body">
                                 <div className="form-group">
-                                    <label>Overhead %</label>
-                                    <input type="number" step="1" value={inputs.overheadPercent} onChange={(e) => updateInput("overheadPercent", parseFloat(e.target.value) || 0)} />
-                                </div>
-                                <div className="form-group">
-                                    <label>Profit Margin %</label>
-                                    <input type="number" step="1" value={inputs.profitPercent} onChange={(e) => updateInput("profitPercent", parseFloat(e.target.value) || 0)} />
-                                </div>
-                            </div>
-                            <div className="calc-row-2">
-                                <div className="form-group">
-                                    <label>Supply Cost / sqft</label>
-                                    <input type="number" step="0.0001" value={inputs.supplyCostPerSqft} onChange={(e) => updateInput("supplyCostPerSqft", parseFloat(e.target.value) || 0)} />
-                                </div>
-                                <div className="form-group">
-                                    <label>Supplies Provided By</label>
-                                    <select value={inputs.supplyPolicy || "company"} onChange={(e) => updateInput("supplyPolicy", e.target.value as SupplyPolicy)}>
-                                        <option value="company">Cleaning Company</option>
-                                        <option value="client">Client Provides</option>
-                                        <option value="shared">Shared (50/50)</option>
+                                    <label>State (auto-fills recommended rates)</label>
+                                    <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
+                                        <option value="">— Select state —</option>
+                                        {STATES.map((s) => (
+                                            <option key={s.code} value={s.code}>{s.name}</option>
+                                        ))}
                                     </select>
                                 </div>
+                                <div className="calc-financials-grid">
+                                    <div className="form-group">
+                                        <label>Hourly Wage ($)</label>
+                                        <input type="number" value={inputs.wageRate} onChange={(e) => update({ wageRate: Number(e.target.value) })} min={7} step={0.5} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Payroll Tax (%)</label>
+                                        <input type="number" value={inputs.payrollTaxPercent} onChange={(e) => update({ payrollTaxPercent: Number(e.target.value) })} min={0} max={30} step={0.5} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Overhead (%)</label>
+                                        <input type="number" value={inputs.overheadPercent} onChange={(e) => update({ overheadPercent: Number(e.target.value) })} min={0} max={50} step={1} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Profit Margin (%)</label>
+                                        <input type="number" value={inputs.profitPercent} onChange={(e) => update({ profitPercent: Number(e.target.value) })} min={0} max={60} step={1} />
+                                    </div>
+                                </div>
+                                <div className="calc-financials-grid" style={{ marginTop: "0.75rem" }}>
+                                    <div className="form-group">
+                                        <label>Supply Cost / sqft</label>
+                                        <input type="number" step="0.0001" value={inputs.supplyCostPerSqft} onChange={(e) => update({ supplyCostPerSqft: Number(e.target.value) })} />
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Supplies Provided By</label>
+                                        <select value={inputs.supplyPolicy || "company"} onChange={(e) => update({ supplyPolicy: e.target.value as SupplyPolicy })}>
+                                            <option value="company">Cleaning Company</option>
+                                            <option value="client">Client Provides</option>
+                                            <option value="shared">Shared (50/50)</option>
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </details>
+                        </details>
+                    </section>
                 </div>
 
-                {/* Right: Results */}
-                <div className="calc-results">
-                    <div className="calc-results-sticky">
-                        <div className="calc-price-card">
-                            <div className="calc-price-label">Recommended Monthly Price</div>
-                            <div className="calc-price-value">
-                                {priceOverride !== null ? (
-                                    <input
-                                        className="calc-price-input"
-                                        type="number"
-                                        value={priceOverride}
-                                        onChange={(e) => setPriceOverride(parseFloat(e.target.value) || 0)}
-                                        onBlur={() => { if (priceOverride === Math.round(results.totalPricePerMonth)) setPriceOverride(null); }}
-                                        autoFocus
-                                    />
-                                ) : (
-                                    <span
-                                        onClick={() => setPriceOverride(Math.round(results.totalPricePerMonth))}
-                                        style={{ cursor: "pointer" }}
-                                        title="Click to override"
-                                    >
-                                        {fmt(results.totalPricePerMonth)}
-                                    </span>
-                                )}
-                                <span className="calc-price-period">/mo</span>
-                            </div>
-                            <div className="calc-price-sub">
-                                {fmt(results.pricePerVisit)}/visit · ${results.pricePerSqft.toFixed(3)}/sqft
+                {/* Right: Results — identical to dashboard */}
+                <div className="calc-results-sticky">
+                    <div className="calc-results-card">
+                        <h3>Bid Summary</h3>
+
+                        <div className="calc-price-hero">
+                            {(() => {
+                                const base = results.totalPricePerMonth;
+                                const low = Math.round(base * 0.85);
+                                const high = Math.round(base * 1.15);
+                                return (
+                                    <>
+                                        <div className="calc-price-range">
+                                            <span className="calc-price-range-value">{fmt(low)}</span>
+                                            <span className="calc-price-range-dash"> – </span>
+                                            <span className="calc-price-range-value">{fmt(high)}</span>
+                                        </div>
+                                        <span className="calc-price-period">{isOneOff ? " total" : "/month"}</span>
+                                        <div className="calc-price-estimate-note">
+                                            Estimated: {fmt(base)}{isOneOff ? " total" : "/mo"}
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        <div className="calc-final-price-row">
+                            <label>Final Price</label>
+                            <div className="calc-final-price-input-wrap">
+                                <span>$</span>
+                                <input
+                                    className="calc-final-price-input"
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={priceOverride !== null ? priceOverride : Math.round(results.totalPricePerMonth)}
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(/[^0-9]/g, "");
+                                        setPriceOverride(raw === "" ? 0 : Number(raw));
+                                    }}
+                                />
+                                <span className="calc-final-price-period">{isOneOff ? "total" : "/mo"}</span>
                             </div>
                         </div>
 
-                        {/* Metrics */}
-                        <div className="calc-metrics">
-                            <div className="calc-metric">
-                                <span className="calc-metric-value">{results.hoursPerVisit}</span>
-                                <span className="calc-metric-label">hrs/visit</span>
+                        {/* Metrics grid */}
+                        <div className="calc-results-grid">
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Per Visit</span>
+                                <span className="calc-result-value">{fmt(results.pricePerVisit)}</span>
                             </div>
-                            <div className="calc-metric">
-                                <span className="calc-metric-value">{results.visitsPerMonth}</span>
-                                <span className="calc-metric-label">visits/mo</span>
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Per Sqft</span>
+                                <span className="calc-result-value">${results.pricePerSqft.toFixed(3)}</span>
                             </div>
-                            <div className="calc-metric">
-                                <span className="calc-metric-value">{results.totalHoursPerMonth}</span>
-                                <span className="calc-metric-label">hrs/mo</span>
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Hrs/Visit</span>
+                                <span className="calc-result-value">{results.hoursPerVisit}</span>
                             </div>
-                            <div className="calc-metric">
-                                <span className="calc-metric-value">{fmt(results.effectiveHourlyRate)}</span>
-                                <span className="calc-metric-label">eff. $/hr</span>
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Visits/Mo</span>
+                                <span className="calc-result-value">{results.visitsPerMonth}</span>
+                            </div>
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Hrs/Mo</span>
+                                <span className="calc-result-value">{results.totalHoursPerMonth}</span>
+                            </div>
+                            <div className="calc-result-item">
+                                <span className="calc-result-label">Eff. $/hr</span>
+                                <span className="calc-result-value">{fmt(results.effectiveHourlyRate)}</span>
                             </div>
                         </div>
 
                         {/* Cost Breakdown */}
                         <div className="calc-breakdown">
-                            <h4 style={{ color: "white", fontSize: "0.875rem", marginBottom: "0.75rem" }}>Cost Breakdown</h4>
+                            <h4>Cost Breakdown</h4>
                             {[
                                 { label: "Labor", value: results.laborCostPerMonth },
                                 { label: "Payroll Tax", value: results.payrollTaxCost },
                                 { label: "Supplies", value: results.supplyCostPerMonth },
                                 { label: "Overhead", value: results.overheadCost },
-                                { label: "Profit", value: results.profitAmount },
                             ].map((item) => (
                                 <div key={item.label} className="calc-breakdown-row">
                                     <span>{item.label}</span>
                                     <span>{fmt(item.value)}</span>
                                 </div>
                             ))}
-                            <div className="calc-breakdown-row calc-breakdown-total">
+                            <div className="calc-breakdown-row calc-breakdown-profit">
+                                <span>Profit</span>
+                                <span>{fmt(results.profitAmount)}</span>
+                            </div>
+                            <div className="calc-breakdown-row calc-breakdown-subtotal">
                                 <span>Total</span>
                                 <span>{fmt(results.totalPricePerMonth)}</span>
                             </div>
                         </div>
 
                         {/* CTA */}
-                        <div style={{ marginTop: "1.5rem" }}>
-                            <a
-                                href="/app/login?mode=signup"
-                                className="calc-btn calc-btn-primary"
-                                style={{ width: "100%", textDecoration: "none", textAlign: "center", display: "block", fontSize: "0.9375rem" }}
-                            >
-                                Save Bid — Start 14-Day Free Trial
-                            </a>
-                            <p style={{ color: "#8b92b3", fontSize: "0.75rem", textAlign: "center", marginTop: "0.5rem" }}>
-                                No credit card required · Full Bid Plus features
-                            </p>
-                        </div>
+                        <a
+                            href="/app/login?mode=signup"
+                            className="calc-btn calc-btn-primary calc-save-btn"
+                            style={{ textDecoration: "none", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem" }}
+                        >
+                            Save Bid — Start 14-Day Free Trial
+                        </a>
+                        <p style={{ color: "#8b92b3", fontSize: "0.75rem", textAlign: "center", marginTop: "0.5rem" }}>
+                            No credit card required · Full Bid Plus features
+                        </p>
                     </div>
                 </div>
             </div>
