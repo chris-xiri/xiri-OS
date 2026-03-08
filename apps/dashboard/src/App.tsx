@@ -10,6 +10,7 @@ import Bids from "./pages/Bids";
 import BidDetail from "./pages/BidDetail";
 import Contacts from "./pages/Contacts";
 import Calculator from "./pages/Calculator";
+import PublicCalculator from "./pages/PublicCalculator";
 import References from "./pages/References";
 import CompanyInfo from "./pages/CompanyInfo";
 import Settings from "./pages/Settings";
@@ -79,6 +80,7 @@ export default function App() {
         />
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
+          <Route path="/calculator" element={<PublicCalculator />} />
 
           <Route element={<ProtectedRoute />}>
             <Route index element={<Dashboard />} />
