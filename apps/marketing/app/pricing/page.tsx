@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
+import CheckoutButton from "../components/CheckoutButton";
 
 export const metadata: Metadata = {
     title: "Pricing — xiriOS | Janitorial Bidding & Business Management",
     description:
-        "Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from $39/mo. No credit card required. Save 60% vs competitors.",
+        "Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from $9/mo. No credit card required. Save 60% vs competitors.",
     keywords:
         "xiriOS pricing, cleaning business software pricing, janitorial software cost, cleaning bidding software price",
 };
@@ -12,27 +13,47 @@ export const metadata: Metadata = {
 const PLANS = [
     {
         name: "Bid",
+        slug: "bid",
         price: 0,
         annual: 0,
         tagline: "Win jobs with professional bids",
         users: "1 user",
         featured: false,
         features: [
-            "Unlimited bids & proposals",
+            "Up to 3 active bids",
             "PDF proposal generation",
-            "CRM — up to 10 contacts",
+            "CRM — up to 5 contacts",
             "Mobile app (PWA)",
             "Email support",
         ],
         cta: "Get Started Free",
     },
     {
+        name: "Bid Plus",
+        slug: "bid_plus",
+        price: 9,
+        annual: 7,
+        tagline: "Unlimited bidding for solo operators",
+        users: "1 user",
+        featured: false,
+        features: [
+            "Everything in Bid",
+            "Unlimited contacts & bids",
+            "Custom tasks & frequencies",
+            "PDF proposal generation",
+            "Priority email support",
+        ],
+        cta: "Start Free Trial",
+    },
+    {
         name: "Grow",
+        slug: "grow",
         price: 39,
         annual: 31,
         tagline: "Add invoicing & a small team",
         users: "Up to 3 users",
         featured: false,
+        comingSoon: true,
         features: [
             "Everything in Bid",
             "Invoicing & payments",
@@ -44,11 +65,13 @@ const PLANS = [
     },
     {
         name: "Pro",
+        slug: "pro",
         price: 79,
         annual: 63,
         tagline: "Full operations for growing teams",
         users: "Up to 10 users",
         featured: true,
+        comingSoon: true,
         features: [
             "Everything in Grow",
             "Scheduling & recurring jobs",
@@ -61,11 +84,13 @@ const PLANS = [
     },
     {
         name: "Business",
+        slug: "business",
         price: 119,
         annual: 95,
         tagline: "Scale with full visibility",
         users: "Up to 25 users",
         featured: false,
+        comingSoon: true,
         features: [
             "Everything in Pro",
             "Inspections & quality scores",
@@ -81,7 +106,7 @@ const PLANS = [
 const FAQ = [
     {
         q: "Is there a free plan?",
-        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 10 CRM contacts. No credit card required. Paid plans start at $39/mo with a 14-day free trial.",
+        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 10 CRM contacts. No credit card required. Bid Plus starts at just $9/mo for unlimited contacts. Other paid plans start at $39/mo with a 14-day free trial.",
     },
     {
         q: "Can I switch plans anytime?",
@@ -137,7 +162,7 @@ export default function PricingPage() {
                 >
                     <span className="section-label">Simple, honest pricing</span>
                     <h1>
-                        More features, <span style={{ color: "#00d4aa" }}>lower price</span>
+                        Janitorial Software Pricing — <span style={{ color: "#00d4aa" }}>More Features, Lower Cost</span>
                     </h1>
                     <p
                         style={{
@@ -163,9 +188,9 @@ export default function PricingPage() {
                         className="pricing-grid"
                         style={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(4, 1fr)",
+                            gridTemplateColumns: "repeat(5, 1fr)",
                             gap: "1.25rem",
-                            maxWidth: "1100px",
+                            maxWidth: "1300px",
                             margin: "0 auto",
                         }}
                     >
@@ -173,7 +198,7 @@ export default function PricingPage() {
                             <div
                                 key={plan.name}
                                 className={`card ${plan.featured ? "card-featured" : ""}`}
-                                style={{ position: "relative" }}
+                                style={{ position: "relative", ...(plan.comingSoon ? { opacity: 0.55 } : {}) }}
                             >
                                 {plan.featured && (
                                     <div
@@ -287,13 +312,38 @@ export default function PricingPage() {
                                     ))}
                                 </ul>
 
-                                <a
-                                    href="#"
-                                    className={`btn ${plan.featured ? "btn-primary" : "btn-secondary"}`}
-                                    style={{ width: "100%" }}
-                                >
-                                    {plan.cta}
-                                </a>
+                                {plan.comingSoon ? (
+                                    <div
+                                        style={{
+                                            textAlign: "center",
+                                            padding: "0.625rem 1rem",
+                                            borderRadius: "8px",
+                                            background: "rgba(245, 158, 11, 0.08)",
+                                            color: "#f59e0b",
+                                            fontWeight: 700,
+                                            fontSize: "0.875rem",
+                                            width: "100%",
+                                        }}
+                                    >
+                                        Coming Soon
+                                    </div>
+                                ) : plan.price === 0 ? (
+                                    <a
+                                        href="/calculator"
+                                        className="btn btn-secondary"
+                                        style={{ width: "100%" }}
+                                    >
+                                        {plan.cta}
+                                    </a>
+                                ) : (
+                                    <a
+                                        href="https://os.xiri.ai/app/login?mode=signup"
+                                        className={`btn ${plan.featured ? "btn-primary" : "btn-secondary"}`}
+                                        style={{ width: "100%" }}
+                                    >
+                                        {plan.cta}
+                                    </a>
+                                )}
                             </div>
                         ))}
                     </div>
@@ -530,7 +580,7 @@ export default function PricingPage() {
                         }}
                     >
                         <a
-                            href="#"
+                            href="https://os.xiri.ai/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{ fontSize: "1.0625rem", padding: "1rem 2.5rem" }}
                         >

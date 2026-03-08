@@ -29,8 +29,8 @@ export default function Home() {
             </span>
 
             <h1 className="animate-fade-in-up delay-100">
-              Win more bids.{" "}
-              <span style={{ color: "#00d4aa" }}>Protect your margins.</span>
+              Janitorial Software to{" "}
+              <span style={{ color: "#00d4aa" }}>Win More Bids</span>
             </h1>
 
             <p
@@ -128,8 +128,8 @@ export default function Home() {
           <div className="section-header">
             <span className="section-label">Everything you need</span>
             <h2>
-              Run your entire cleaning business{" "}
-              <span style={{ color: "#00d4aa" }}>from one place</span>
+              All-in-one cleaning business software{" "}
+              <span style={{ color: "#00d4aa" }}>built for janitorial teams</span>
             </h2>
             <p style={{ marginTop: "1rem" }}>
               No more juggling spreadsheets, paper bids, and random apps. xiriOS brings it all together.
@@ -229,7 +229,7 @@ export default function Home() {
       >
         <div className="section-inner" style={{ textAlign: "center" }}>
           <h2>
-            <span style={{ color: "#00d4aa" }}>Save $600–4,500/year</span> switching to xiriOS
+            <span style={{ color: "#00d4aa" }}>Save $600–4,500/year</span> vs other janitorial management software
           </h2>
           <p style={{ maxWidth: "600px", margin: "1rem auto 0" }}>
             We include more features at every price point. No surprises, no per-user gotchas, just honest pricing for honest businesses.
@@ -289,7 +289,8 @@ export default function Home() {
           <div className="section-header">
             <span className="section-label">Simple, honest pricing</span>
             <h2>
-              More features, <span style={{ color: "#00d4aa" }}>lower price</span>
+              Janitorial software pricing:{" "}
+              <span style={{ color: "#00d4aa" }}>more features, lower price</span>
             </h2>
             <p style={{ marginTop: "1rem" }}>
               Every plan includes more than what competitors charge 2–5× more for. Start with a 14-day free trial. No credit card required.
@@ -452,8 +453,8 @@ export default function Home() {
         <div className="section-inner" style={{ textAlign: "center" }}>
           <span className="section-label">Free tool — no sign-up required</span>
           <h2>
-            Know exactly what to bid{" "}
-            <span style={{ color: "#00d4aa" }}>before you quote</span>
+            Free janitorial bid calculator —{" "}
+            <span style={{ color: "#00d4aa" }}>know your price before you quote</span>
           </h2>
           <p style={{ maxWidth: "550px", margin: "1rem auto 0" }}>
             Our free cleaning bid calculator helps you price jobs accurately based on square footage, building type, and frequency. Used by 2,000+ cleaning businesses.
