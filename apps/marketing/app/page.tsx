@@ -56,13 +56,13 @@ export default function Home() {
                 flexWrap: "wrap",
               }}
             >
-              <a href="#pricing" className="btn btn-primary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
+              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
                 Start Free Trial
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                   <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </a>
-              <a href="#calculator" className="btn btn-secondary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
+              <a href="/calculator" className="btn btn-secondary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
                 Try Free Calculator
               </a>
             </div>
@@ -328,7 +328,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
                 Get Started Free
               </a>
             </div>
@@ -356,7 +356,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
                 Start Free Trial
               </a>
             </div>
@@ -392,7 +392,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
                 Start Free Trial
               </a>
             </div>
@@ -428,7 +428,7 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              <a href="#" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
+              <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
                 Start Free Trial
               </a>
             </div>
@@ -520,11 +520,9 @@ export default function Home() {
               Product
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {["Features", "Pricing", "Calculator", "Integrations"].map((link) => (
-                <a key={link} href="#" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>
-                  {link}
-                </a>
-              ))}
+              <a href="/#features" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Features</a>
+              <a href="/pricing" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Pricing</a>
+              <a href="/calculator" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Calculator</a>
             </div>
           </div>
 

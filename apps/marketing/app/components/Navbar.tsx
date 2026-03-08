@@ -72,9 +72,9 @@ export default function Navbar() {
             >
                 <div style={{ display: "flex", gap: "2rem" }}>
                     {[
-                        { href: "#features", label: "Features" },
-                        { href: "#pricing", label: "Pricing" },
-                        { href: "#calculator", label: "Calculator" },
+                        { href: "/#features", label: "Features" },
+                        { href: "/pricing", label: "Pricing" },
+                        { href: "/calculator", label: "Calculator" },
                     ].map((link) => (
                         <a
                             key={link.href}
@@ -100,10 +100,10 @@ export default function Navbar() {
                 </div>
 
                 <div style={{ display: "flex", gap: "0.75rem" }}>
-                    <a href="/app/login" className="btn btn-secondary" style={{ padding: "0.625rem 1.25rem", fontSize: "0.875rem" }}>
+                    <a href="https://os.xiri.ai/app/login" className="btn btn-secondary" style={{ padding: "0.625rem 1.25rem", fontSize: "0.875rem" }}>
                         Sign In
                     </a>
-                    <a href="#pricing" className="btn btn-primary" style={{ padding: "0.625rem 1.25rem", fontSize: "0.875rem" }}>
+                    <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ padding: "0.625rem 1.25rem", fontSize: "0.875rem" }}>
                         Start Free Trial
                     </a>
                 </div>
@@ -149,9 +149,9 @@ export default function Navbar() {
                     }}
                 >
                     {[
-                        { href: "#features", label: "Features" },
-                        { href: "#pricing", label: "Pricing" },
-                        { href: "#calculator", label: "Calculator" },
+                        { href: "/#features", label: "Features" },
+                        { href: "/pricing", label: "Pricing" },
+                        { href: "/calculator", label: "Calculator" },
                     ].map((link) => (
                         <a
                             key={link.href}
@@ -171,8 +171,8 @@ export default function Navbar() {
                         </a>
                     ))}
                     <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginTop: "1rem" }}>
-                        <a href="/app/login" className="btn btn-secondary">Sign In</a>
-                        <a href="#pricing" className="btn btn-primary">Start Free Trial</a>
+                        <a href="https://os.xiri.ai/app/login" className="btn btn-secondary">Sign In</a>
+                        <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary">Start Free Trial</a>
                     </div>
                 </div>
             )}

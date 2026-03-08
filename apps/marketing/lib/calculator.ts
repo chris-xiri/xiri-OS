@@ -164,14 +164,17 @@ export const BUILDING_TYPES: BuildingType[] = [
     },
 ];
 
-export type Frequency = "1" | "2" | "3" | "5" | "7";
+export type Frequency = "once" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
 
-export const FREQUENCIES: { value: Frequency; label: string }[] = [
-    { value: "1", label: "1x per week" },
-    { value: "2", label: "2x per week" },
-    { value: "3", label: "3x per week" },
-    { value: "5", label: "5x per week (weekdays)" },
-    { value: "7", label: "7x per week (daily)" },
+export const FREQUENCIES: { value: Frequency; label: string; group: "recurring" | "once" }[] = [
+    { value: "once", label: "One-Time / Deep Clean", group: "once" },
+    { value: "1", label: "1x per week", group: "recurring" },
+    { value: "2", label: "2x per week", group: "recurring" },
+    { value: "3", label: "3x per week", group: "recurring" },
+    { value: "4", label: "4x per week", group: "recurring" },
+    { value: "5", label: "5x per week (weekdays)", group: "recurring" },
+    { value: "6", label: "6x per week", group: "recurring" },
+    { value: "7", label: "7x per week (daily)", group: "recurring" },
 ];
 
 // ============================================================
@@ -252,7 +255,7 @@ export function getStateDefaults(stateCode: string): Partial<CalculatorInputs> |
     return {
         wageRate: state.recommendedWage,
         payrollTaxPercent: state.payrollTaxPercent,
-        supplyCostPerSqft: Math.round(0.003 * state.supplyCostMultiplier * 10000) / 10000,
+        supplyCostPerSqft: Math.round(0.0015 * state.supplyCostMultiplier * 10000) / 10000,
     };
 }
 
@@ -267,32 +270,39 @@ export interface CleaningTask {
     category: "general" | "restrooms" | "floors" | "specialty";
     /** Whether this is included by default */
     defaultIncluded: boolean;
-    /** Extra minutes per 1,000 sqft this task adds */
+    /** ISSA-calibrated minutes per 1,000 sqft */
     minutesPer1kSqft: number;
+    /** How carpet/hard-floor split affects this task's sqft */
+    floorType: "carpet" | "hard" | "none";
     /** Description for the proposal */
     description: string;
+    /**
+     * Industry-standard recommended frequency (times per week).
+     * "max" = every visit (match bid frequency).  Otherwise a numeric string.
+     */
+    recommendedFrequency: "max" | string;
 }
 
 export const CLEANING_TASKS: CleaningTask[] = [
-    // General — typically always included
-    { id: "trash", name: "Empty trash & replace liners", category: "general", defaultIncluded: true, minutesPer1kSqft: 1.5, description: "Empty all waste baskets, replace liners, transport to dumpster" },
-    { id: "dust", name: "Dust surfaces & desks", category: "general", defaultIncluded: true, minutesPer1kSqft: 2.0, description: "Dust all reachable horizontal surfaces, desks, ledges, and countertops" },
-    { id: "wipe", name: "Wipe & sanitize surfaces", category: "general", defaultIncluded: true, minutesPer1kSqft: 1.5, description: "Wipe down and sanitize high-touch surfaces: door handles, light switches, railings" },
-    { id: "glass-entry", name: "Clean entry glass & doors", category: "general", defaultIncluded: true, minutesPer1kSqft: 0.5, description: "Clean and polish entry glass doors and sidelights" },
-    // Restrooms
-    { id: "restroom-clean", name: "Clean & disinfect restrooms", category: "restrooms", defaultIncluded: true, minutesPer1kSqft: 3.0, description: "Clean and disinfect toilets, urinals, sinks, mirrors, and partitions" },
-    { id: "restroom-restock", name: "Restock restroom supplies", category: "restrooms", defaultIncluded: true, minutesPer1kSqft: 0.5, description: "Restock paper towels, toilet paper, hand soap, and sanitizer" },
-    // Floors
-    { id: "vacuum", name: "Vacuum carpeted areas", category: "floors", defaultIncluded: true, minutesPer1kSqft: 2.5, description: "Vacuum all carpeted areas including edges and corners" },
-    { id: "mop", name: "Mop hard floors", category: "floors", defaultIncluded: true, minutesPer1kSqft: 2.0, description: "Damp mop all hard-surface flooring" },
-    { id: "sweep", name: "Sweep hard floors", category: "floors", defaultIncluded: false, minutesPer1kSqft: 1.5, description: "Sweep all hard-surface floors before mopping" },
-    // Specialty / Add-ons
-    { id: "breakroom", name: "Kitchen / breakroom cleaning", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 1.0, description: "Clean breakroom counters, tables, sinks, and appliance exteriors" },
-    { id: "glass-interior", name: "Interior glass & partitions", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 1.0, description: "Clean interior glass partitions, conference room glass, and mirrors" },
-    { id: "high-dust", name: "High dusting (vents, ledges)", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 0.75, description: "Dust high areas: vents, ceiling ledges, tops of cabinets" },
-    { id: "floor-wax", name: "Floor waxing & buffing", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 3.0, description: "Strip, wax, and buff hard floors (periodic)" },
-    { id: "carpet-extract", name: "Carpet extraction / shampooing", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 4.0, description: "Deep clean carpets with hot water extraction (periodic)" },
-    { id: "pressure-wash", name: "Pressure washing (exterior)", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 2.0, description: "Pressure wash building exterior, sidewalks, and parking areas" },
+    // General — every-visit tasks
+    { id: "trash", name: "Empty trash & replace liners", category: "general", defaultIncluded: true, minutesPer1kSqft: 2.5, floorType: "none", description: "Empty all waste baskets, replace liners, transport to dumpster", recommendedFrequency: "max" },
+    { id: "dust", name: "Dust surfaces & desks", category: "general", defaultIncluded: true, minutesPer1kSqft: 3.0, floorType: "none", description: "Dust all reachable horizontal surfaces, desks, ledges, and countertops", recommendedFrequency: "max" },
+    { id: "wipe", name: "Wipe & sanitize surfaces", category: "general", defaultIncluded: true, minutesPer1kSqft: 2.5, floorType: "none", description: "Wipe down and sanitize high-touch surfaces: door handles, light switches, railings", recommendedFrequency: "max" },
+    { id: "glass-entry", name: "Clean entry glass & doors", category: "general", defaultIncluded: true, minutesPer1kSqft: 1.0, floorType: "none", description: "Clean and polish entry glass doors and sidelights", recommendedFrequency: "3" },
+    // Restrooms — every visit
+    { id: "restroom-clean", name: "Clean & disinfect restrooms", category: "restrooms", defaultIncluded: true, minutesPer1kSqft: 3.5, floorType: "none", description: "Clean and disinfect toilets, urinals, sinks, mirrors, and partitions", recommendedFrequency: "max" },
+    { id: "restroom-restock", name: "Restock restroom supplies", category: "restrooms", defaultIncluded: true, minutesPer1kSqft: 0.75, floorType: "none", description: "Restock paper towels, toilet paper, hand soap, and sanitizer", recommendedFrequency: "max" },
+    // Floors — every visit (affected by carpet/hard split)
+    { id: "vacuum", name: "Vacuum carpeted areas", category: "floors", defaultIncluded: true, minutesPer1kSqft: 4.5, floorType: "carpet", description: "Vacuum all carpeted areas including edges and corners", recommendedFrequency: "max" },
+    { id: "mop", name: "Mop hard floors", category: "floors", defaultIncluded: true, minutesPer1kSqft: 5.0, floorType: "hard", description: "Damp mop all hard-surface flooring", recommendedFrequency: "max" },
+    { id: "sweep", name: "Sweep hard floors", category: "floors", defaultIncluded: false, minutesPer1kSqft: 3.5, floorType: "hard", description: "Sweep all hard-surface floors before mopping", recommendedFrequency: "max" },
+    // Specialty / Add-ons — periodic
+    { id: "breakroom", name: "Kitchen / breakroom cleaning", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 2.5, floorType: "none", description: "Clean breakroom counters, tables, sinks, and appliance exteriors", recommendedFrequency: "3" },
+    { id: "glass-interior", name: "Interior glass & partitions", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 2.0, floorType: "none", description: "Clean interior glass partitions, conference room glass, and mirrors", recommendedFrequency: "1" },
+    { id: "high-dust", name: "High dusting (vents, ledges)", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 2.0, floorType: "none", description: "Dust high areas: vents, ceiling ledges, tops of cabinets", recommendedFrequency: "0.25" },
+    { id: "floor-wax", name: "Floor waxing & buffing", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 8.0, floorType: "hard", description: "Strip, wax, and buff hard floors (periodic)", recommendedFrequency: "0.25" },
+    { id: "carpet-extract", name: "Carpet extraction / shampooing", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 10.0, floorType: "carpet", description: "Deep clean carpets with hot water extraction (periodic)", recommendedFrequency: "0.25" },
+    { id: "pressure-wash", name: "Pressure washing (exterior)", category: "specialty", defaultIncluded: false, minutesPer1kSqft: 5.0, floorType: "none", description: "Pressure wash building exterior, sidewalks, and parking areas", recommendedFrequency: "0.25" },
 ];
 
 export const TASK_CATEGORIES = [
@@ -301,6 +311,156 @@ export const TASK_CATEGORIES = [
     { id: "floors" as const, label: "Floors", icon: "🧽" },
     { id: "specialty" as const, label: "Specialty / Add-ons", icon: "✨" },
 ];
+
+// ============================================================
+// Room / Space Types for scope-per-room
+// ============================================================
+
+export interface RoomType {
+    id: string;
+    name: string;
+    icon: string;
+    defaultTasks: string[];
+    relevantCategories: string[];  // which task categories to show in this room
+}
+
+export const ROOM_TYPES: RoomType[] = [
+    { id: "lobby", name: "Lobby / Reception", icon: "🏢", defaultTasks: ["trash", "dust", "wipe", "glass-entry", "vacuum", "mop"], relevantCategories: ["general", "floors", "specialty"] },
+    { id: "offices", name: "Offices", icon: "💼", defaultTasks: ["trash", "dust", "wipe", "vacuum"], relevantCategories: ["general", "floors"] },
+    { id: "restrooms", name: "Restrooms", icon: "🚻", defaultTasks: ["restroom-clean", "restroom-restock", "mop"], relevantCategories: ["restrooms", "floors"] },
+    { id: "hallways", name: "Hallways / Corridors", icon: "🚶", defaultTasks: ["vacuum", "mop", "dust"], relevantCategories: ["general", "floors"] },
+    { id: "kitchen", name: "Kitchen / Breakroom", icon: "🍽️", defaultTasks: ["breakroom", "trash", "wipe", "mop"], relevantCategories: ["general", "floors", "specialty"] },
+    { id: "conference", name: "Conference Rooms", icon: "📋", defaultTasks: ["trash", "dust", "wipe", "vacuum", "glass-interior"], relevantCategories: ["general", "floors"] },
+    { id: "patient", name: "Patient / Exam Rooms", icon: "🩺", defaultTasks: ["trash", "dust", "wipe", "restroom-clean", "mop"], relevantCategories: ["general", "restrooms", "floors", "specialty"] },
+    { id: "common", name: "Common Areas", icon: "🛋️", defaultTasks: ["trash", "dust", "wipe", "vacuum"], relevantCategories: ["general", "floors", "specialty"] },
+    { id: "warehouse", name: "Warehouse / Storage", icon: "📦", defaultTasks: ["sweep", "trash"], relevantCategories: ["general", "floors"] },
+    { id: "exterior", name: "Exterior", icon: "🏗️", defaultTasks: ["pressure-wash"], relevantCategories: ["specialty"] },
+    { id: "custom", name: "Custom Area", icon: "✏️", defaultTasks: [], relevantCategories: ["general", "restrooms", "floors", "specialty"] },
+];
+
+export const TASK_FREQUENCY_OPTIONS = [
+    { value: "7", label: "7x/wk" },
+    { value: "6", label: "6x/wk" },
+    { value: "5", label: "5x/wk" },
+    { value: "4", label: "4x/wk" },
+    { value: "3", label: "3x/wk" },
+    { value: "2", label: "2x/wk" },
+    { value: "1", label: "1x/wk" },
+    { value: "0.5", label: "2x/mo" },
+    { value: "0.25", label: "1x/mo" },
+    { value: "0.083", label: "Quarterly" },
+    { value: "0.042", label: "Semi-Annual" },
+    { value: "0.019", label: "Annual" },
+] as const;
+
+/**
+ * Resolve the recommended frequency for a task, capped at bid frequency.
+ * - "max" → use bid frequency
+ * - numeric → min(recommended, bidFreq)
+ * - once → always "once" (single visit)
+ */
+export function resolveTaskFrequency(recommended: "max" | string, bidFrequency: string): string {
+    if (bidFrequency === "once") return "once";
+    const bidVal = parseFloat(bidFrequency);
+    if (recommended === "max") return bidFrequency;
+    const recVal = parseFloat(recommended);
+    if (isNaN(recVal)) return bidFrequency;
+    // Cap at bid frequency
+    const effective = Math.min(recVal, bidVal);
+    // Snap to the nearest known option value
+    const opt = TASK_FREQUENCY_OPTIONS.find(o => parseFloat(o.value) === effective);
+    if (opt) return opt.value;
+    // If capped matches bid exactly, use that
+    if (effective === bidVal) return bidFrequency;
+    // Fall back to the closest option ≤ effective
+    const closest = [...TASK_FREQUENCY_OPTIONS]
+        .filter(o => parseFloat(o.value) <= effective)
+        .sort((a, b) => parseFloat(b.value) - parseFloat(a.value));
+    return closest.length ? closest[0].value : bidFrequency;
+}
+
+/**
+ * Return frequency options filtered to values ≤ bid frequency.
+ * If bid is "once", returns only the one-time option.
+ */
+export function getTaskFrequencyOptions(bidFrequency: string) {
+    if (bidFrequency === "once") return [{ value: "once" as const, label: "1x (one-time)" }];
+    const bidVal = parseFloat(bidFrequency);
+    return TASK_FREQUENCY_OPTIONS.filter(o => parseFloat(o.value) <= bidVal);
+}
+
+export interface CustomTask {
+    id: string;           // unique ID (prefixed with 'ct-')
+    name: string;
+    description?: string;
+    frequency?: string;   // per-task frequency (defaults to bid frequency)
+}
+
+export interface RoomScope {
+    id: string;           // unique instance id (crypto.randomUUID)
+    roomTypeId: string;
+    customName?: string;  // editable name for custom rooms
+    sqft?: number;        // per-room sqft (auto-distributed from total, user can override)
+    tasks: string[];      // selected preset task IDs
+    customTasks?: CustomTask[];  // user-created tasks for this room
+    taskOverrides?: Record<string, { name?: string; description?: string }>; // edited preset tasks
+    taskFrequencies?: Record<string, string>; // per-task frequency overrides (task ID -> frequency value)
+    taskTimeOverrides?: Record<string, number>; // per-task time overrides (minutes, replaces ISSA default)
+    notes?: string;
+}
+
+// ============================================================
+// Room Area Ratios — how total sqft is distributed per building type
+// ============================================================
+
+export const ROOM_AREA_RATIOS: Record<string, Record<string, number>> = {
+    office: { lobby: 0.08, offices: 0.40, restrooms: 0.08, hallways: 0.15, kitchen: 0.07, conference: 0.22 },
+    medical: { lobby: 0.15, patient: 0.45, restrooms: 0.12, hallways: 0.28 },
+    retail: { lobby: 0.65, restrooms: 0.10, common: 0.25 },
+    school: { lobby: 0.08, offices: 0.15, restrooms: 0.10, hallways: 0.20, kitchen: 0.07, common: 0.40 },
+    gym: { lobby: 0.15, restrooms: 0.15, common: 0.70 },
+    warehouse: { offices: 0.10, restrooms: 0.05, warehouse: 0.85 },
+    restaurant: { lobby: 0.60, restrooms: 0.12, kitchen: 0.28 },
+    church: { lobby: 0.12, restrooms: 0.08, common: 0.65, offices: 0.15 },
+    hotel: { lobby: 0.15, restrooms: 0.10, hallways: 0.25, common: 0.50 },
+    bank: { lobby: 0.40, offices: 0.45, restrooms: 0.15 },
+    daycare: { lobby: 0.10, restrooms: 0.12, common: 0.55, offices: 0.08, kitchen: 0.15 },
+    "auto-dealer": { lobby: 0.50, offices: 0.25, restrooms: 0.10, common: 0.15 },
+    salon: { lobby: 0.55, restrooms: 0.15, common: 0.30 },
+    "movie-theater": { lobby: 0.20, restrooms: 0.12, common: 0.58, hallways: 0.10 },
+};
+
+/** Auto-seed rooms based on building type, distributing sqft */
+export function getDefaultRooms(buildingTypeId: string, totalSqft?: number): RoomScope[] {
+    const presets: Record<string, string[]> = {
+        office: ["lobby", "offices", "restrooms", "hallways", "kitchen", "conference"],
+        medical: ["lobby", "patient", "restrooms", "hallways"],
+        retail: ["lobby", "restrooms", "common"],
+        school: ["lobby", "offices", "restrooms", "hallways", "kitchen", "common"],
+        gym: ["lobby", "restrooms", "common"],
+        warehouse: ["offices", "restrooms", "warehouse"],
+        restaurant: ["lobby", "restrooms", "kitchen"],
+        church: ["lobby", "restrooms", "common", "offices"],
+        government: ["lobby", "offices", "restrooms", "hallways", "conference"],
+        hotel: ["lobby", "restrooms", "hallways", "common"],
+        industrial: ["offices", "restrooms", "warehouse"],
+        bank: ["lobby", "offices", "restrooms"],
+    };
+    const roomIds = presets[buildingTypeId] || ["lobby", "offices", "restrooms"];
+    const ratios = ROOM_AREA_RATIOS[buildingTypeId];
+    return roomIds.map((rid) => {
+        const rt = ROOM_TYPES.find((r) => r.id === rid)!;
+        const ratio = ratios?.[rid];
+        return {
+            id: crypto.randomUUID(),
+            roomTypeId: rid,
+            sqft: totalSqft && ratio ? Math.round(totalSqft * ratio) : undefined,
+            tasks: [...rt.defaultTasks],
+        };
+    });
+}
+
+export type SupplyPolicy = "company" | "client" | "shared";
 
 export interface CalculatorInputs {
     buildingTypeId: string;
@@ -316,6 +476,8 @@ export interface CalculatorInputs {
     profitPercent: number;
     /** Supply cost per sqft per visit */
     supplyCostPerSqft: number;
+    /** Who covers supplies: company (full), client ($0), or shared (50/50) */
+    supplyPolicy?: SupplyPolicy;
 }
 
 export interface CalculatorResults {
@@ -349,7 +511,8 @@ export const DEFAULT_INPUTS: CalculatorInputs = {
     payrollTaxPercent: 15,
     overheadPercent: 12,
     profitPercent: 15,
-    supplyCostPerSqft: 0.003,
+    supplyCostPerSqft: 0.0015,
+    supplyPolicy: "company",
 };
 
 /** Calculate the restroom fixture time in hours per visit */
@@ -362,12 +525,99 @@ function fixtureTime(fixtures: { toilets: number; urinals: number; sinks: number
     return minutes / 60;
 }
 
-export function calculate(inputs: CalculatorInputs): CalculatorResults {
-    const buildingType = BUILDING_TYPES.find((b) => b.id === inputs.buildingTypeId) ?? BUILDING_TYPES[0];
+/**
+ * Apply floor-type scaling to sqft based on building carpet %.
+ *  - "carpet" → sqft × (carpetPercent / 100)
+ *  - "hard"   → sqft × ((100 - carpetPercent) / 100)
+ *  - "none"   → full sqft (task applies to all surfaces)
+ */
+function applyFloorType(sqft: number, floorType: CleaningTask["floorType"], carpetPercent: number): number {
+    if (floorType === "carpet") return sqft * (carpetPercent / 100);
+    if (floorType === "hard") return sqft * ((100 - carpetPercent) / 100);
+    return sqft;
+}
 
-    // --- Time Calculation ---
-    const baseHours = inputs.sqft / buildingType.productionRate;
-    const adjustedHours = baseHours * buildingType.complexityMultiplier;
+/**
+ * Task-based pricing engine.
+ *
+ * Computes monthly labor from each room's tasks (ISSA times × per-room sqft × frequency),
+ * then applies building complexity, wage, payroll, overhead, supplies, and profit.
+ *
+ * @param inputs   Financial and building parameters
+ * @param rooms    Current room scopes with per-room sqft and task selections
+ */
+export function calculate(inputs: CalculatorInputs, rooms?: RoomScope[]): CalculatorResults {
+    const buildingType = BUILDING_TYPES.find((b) => b.id === inputs.buildingTypeId) ?? BUILDING_TYPES[0];
+    const isOneOff = inputs.frequency === "once";
+    const bidFreqValue = isOneOff ? 1 : parseFloat(inputs.frequency);
+    const bidVisitsPerMonth = isOneOff ? 1 : Math.round(bidFreqValue * 4.33);
+
+    // --- Task-based time calculation ---
+    let totalMonthlyMinutes = 0;
+    // Track "max frequency" visits for hoursPerVisit derivation
+    let maxFreqMinutesPerVisit = 0;
+
+    if (rooms && rooms.length > 0) {
+        const taskMap = new Map(CLEANING_TASKS.map(t => [t.id, t]));
+
+        for (const room of rooms) {
+            // Room sqft: use room override, or fallback to total / roomCount
+            const roomSqft = room.sqft || Math.round(inputs.sqft / rooms.length);
+
+            for (const taskId of room.tasks) {
+                const taskDef = taskMap.get(taskId);
+                if (!taskDef) continue;
+
+                // Calculate effective sqft (floor-type adjusted)
+                const effectiveSqft = applyFloorType(roomSqft, taskDef.floorType, buildingType.carpetPercent);
+                if (effectiveSqft <= 0) continue;
+
+                // Base task time or user override
+                const baseMinutes = taskDef.minutesPer1kSqft * (effectiveSqft / 1000);
+                const taskMinutes = room.taskTimeOverrides?.[taskId] ?? baseMinutes;
+
+                // Task frequency
+                const taskFreqStr = room.taskFrequencies?.[taskId] || inputs.frequency;
+                let taskMonthlyVisits: number;
+                if (isOneOff || taskFreqStr === "once") {
+                    taskMonthlyVisits = 1;
+                } else {
+                    const taskFreqVal = parseFloat(taskFreqStr);
+                    taskMonthlyVisits = Math.round(taskFreqVal * 4.33);
+                }
+
+                totalMonthlyMinutes += taskMinutes * taskMonthlyVisits;
+
+                // Track per-visit hours (for tasks at bid frequency)
+                if (taskFreqStr === inputs.frequency || taskFreqStr === "once") {
+                    maxFreqMinutesPerVisit += taskMinutes;
+                }
+            }
+
+            // Custom tasks: flat 2 min per 1k sqft each (no specific ISSA data)
+            if (room.customTasks) {
+                for (const ct of room.customTasks) {
+                    const ctMinutes = 2.0 * (roomSqft / 1000);
+                    const ctFreqStr = ct.frequency || inputs.frequency;
+                    let ctMonthlyVisits: number;
+                    if (isOneOff || ctFreqStr === "once") {
+                        ctMonthlyVisits = 1;
+                    } else {
+                        ctMonthlyVisits = Math.round(parseFloat(ctFreqStr) * 4.33);
+                    }
+                    totalMonthlyMinutes += ctMinutes * ctMonthlyVisits;
+                    if (ctFreqStr === inputs.frequency) {
+                        maxFreqMinutesPerVisit += ctMinutes;
+                    }
+                }
+            }
+        }
+    } else {
+        // Fallback: no rooms provided, use old production-rate model
+        const baseHours = inputs.sqft / buildingType.productionRate;
+        totalMonthlyMinutes = baseHours * 60 * bidVisitsPerMonth;
+        maxFreqMinutesPerVisit = baseHours * 60;
+    }
 
     // Fixture estimates based on sqft
     const fixtureMultiplier = inputs.sqft / 10000;
@@ -376,19 +626,24 @@ export function calculate(inputs: CalculatorInputs): CalculatorResults {
         urinals: Math.round(buildingType.fixturesPer10k.urinals * fixtureMultiplier),
         sinks: Math.round(buildingType.fixturesPer10k.sinks * fixtureMultiplier),
     };
+    const fixtureHoursPerVisit = fixtureTime(estimatedFixtures);
+    totalMonthlyMinutes += fixtureHoursPerVisit * 60 * bidVisitsPerMonth;
+    maxFreqMinutesPerVisit += fixtureHoursPerVisit * 60;
 
-    const restroomHours = fixtureTime(estimatedFixtures);
-    const hoursPerVisit = Math.round((adjustedHours + restroomHours) * 100) / 100;
+    // Apply building complexity multiplier
+    totalMonthlyMinutes *= buildingType.complexityMultiplier;
+    maxFreqMinutesPerVisit *= buildingType.complexityMultiplier;
 
-    // Visits per month (frequency × ~4.33 weeks/month)
-    const freq = parseInt(inputs.frequency);
-    const visitsPerMonth = Math.round(freq * 4.33);
-    const totalHoursPerMonth = Math.round(hoursPerVisit * visitsPerMonth * 100) / 100;
+    const totalHoursPerMonth = Math.round((totalMonthlyMinutes / 60) * 100) / 100;
+    const hoursPerVisit = bidVisitsPerMonth > 0
+        ? Math.round((maxFreqMinutesPerVisit / 60) * 100) / 100
+        : 0;
 
     // --- Cost Calculation ---
     const laborCostPerMonth = totalHoursPerMonth * inputs.wageRate;
     const payrollTaxCost = laborCostPerMonth * (inputs.payrollTaxPercent / 100);
-    const supplyCostPerMonth = inputs.supplyCostPerSqft * inputs.sqft * visitsPerMonth;
+    const supplyMultiplier = (inputs.supplyPolicy ?? "company") === "client" ? 0 : (inputs.supplyPolicy ?? "company") === "shared" ? 0.5 : 1;
+    const supplyCostPerMonth = inputs.supplyCostPerSqft * inputs.sqft * bidVisitsPerMonth * supplyMultiplier;
     const subtotalDirect = laborCostPerMonth + payrollTaxCost + supplyCostPerMonth;
     const overheadCost = subtotalDirect * (inputs.overheadPercent / 100);
     const totalCostPerMonth = subtotalDirect + overheadCost;
@@ -396,8 +651,12 @@ export function calculate(inputs: CalculatorInputs): CalculatorResults {
     const totalPricePerMonth = Math.round((totalCostPerMonth + profitAmount) * 100) / 100;
 
     // --- Derived ---
-    const pricePerVisit = Math.round((totalPricePerMonth / visitsPerMonth) * 100) / 100;
-    const pricePerSqft = Math.round((totalPricePerMonth / inputs.sqft) * 1000) / 1000;
+    const pricePerVisit = bidVisitsPerMonth > 0
+        ? Math.round((totalPricePerMonth / bidVisitsPerMonth) * 100) / 100
+        : totalPricePerMonth;
+    const pricePerSqft = inputs.sqft > 0
+        ? Math.round((totalPricePerMonth / inputs.sqft) * 1000) / 1000
+        : 0;
     const effectiveHourlyRate =
         totalHoursPerMonth > 0
             ? Math.round((totalPricePerMonth / totalHoursPerMonth) * 100) / 100
@@ -406,7 +665,7 @@ export function calculate(inputs: CalculatorInputs): CalculatorResults {
     return {
         buildingType,
         hoursPerVisit,
-        visitsPerMonth,
+        visitsPerMonth: bidVisitsPerMonth,
         totalHoursPerMonth,
         estimatedFixtures,
         laborCostPerMonth: Math.round(laborCostPerMonth * 100) / 100,
