@@ -6,9 +6,10 @@ export default function robots(): MetadataRoute.Robots {
             {
                 userAgent: "*",
                 allow: "/",
-                disallow: ["/api/", "/checkout/"],
+                disallow: ["/api/", "/checkout/", "/app/"],
             },
         ],
         sitemap: "https://os.xiri.ai/sitemap.xml",
+        host: "https://os.xiri.ai",
     };
 }

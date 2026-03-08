@@ -170,6 +170,43 @@ export const SERVICES: ServiceType[] = [
         metaDescTemplate:
             "Run your {city} cleaning company with xiriOS. Bidding, scheduling, CRM, timekeeping, and invoicing — all in one platform. Free to start.",
     },
+    {
+        slug: "janitorial-pricing",
+        name: "Janitorial Pricing",
+        h1Template: "Janitorial Pricing Guide for {city}, {stateCode}",
+        subtitle:
+            "How much should you charge for janitorial services in {city}? Use local wage data, ISSA production rates, and our free calculator to price {city} cleaning contracts accurately.",
+        features: [
+            "Average janitorial wage in {state}: $13–$19/hour depending on market and experience",
+            "Office cleaning in {city} typically runs $0.05–$0.25 per square foot per visit",
+            "Medical facilities in {city} command 30–40% premium over standard office rates",
+            "Use ISSA 612 production rates calibrated for {city} building types",
+            "Factor in {state} payroll taxes, workers' comp, and insurance requirements",
+            "Free bid calculator with {city}-specific wage pre-fills",
+        ],
+        faqs: [
+            {
+                q: "How much do janitorial companies charge per square foot in {city}?",
+                a: "In {city}, {stateCode}, janitorial pricing typically ranges from $0.05–$0.15/sqft for basic office cleaning (3–5x/week) to $0.20–$0.35/sqft for medical or specialty facilities. Rates vary based on building type, cleaning frequency, and scope of work. Use our free calculator for an instant estimate.",
+            },
+            {
+                q: "What is the average janitorial service wage in {city}, {stateCode}?",
+                a: "Janitorial workers in {city} earn between $13–$19/hour on average, depending on experience and facility type. Your fully-loaded labor cost (with payroll taxes, workers' comp, and benefits) is typically 15–25% higher than the base wage. Our calculator accounts for {state}-specific payroll burden.",
+            },
+            {
+                q: "How do I calculate a janitorial bid for a building in {city}?",
+                a: "Use the square footage method: (1) Determine the building's cleanable area, (2) Apply the ISSA production rate for the building type, (3) Calculate labor hours × your {city} labor rate, (4) Add overhead (8–15%) and profit margin (10–20%). Our free calculator automates this entire process.",
+            },
+            {
+                q: "Should I price differently for {city} vs other {state} cities?",
+                a: "Yes — labor costs, competition density, and commercial real estate markets vary within {state}. {city} may have different wage expectations and cost-of-living factors than other {state} markets. Always research local rates and use market-appropriate pricing.",
+            },
+        ],
+        metaTitleTemplate:
+            "Janitorial Pricing in {city}, {stateCode} — Rates, Calculator & Guide | xiriOS",
+        metaDescTemplate:
+            "How much to charge for janitorial services in {city}, {stateCode}? Local pricing guide with wage data, per-sqft rates, and a free bid calculator. Price your next cleaning contract accurately.",
+    },
 ];
 
 /** Replace {city}, {state}, {stateCode} placeholders in a template */

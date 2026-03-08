@@ -162,6 +162,16 @@ export const BUILDING_TYPES: BuildingType[] = [
         popular: false,
         fixturesPer10k: { toilets: 6, urinals: 3, sinks: 6 },
     },
+    {
+        id: "residential",
+        name: "Residential Home",
+        icon: "🏠",
+        productionRate: 2000,
+        carpetPercent: 55,
+        complexityMultiplier: 1.0,
+        popular: false,
+        fixturesPer10k: { toilets: 3, urinals: 0, sinks: 3 },
+    },
 ];
 
 export type Frequency = "once" | "1" | "2" | "3" | "4" | "5" | "6" | "7";
@@ -428,6 +438,7 @@ export const ROOM_AREA_RATIOS: Record<string, Record<string, number>> = {
     "auto-dealer": { lobby: 0.50, offices: 0.25, restrooms: 0.10, common: 0.15 },
     salon: { lobby: 0.55, restrooms: 0.15, common: 0.30 },
     "movie-theater": { lobby: 0.20, restrooms: 0.12, common: 0.58, hallways: 0.10 },
+    residential: { lobby: 0.10, restrooms: 0.10, kitchen: 0.15, common: 0.65 },
 };
 
 /** Auto-seed rooms based on building type, distributing sqft */

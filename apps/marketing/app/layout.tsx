@@ -27,6 +27,11 @@ export const metadata: Metadata = {
     "cleaning company CRM",
     "janitorial scheduling software",
     "cleaning bid calculator",
+    "free janitorial calculator",
+    "how to price janitorial cleaning",
+    "janitorial bid calculator",
+    "janitorial pricing per square foot",
+    "cleaning company software",
   ],
   icons: {
     icon: "/favicon.png",

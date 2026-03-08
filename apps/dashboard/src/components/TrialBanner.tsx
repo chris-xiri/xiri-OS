@@ -4,7 +4,8 @@ import "./TrialBanner.css";
 
 /**
  * Dismissible banner shown during the Bid Plus trial period.
- * Shows days remaining and an upgrade CTA.
+ * Shows days remaining and a subscribe CTA.
+ * Trial expires → account downgrades to Free (Bid) tier.
  */
 export default function TrialBanner() {
     const { subscription } = useAuth();
@@ -28,11 +29,11 @@ export default function TrialBanner() {
                     <polyline points="12 6 12 12 16 14" />
                 </svg>
                 <span>
-                    <strong>Bid Plus trial</strong> — {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining
+                    <strong>Bid Plus trial</strong> — {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining. Subscribe to keep your features.
                 </span>
             </div>
             <button className="trial-banner-btn" onClick={() => navigate("/settings?tab=subscription")}>
-                Upgrade Now
+                Subscribe Now
             </button>
         </div>
     );

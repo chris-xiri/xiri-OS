@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { UNIQUE_CITIES } from "../lib/cities";
 import { SERVICES } from "../lib/services";
 import { INDUSTRIES } from "../lib/industries";
+import { BLOG_POSTS } from "../lib/posts";
 
 const BASE = "https://os.xiri.ai";
 
@@ -13,10 +14,21 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
         { url: `${BASE}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
         { url: `${BASE}/calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+        { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
+        { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+        { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     ];
 
+    /* ── Blog posts ── */
+    const blogPages: MetadataRoute.Sitemap = BLOG_POSTS.map((post) => ({
+        url: `${BASE}/blog/${post.slug}`,
+        lastModified: new Date(post.updatedAt),
+        changeFrequency: "monthly" as const,
+        priority: 0.8,
+    }));
+
     /* ── Competitor comparison pages ── */
-    const competitors = ["swept", "cleanguru", "jobber", "cleantechloop"];
+    const competitors = ["swept", "cleanguru", "jobber", "janitorial-manager"];
     const vsPages: MetadataRoute.Sitemap = competitors.map((c) => ({
         url: `${BASE}/vs/${c}`,
         lastModified: now,
@@ -45,5 +57,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
         }
     }
 
-    return [...staticPages, ...vsPages, ...industryPages, ...cityPages];
+    return [...staticPages, ...blogPages, ...vsPages, ...industryPages, ...cityPages];
 }

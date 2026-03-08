@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
@@ -10,6 +10,7 @@ export default function Login() {
     const [searchParams] = useSearchParams();
     const isSignupMode = searchParams.get("mode") === "signup";
 
+    const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isSignup, setIsSignup] = useState(isSignupMode);
@@ -22,7 +23,11 @@ export default function Login() {
         setLoading(true);
         try {
             if (isSignup) {
-                await createUserWithEmailAndPassword(auth, email, password);
+                const cred = await createUserWithEmailAndPassword(auth, email, password);
+                // Set displayName so AuthContext uses it instead of email
+                if (fullName.trim()) {
+                    await updateProfile(cred.user, { displayName: fullName.trim() });
+                }
                 // AuthContext onAuthStateChanged will auto-create profile + company with trial
             } else {
                 await login(email, password);
@@ -75,6 +80,22 @@ export default function Login() {
                 )}
 
                 <form onSubmit={handleSubmit} className="login-form">
+                    {isSignup && (
+                        <div className="form-group">
+                            <label htmlFor="fullName">Full Name</label>
+                            <input
+                                id="fullName"
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                placeholder="John Smith"
+                                required
+                                autoComplete="name"
+                                autoFocus
+                            />
+                        </div>
+                    )}
+
                     <div className="form-group">
                         <label htmlFor="email">Email</label>
                         <input
@@ -85,7 +106,7 @@ export default function Login() {
                             placeholder="you@company.com"
                             required
                             autoComplete="email"
-                            autoFocus
+                            autoFocus={!isSignup}
                         />
                     </div>
 

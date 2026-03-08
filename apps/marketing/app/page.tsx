@@ -502,9 +502,14 @@ export default function Home() {
               Compare
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {["vs CleanGuru", "vs Swept", "vs Janitorial Manager", "vs Jobber"].map((link) => (
-                <a key={link} href="#" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>
-                  {link}
+              {[
+                { label: "vs CleanGuru", href: "/vs/cleanguru" },
+                { label: "vs Swept", href: "/vs/swept" },
+                { label: "vs Janitorial Manager", href: "/vs/janitorial-manager" },
+                { label: "vs Jobber", href: "/vs/jobber" },
+              ].map((link) => (
+                <a key={link.label} href={link.href} style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>
+                  {link.label}
                 </a>
               ))}
             </div>
@@ -515,11 +520,9 @@ export default function Home() {
               Resources
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {["Blog", "Guides", "Help Center", "Contact"].map((link) => (
-                <a key={link} href="#" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>
-                  {link}
-                </a>
-              ))}
+              <a href="/blog" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Blog</a>
+              <a href="/blog/how-to-price-janitorial-cleaning" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Pricing Guide</a>
+              <a href="/calculator" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Free Calculator</a>
             </div>
           </div>
         </div>
@@ -541,11 +544,8 @@ export default function Home() {
             © {YEAR} xiriOS. All rights reserved.
           </p>
           <div style={{ display: "flex", gap: "1.5rem" }}>
-            {["Privacy", "Terms"].map((link) => (
-              <a key={link} href="#" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.8125rem" }}>
-                {link}
-              </a>
-            ))}
+            <a href="/privacy" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.8125rem" }}>Privacy</a>
+            <a href="/terms" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.8125rem" }}>Terms</a>
           </div>
         </div>
       </footer>
