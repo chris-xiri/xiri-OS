@@ -150,8 +150,8 @@ export default function CalculatorPage() {
                     </span>
                 </a>
                 <div style={{ display: "flex", gap: "0.75rem" }}>
-                    <a href="/#pricing" className="btn btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>View Pricing</a>
-                    <a href="/#pricing" className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>Start Free Trial</a>
+                    <a href="/pricing" className="btn btn-secondary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>View Pricing</a>
+                    <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ padding: "0.5rem 1rem", fontSize: "0.8125rem" }}>Start Free Trial</a>
                 </div>
             </header>
 
@@ -694,9 +694,24 @@ export default function CalculatorPage() {
                                     <p style={{ color: "#00d4aa", fontSize: "1rem", fontWeight: 700, fontFamily: "var(--font-outfit)", margin: "0 0 0.375rem" }}>
                                         Your bid proposal is on the way!
                                     </p>
-                                    <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: 0 }}>
+                                    <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: "0 0 1.25rem" }}>
                                         Check <strong style={{ color: "#c4c9e0" }}>{leadInfo.email}</strong> — your client-ready bid proposal for <strong style={{ color: "#c4c9e0" }}>{leadInfo.clientName || "your client"}</strong> will arrive shortly.
                                     </p>
+                                    <div style={{ padding: "1rem", background: "rgba(0,212,170,0.06)", border: "1px solid rgba(0,212,170,0.15)", borderRadius: "0.75rem" }}>
+                                        <p style={{ color: "white", fontSize: "0.875rem", fontWeight: 700, margin: "0 0 0.375rem" }}>
+                                            🚀 Save this bid & track your pipeline
+                                        </p>
+                                        <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: "0 0 0.75rem" }}>
+                                            Create a free account to manage bids, contacts, and send branded proposals — 14-day Bid Plus trial included.
+                                        </p>
+                                        <a
+                                            href="https://os.xiri.ai/app/login?mode=signup"
+                                            className="btn btn-primary"
+                                            style={{ width: "100%", fontSize: "0.875rem", padding: "0.75rem" }}
+                                        >
+                                            Create Free Account →
+                                        </a>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -719,7 +734,7 @@ export default function CalculatorPage() {
                         <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: "0.5rem 0 1rem" }}>
                             xiriOS turns estimates into professional PDF proposals, tracks leads, and manages your cleaning business.
                         </p>
-                        <a href="/#pricing" className="btn btn-primary" style={{ width: "100%", fontSize: "0.875rem" }}>
+                        <a href="https://os.xiri.ai/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", fontSize: "0.875rem" }}>
                             Start 14-Day Free Trial
                         </a>
                     </div>
