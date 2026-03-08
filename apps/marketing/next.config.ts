@@ -7,10 +7,6 @@ const nextConfig: NextConfig = {
         source: "/app/:path*",
         destination: `${process.env.DASHBOARD_URL || "https://xiri-os-dashboard-xiri-facility-solutions.vercel.app"}/:path*`,
       },
-      {
-        source: "/calculator",
-        destination: `${process.env.DASHBOARD_URL || "https://xiri-os-dashboard-xiri-facility-solutions.vercel.app"}/app/calculator`,
-      },
     ];
   },
 };
