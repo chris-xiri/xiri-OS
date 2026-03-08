@@ -563,13 +563,30 @@ export default function PublicCalculator() {
                         </div>
 
                         {/* CTA */}
-                        <a
-                            href="/app/login?mode=signup"
+                        <button
                             className="calc-btn calc-btn-primary calc-save-btn"
-                            style={{ textDecoration: "none", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem" }}
+                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem", cursor: "pointer" }}
+                            onClick={() => {
+                                // Save full calculator state so it can be auto-created after signup
+                                const selectedTasks = new Set<string>();
+                                roomScopes.forEach((r) => r.tasks.forEach((t) => selectedTasks.add(t)));
+                                const pendingBid = {
+                                    inputs,
+                                    roomScopes,
+                                    priceOverride,
+                                    selectedState,
+                                    selectedTasks: Array.from(selectedTasks),
+                                    results,
+                                    savedAt: new Date().toISOString(),
+                                };
+                                try {
+                                    localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
+                                } catch { /* localStorage full or unavailable — proceed anyway */ }
+                                window.location.href = "/app/login?mode=signup";
+                            }}
                         >
                             Save Bid — Start 14-Day Free Trial
-                        </a>
+                        </button>
                         <p style={{ color: "#8b92b3", fontSize: "0.75rem", textAlign: "center", marginTop: "0.5rem" }}>
                             No credit card required · Full Bid Plus features
                         </p>

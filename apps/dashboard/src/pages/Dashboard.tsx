@@ -4,6 +4,7 @@ import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { TIER_INFO, getLimits } from "../lib/rbac";
+import { usePendingBid } from "../hooks/usePendingBid";
 import type { Bid } from "./Bids";
 import "./Dashboard.css";
 
@@ -28,6 +29,9 @@ export default function Dashboard() {
     const tierInfo = TIER_INFO[subscription.tier];
     const limits = getLimits(subscription.tier);
     const contactLimit = limits.contacts === -1 ? "∞" : limits.contacts;
+
+    // Auto-create pending bid from public calculator after signup
+    usePendingBid();
 
     const companyId = profile?.companyId;
 
