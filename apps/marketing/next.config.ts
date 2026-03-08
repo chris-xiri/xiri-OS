@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/app/:path*",
-        destination: `${process.env.DASHBOARD_URL || "https://xiri-os-dashboard.vercel.app"}/:path*`,
+        destination: `${process.env.DASHBOARD_URL || "https://xiri-os-dashboard-xiri-facility-solutions.vercel.app"}/:path*`,
       },
     ];
   },
