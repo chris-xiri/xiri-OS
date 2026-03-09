@@ -46,7 +46,7 @@ export const SERVICES: ServiceType[] = [
                 a: "xiriOS starts free with core bidding features. Bid Plus is $9/mo ($7/mo billed annually) for unlimited bids, contacts, and custom tasks. That's 50–80% less than competitors like CleanGuru ($79–159/mo) or Janitorial Manager ($300+/mo).",
             },
         ],
-        metaTitleTemplate: "Janitorial Services Software in {city}, {stateCode} | xiriOS",
+        metaTitleTemplate: "Janitorial Services Software for {city}, {stateCode} — From $0/mo | xiriOS",
         metaDescTemplate:
             "Manage your {city} janitorial business with xiriOS. Bidding calculator, scheduling, GPS timekeeping, CRM, and invoicing. Free plan available.",
     },
@@ -78,7 +78,7 @@ export const SERVICES: ServiceType[] = [
                 a: "xiriOS starts free with unlimited bids. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts and full CRM — a fraction of what competitors like CleanGuru charge.",
             },
         ],
-        metaTitleTemplate: "Commercial Cleaning Software in {city}, {stateCode} | xiriOS",
+        metaTitleTemplate: "Commercial Cleaning Software for {city}, {stateCode} — From $0/mo | xiriOS",
         metaDescTemplate:
             "Win more commercial cleaning contracts in {city}. xiriOS offers bidding calculators, scheduling, timekeeping, and CRM for cleaning businesses. Start free.",
     },
@@ -110,7 +110,7 @@ export const SERVICES: ServiceType[] = [
                 a: "Spreadsheets can't generate professional proposals, schedule recurring jobs, track employee GPS clock-ins, or manage client relationships. xiriOS does all of that in one place.",
             },
         ],
-        metaTitleTemplate: "Office Cleaning Software in {city}, {stateCode} | xiriOS",
+        metaTitleTemplate: "Office Cleaning Software for {city}, {stateCode} — From $0/mo | xiriOS",
         metaDescTemplate:
             "Manage office cleaning contracts in {city} with xiriOS. Per-sqft bidding, recurring schedules, inspection checklists, and GPS timekeeping. Free to start.",
     },
@@ -142,7 +142,7 @@ export const SERVICES: ServiceType[] = [
                 a: "Yes. As you grow from a solo operation to multiple crews, xiriOS scales with you — adding scheduling, GPS timekeeping, and quality inspections to keep your {city} operations running smoothly.",
             },
         ],
-        metaTitleTemplate: "Cleaning Company Software in {city}, {stateCode} | xiriOS",
+        metaTitleTemplate: "Cleaning Company Software for {city}, {stateCode} — From $0/mo | xiriOS",
         metaDescTemplate:
             "Run your {city} cleaning company with xiriOS. Bidding, scheduling, CRM, timekeeping, and invoicing — all in one platform. Free to start.",
     },
@@ -179,7 +179,7 @@ export const SERVICES: ServiceType[] = [
             },
         ],
         metaTitleTemplate:
-            "Janitorial Pricing in {city}, {stateCode} — Rates, Calculator & Guide | xiriOS",
+            "Janitorial Pricing in {city}, {stateCode} — Price Jobs in 5 Min | xiriOS",
         metaDescTemplate:
             "How much to charge for janitorial services in {city}, {stateCode}? Local pricing guide with wage data, per-sqft rates, and a free bid calculator. Price your next cleaning contract accurately.",
     },
