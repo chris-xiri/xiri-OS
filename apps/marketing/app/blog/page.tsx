@@ -13,6 +13,11 @@ export const metadata: Metadata = {
         "janitorial pricing guide",
         "cleaning company advice",
     ],
+    openGraph: {
+        title: "Janitorial Business Blog | xiriOS",
+        description: "Expert guides on pricing, bidding, and growing your janitorial cleaning business. Free resources for cleaning companies.",
+    },
+    alternates: { canonical: "https://os.xiri.ai/blog" },
 };
 
 const CATEGORY_COLORS: Record<string, string> = {

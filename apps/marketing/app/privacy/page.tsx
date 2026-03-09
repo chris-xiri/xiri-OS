@@ -4,6 +4,11 @@ import Navbar from "../components/Navbar";
 export const metadata: Metadata = {
     title: "Privacy Policy | xiriOS",
     description: "xiriOS privacy policy — how we collect, use, and protect your data.",
+    openGraph: {
+        title: "Privacy Policy | xiriOS",
+        description: "How xiriOS collects, uses, and protects your data. Read our full privacy policy.",
+    },
+    alternates: { canonical: "https://os.xiri.ai/privacy" },
 };
 
 export default function PrivacyPage() {

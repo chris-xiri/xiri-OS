@@ -1,5 +1,6 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { trackTrialBannerShown, trackSubscribeClicked } from "../lib/analytics";
 import "./TrialBanner.css";
 
 /**
@@ -21,6 +22,9 @@ export default function TrialBanner() {
 
     if (daysLeft <= 0) return null;
 
+    // Fire once per render
+    trackTrialBannerShown(daysLeft);
+
     return (
         <div className="trial-banner">
             <div className="trial-banner-content">
@@ -32,7 +36,7 @@ export default function TrialBanner() {
                     <strong>Bid Plus trial</strong> — {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining. Subscribe to keep your features.
                 </span>
             </div>
-            <button className="trial-banner-btn" onClick={() => navigate("/settings?tab=subscription")}>
+            <button className="trial-banner-btn" onClick={() => { trackSubscribeClicked("bid_plus"); navigate("/settings?tab=subscription"); }}>
                 Subscribe Now
             </button>
         </div>

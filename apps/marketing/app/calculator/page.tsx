@@ -9,6 +9,7 @@ export const metadata: Metadata = {
         description:
             "Calculate accurate cleaning bids in seconds. Powered by ISSA 612 production rates.",
     },
+    alternates: { canonical: "https://os.xiri.ai/calculator" },
 };
 
 export default function CalculatorPage() {

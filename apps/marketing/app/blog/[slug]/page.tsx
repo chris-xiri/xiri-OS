@@ -27,6 +27,7 @@ export async function generateMetadata({
             publishedTime: post.publishedAt,
             modifiedTime: post.updatedAt,
         },
+        alternates: { canonical: `https://os.xiri.ai/blog/${slug}` },
     };
 }
 

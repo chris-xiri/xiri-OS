@@ -26,6 +26,7 @@ export async function generateMetadata({
             title: `xiriOS vs ${comp.name} — ${comp.tagline}`,
             description: `Save ${comp.annualSavings}/year. More features, lower price. Free 14-day trial.`,
         },
+        alternates: { canonical: `https://os.xiri.ai/vs/${slug}` },
     };
 }
 

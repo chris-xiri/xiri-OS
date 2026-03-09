@@ -8,6 +8,11 @@ export const metadata: Metadata = {
         "Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from $9/mo. No credit card required. Save 60% vs competitors.",
     keywords:
         "xiriOS pricing, cleaning business software pricing, janitorial software cost, cleaning bidding software price",
+    openGraph: {
+        title: "Pricing — xiriOS | Janitorial Software Pricing",
+        description: "Simple, honest pricing for cleaning businesses. Free plan forever. Paid plans from $7/mo. Save 60% vs competitors.",
+    },
+    alternates: { canonical: "https://os.xiri.ai/pricing" },
 };
 
 const PLANS = [

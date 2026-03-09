@@ -61,6 +61,7 @@ export const metadata: Metadata = {
     images: ["/og-image.png"],
   },
   metadataBase: new URL("https://os.xiri.ai"),
+  alternates: { canonical: "https://os.xiri.ai" },
 };
 
 export default function RootLayout({
@@ -70,6 +71,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* GA4 */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8V0GR4ESS" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Y8V0GR4ESS');`,
+          }}
+        />
+      </head>
       <body className={`${outfit.variable} ${dmSans.variable}`}>
         {children}
       </body>

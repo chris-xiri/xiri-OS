@@ -27,15 +27,23 @@ export const SERVICES: ServiceType[] = [
         faqs: [
             {
                 q: "How does xiriOS help janitorial companies in {city}?",
-                a: "xiriOS gives {city} janitorial businesses a complete toolkit — from calculating accurate bids per square foot to scheduling crews, tracking time, and managing clients. It replaces spreadsheets, paper bids, and disconnected tools with one platform.",
+                a: "xiriOS gives {city} janitorial businesses a complete toolkit — from calculating accurate bids per square foot to generating professional PDF proposals and managing all your contacts. It replaces spreadsheets, paper bids, and disconnected tools with one platform built specifically for cleaning companies.",
             },
             {
                 q: "Is there a free plan for {city} cleaning companies?",
-                a: "Yes! Our Bid plan is 100% free forever. You get unlimited bids, PDF proposals, and a CRM for up to 10 contacts — no credit card required.",
+                a: "Yes! Our Bid plan is 100% free forever. You get up to 3 active bids, PDF proposal generation, and a CRM for up to 5 contacts — no credit card required. When you're ready to grow, upgrade to Bid Plus for unlimited bids starting at $7/mo.",
             },
             {
                 q: "What size janitorial company in {city} is xiriOS best for?",
-                a: "xiriOS works for solo cleaners bidding their first office contract all the way up to 25+ person teams managing multiple buildings across {city} and {state}.",
+                a: "xiriOS works for solo cleaners bidding their first office contract all the way up to 25+ person teams managing multiple buildings across {city} and the greater {stateCode} area.",
+            },
+            {
+                q: "How do I create a janitorial bid for a building in {city}?",
+                a: "Use the free xiriOS calculator: enter the building's square footage, select the building type, choose your cleaning frequency, and adjust your labor rate for the {city} market. The calculator uses ISSA 612 production rates to estimate hours and generates a professional bid you can send as a PDF.",
+            },
+            {
+                q: "How much does janitorial software cost in {city}?",
+                a: "xiriOS starts free with core bidding features. Paid plans range from $7/mo (Bid Plus for unlimited bids) to $95/mo (Business with inspections and client portal). That's 50–80% less than competitors like CleanGuru ($79–159/mo) or Janitorial Manager ($300+/mo).",
             },
         ],
         metaTitleTemplate: "Janitorial Services Software in {city}, {stateCode} | xiriOS",

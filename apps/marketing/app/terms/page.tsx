@@ -4,6 +4,11 @@ import Navbar from "../components/Navbar";
 export const metadata: Metadata = {
     title: "Terms & Conditions | xiriOS",
     description: "xiriOS terms and conditions of service — your agreement when using our platform.",
+    openGraph: {
+        title: "Terms & Conditions | xiriOS",
+        description: "Terms and conditions for using xiriOS janitorial business management software.",
+    },
+    alternates: { canonical: "https://os.xiri.ai/terms" },
 };
 
 export default function TermsPage() {

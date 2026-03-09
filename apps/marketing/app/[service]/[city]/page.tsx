@@ -81,12 +81,30 @@ export default async function CityServicePage({
         },
     };
 
+    // FAQPage schema for rich snippets
+    const faqLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: svc.faqs.map((faq) => ({
+            "@type": "Question",
+            name: t(faq.q),
+            acceptedAnswer: {
+                "@type": "Answer",
+                text: t(faq.a),
+            },
+        })),
+    };
+
     return (
         <>
             <Navbar />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
             />
 
             {/* Hero */}

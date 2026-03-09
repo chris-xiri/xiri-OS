@@ -3,6 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
+import { trackSignupCompleted } from "../lib/analytics";
 import "./Login.css";
 
 export default function Login() {
@@ -28,6 +29,7 @@ export default function Login() {
                 if (fullName.trim()) {
                     await updateProfile(cred.user, { displayName: fullName.trim() });
                 }
+                trackSignupCompleted("email");
                 // AuthContext onAuthStateChanged will auto-create profile + company with trial
             } else {
                 await login(email, password);

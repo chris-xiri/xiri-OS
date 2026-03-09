@@ -2,10 +2,49 @@ import Navbar from "./components/Navbar";
 
 const YEAR = 2026; // Hardcoded to avoid hydration mismatch
 
+const ORG_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "xiriOS",
+  legalName: "Xiri Inc.",
+  url: "https://os.xiri.ai",
+  logo: "https://os.xiri.ai/og-image.png",
+  description: "Janitorial bidding and business management software for cleaning companies.",
+  sameAs: [
+    "https://www.facebook.com/xaborservices",
+    "https://www.instagram.com/xaborservices",
+    "https://www.linkedin.com/company/xabor",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    email: "support@xiri.ai",
+    contactType: "customer service",
+  },
+};
+
+const APP_LD = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "xiriOS",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  url: "https://os.xiri.ai",
+  description: "Professional bidding, scheduling, timekeeping, and CRM for janitorial businesses.",
+  offers: [
+    { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Bid — Free forever" },
+    { "@type": "Offer", price: "7", priceCurrency: "USD", description: "Bid Plus — $7/mo" },
+    { "@type": "Offer", price: "31", priceCurrency: "USD", description: "Grow — $31/mo" },
+    { "@type": "Offer", price: "63", priceCurrency: "USD", description: "Pro — $63/mo" },
+    { "@type": "Offer", price: "95", priceCurrency: "USD", description: "Business — $95/mo" },
+  ],
+};
+
 export default function Home() {
   return (
     <>
       <Navbar />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(APP_LD) }} />
 
       {/* ============================================================
           HERO SECTION
