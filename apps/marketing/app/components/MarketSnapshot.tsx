@@ -108,13 +108,49 @@ export default function MarketSnapshot({
                         />
                     )}
 
-                    {/* Market density insight */}
-                    {data.state && data.state.janitorialCompanies > 0 && (
+                    {/* Office properties — metro level */}
+                    {data.metro && data.metro.officeProperties > 0 && (
                         <StatCard
-                            label="Competition density"
-                            value={`${data.state.janitorialCompanies.toLocaleString()} companies statewide`}
-                            subtext={`NAICS 561720 · ${DATA_SOURCES.census.dataset}`}
+                            label="Office properties"
+                            value={data.metro.officeProperties.toLocaleString()}
+                            subtext={`${data.metro.name} metro`}
                             subtextColor="#555d7e"
+                            sourceLabel="Census Bureau"
+                            sourceUrl={data.censusUrl}
+                        />
+                    )}
+
+                    {/* Medical facilities — metro level */}
+                    {data.metro && data.metro.medicalFacilities > 0 && (
+                        <StatCard
+                            label="Medical facilities"
+                            value={data.metro.medicalFacilities.toLocaleString()}
+                            subtext={`${data.metro.name} metro`}
+                            subtextColor="#555d7e"
+                            sourceLabel="Census Bureau"
+                            sourceUrl={data.censusUrl}
+                        />
+                    )}
+
+                    {/* Schools — metro level */}
+                    {data.metro && data.metro.schools > 0 && (
+                        <StatCard
+                            label="Schools"
+                            value={data.metro.schools.toLocaleString()}
+                            subtext={`${data.metro.name} metro`}
+                            subtextColor="#555d7e"
+                            sourceLabel="Census Bureau"
+                            sourceUrl={data.censusUrl}
+                        />
+                    )}
+
+                    {/* Total potential clients */}
+                    {data.totalPotentialClients && data.totalPotentialClients > 0 && (
+                        <StatCard
+                            label="Total potential clients"
+                            value={data.totalPotentialClients.toLocaleString() + "+"}
+                            subtext="Offices + medical + schools in metro"
+                            subtextColor="#00d4aa"
                         />
                     )}
                 </div>

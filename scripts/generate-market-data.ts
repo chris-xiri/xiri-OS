@@ -2,12 +2,23 @@
  * Market Data Generator for xiriOS pSEO pages
  * 
  * Pulls real data from:
- * - U.S. Census Bureau County Business Patterns (CBP) — NAICS 561720 (Janitorial Services)
+ * - U.S. Census Bureau County Business Patterns (CBP):
+ *     NAICS 561720 (Janitorial Services) — by state
+ *     NAICS 5311   (Lessors of Real Estate — office buildings) — by metro
+ *     NAICS 6211   (Offices of Physicians — medical facilities) — by metro
+ *     NAICS 6111   (Elementary & Secondary Schools) — by metro
  * - U.S. Bureau of Labor Statistics (BLS) OEWS — SOC 37-2011 (Janitors & Cleaners)
  * 
  * Run: npx tsx scripts/generate-market-data.ts
  * Schedule: GitHub Actions workflow runs annually (see .github/workflows/refresh-market-data.yml)
  */
+
+import * as path from "path";
+import * as fs from "fs";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const CBP_YEAR = "2022"; // Latest CBP data year
 const BLS_YEAR = "May 2024"; // Latest BLS OEWS release
@@ -36,7 +47,6 @@ const STATE_MIN_WAGES: Record<string, number> = {
     WI: 7.25, WY: 7.25,
 };
 
-// City-to-MSA mapping and MSA wage data
 // BLS OEWS MSA codes → median hourly wage for SOC 37-2011 (May 2024)
 // Source: https://www.bls.gov/oes/current/oes372011.htm
 const MSA_DATA: Record<string, { name: string; medianWage: number }> = {
@@ -217,7 +227,33 @@ const CITY_MSA: Record<string, string> = {
     "north-las-vegas-nv": "29820",
     "naperville-il": "16980", "joliet-il": "16980", "elgin-il": "16980",
     "rockford-il": "40420", "peoria-il": "37900",
-    "cape-coral-fl": "15980",
+    // Backfill — remaining cities from cities.ts
+    "fremont-ca": "41860", "san-bernardino-ca": "40140", "corona-ca": "40140",
+    "glendale-az": "38060", "peoria-az": "38060",
+    "fort-collins-co": "22660",
+    "vancouver-wa": "38900",
+    "salem-or": "41420", "eugene-or": "21660",
+    "cary-nc": "39580",
+    "clarksville-tn": "17300", "murfreesboro-tn": "34980",
+    "springfield-mo": "44180",
+    "sioux-falls-sd": "43620",
+    "billings-mt": "13740", "missoula-mt": "32820", "bozeman-mt": "14580",
+    "cheyenne-wy": "16220",
+    "burlington-vt": "15540",
+    "manchester-nh": "31700",
+    "portland-me": "38860",
+    "fargo-nd": "22020", "bismarck-nd": "13900",
+    "jackson-ms": "27140",
+    "rapid-city-sd": "39660",
+    "topeka-ks": "45820",
+    "charleston-wv": "16620",
+    "concord-nh": "31700",
+    "rochester-mn": "40340",
+    "pensacola-fl": "37860", "lakeland-fl": "29460", "fort-myers-fl": "15980",
+    "boca-raton-fl": "33100", "sarasota-fl": "42260",
+    "provo-ut": "39340", "ogden-ut": "36260",
+    "santa-fe-nm": "42140",
+    "ann-arbor-mi": "11460", "lansing-mi": "29620",
 };
 
 // Population data for cities (Census estimates)
@@ -249,30 +285,81 @@ const CITY_POPULATIONS: Record<string, number> = {
     "detroit-mi": 639111, "richmond-va": 226610, "salt-lake-city-ut": 200133,
     "birmingham-al": 200733, "baton-rouge-la": 225374, "boise-id": 235684,
     "hartford-ct": 121054, "charleston-sc": 150227,
+    // Backfill
+    "fremont-ca": 230504, "san-bernardino-ca": 222101, "corona-ca": 157136,
+    "glendale-az": 248325, "peoria-az": 190985,
+    "fort-collins-co": 169810, "vancouver-wa": 190915,
+    "salem-or": 178510, "eugene-or": 176654,
+    "cary-nc": 174721, "clarksville-tn": 166722, "murfreesboro-tn": 152769,
+    "springfield-mo": 169176, "sioux-falls-sd": 192517,
+    "billings-mt": 119510, "missoula-mt": 77757, "bozeman-mt": 56908,
+    "cheyenne-wy": 65132, "burlington-vt": 44743, "manchester-nh": 115644,
+    "portland-me": 68408, "fargo-nd": 129907, "bismarck-nd": 74018,
+    "jackson-ms": 153701, "rapid-city-sd": 78130, "topeka-ks": 126587,
+    "charleston-wv": 48006, "concord-nh": 43976, "rochester-mn": 121395,
+    "pensacola-fl": 54312, "lakeland-fl": 114529, "fort-myers-fl": 92754,
+    "boca-raton-fl": 99805, "sarasota-fl": 57602,
+    "provo-ut": 115919, "ogden-ut": 87321, "santa-fe-nm": 89177,
+    "ann-arbor-mi": 123851, "lansing-mi": 112644,
 };
 
-async function fetchCensusCBP(): Promise<Record<string, number>> {
-    console.log("Fetching Census CBP data (NAICS 561720 - Janitorial Services)...");
-    const url = `https://api.census.gov/data/${CBP_YEAR}/cbp?get=ESTAB,NAICS2017_LABEL&for=state:*&NAICS2017=561720`;
+/* ── Census API helpers ─────────────────────────────────── */
+
+const CENSUS_GEO_STATE = "state:*";
+const CENSUS_GEO_MSA = "metropolitan%20statistical%20area/micropolitan%20statistical%20area:*";
+
+async function fetchCensusNAICS(naics: string, geo: string, label: string): Promise<Record<string, number>> {
+    console.log(`  Fetching NAICS ${naics} (${label}) by ${geo.includes("state") ? "state" : "metro"}...`);
+    const url = `https://api.census.gov/data/${CBP_YEAR}/cbp?get=ESTAB,NAICS2017_LABEL&for=${geo}&NAICS2017=${naics}`;
     const res = await fetch(url);
     const data = await res.json() as string[][];
 
     const result: Record<string, number> = {};
-    // Find stateCode from FIPS
+    for (let i = 1; i < data.length; i++) {
+        const row = data[i];
+        const estab = row[0];
+        const geoCode = row[row.length - 1]; // last column is always the geo code
+        result[geoCode] = parseInt(estab, 10);
+    }
+    console.log(`    ✓ ${Object.keys(result).length} entries`);
+    // Be polite to Census API
+    await new Promise(r => setTimeout(r, 300));
+    return result;
+}
+
+async function fetchAllCensusData() {
     const fipsToState = Object.fromEntries(
         Object.entries(STATE_FIPS).map(([k, v]) => [v, k])
     );
 
-    for (let i = 1; i < data.length; i++) {
-        const [estab, , , fips] = data[i];
+    console.log("📊 Fetching Census Bureau data...\n");
+
+    // State-level: janitorial company counts
+    const janitorialByFips = await fetchCensusNAICS("561720", CENSUS_GEO_STATE, "Janitorial Services");
+    const janitorialByState: Record<string, number> = {};
+    for (const [fips, count] of Object.entries(janitorialByFips)) {
         const sc = fipsToState[fips];
-        if (sc) result[sc] = parseInt(estab, 10);
+        if (sc) janitorialByState[sc] = count;
     }
-    console.log(`  ✓ Got data for ${Object.keys(result).length} states`);
-    return result;
+
+    // Metro-level: industry counts (potential clients)
+    const officesByMSA = await fetchCensusNAICS("5311", CENSUS_GEO_MSA, "Lessors of Real Estate (offices)");
+    const medicalByMSA = await fetchCensusNAICS("6211", CENSUS_GEO_MSA, "Offices of Physicians (medical)");
+    const schoolsByMSA = await fetchCensusNAICS("6111", CENSUS_GEO_MSA, "Elementary & Secondary Schools");
+
+    return { janitorialByState, officesByMSA, medicalByMSA, schoolsByMSA };
 }
 
-function generateMarketDataFile(censusData: Record<string, number>): string {
+/* ── Output file generation ─────────────────────────────── */
+
+interface CensusResults {
+    janitorialByState: Record<string, number>;
+    officesByMSA: Record<string, number>;
+    medicalByMSA: Record<string, number>;
+    schoolsByMSA: Record<string, number>;
+}
+
+function generateMarketDataFile(census: CensusResults): string {
     const lines: string[] = [];
 
     lines.push(`/**`);
@@ -282,7 +369,11 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
     lines.push(` * Run: npx tsx scripts/generate-market-data.ts`);
     lines.push(` * `);
     lines.push(` * Sources:`);
-    lines.push(` *   - Census Bureau County Business Patterns (${CBP_YEAR}), NAICS 561720`);
+    lines.push(` *   - Census Bureau County Business Patterns (${CBP_YEAR})`);
+    lines.push(` *     NAICS 561720 (Janitorial Services) by state`);
+    lines.push(` *     NAICS 5311 (Office Properties) by metro`);
+    lines.push(` *     NAICS 6211 (Medical Facilities) by metro`);
+    lines.push(` *     NAICS 6111 (Schools) by metro`);
     lines.push(` *   - Bureau of Labor Statistics OEWS (${BLS_YEAR}), SOC 37-2011`);
     lines.push(` *   - State minimum wage data (Jan 2025)`);
     lines.push(` * `);
@@ -295,7 +386,6 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
     lines.push(`    census: {`);
     lines.push(`        name: "U.S. Census Bureau",`);
     lines.push(`        dataset: "County Business Patterns (${CBP_YEAR})",`);
-    lines.push(`        naics: "561720 — Janitorial Services",`);
     lines.push(`        baseUrl: "https://data.census.gov/table/CBP${CBP_YEAR}.CB2200CBP?t=Janitorial+Services",`);
     lines.push(`        stateUrl: (fips: string) => \`https://data.census.gov/table/CBP${CBP_YEAR}.CB2200CBP?t=Janitorial+Services&g=0400000US\${fips}\`,`);
     lines.push(`    },`);
@@ -312,31 +402,37 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
     lines.push(`export const STATE_FIPS: Record<string, string> = ${JSON.stringify(STATE_FIPS, null, 4)};`);
     lines.push(``);
 
-    // State data interface + data
+    // State data (janitorial companies + min wage)
     lines.push(`export interface StateMarketData {`);
     lines.push(`    janitorialCompanies: number;`);
     lines.push(`    minWage: number;`);
     lines.push(`}`);
     lines.push(``);
     lines.push(`export const STATE_DATA: Record<string, StateMarketData> = {`);
-    const sortedStates = Object.keys(censusData).sort();
+    const sortedStates = Object.keys(census.janitorialByState).sort();
     for (const sc of sortedStates) {
-        const companies = censusData[sc];
+        const companies = census.janitorialByState[sc];
         const minWage = STATE_MIN_WAGES[sc] ?? 7.25;
         lines.push(`    ${sc}: { janitorialCompanies: ${companies}, minWage: ${minWage} },`);
     }
     lines.push(`};`);
     lines.push(``);
 
-    // MSA data
+    // Metro data: wages + industry counts
     lines.push(`export interface MetroMarketData {`);
     lines.push(`    name: string;`);
     lines.push(`    medianWage: number;`);
+    lines.push(`    officeProperties: number;`);
+    lines.push(`    medicalFacilities: number;`);
+    lines.push(`    schools: number;`);
     lines.push(`}`);
     lines.push(``);
     lines.push(`export const METRO_DATA: Record<string, MetroMarketData> = {`);
     for (const [code, data] of Object.entries(MSA_DATA).sort((a, b) => a[0].localeCompare(b[0]))) {
-        lines.push(`    "${code}": { name: "${data.name}", medianWage: ${data.medianWage} },`);
+        const offices = census.officesByMSA[code] || 0;
+        const medical = census.medicalByMSA[code] || 0;
+        const schools = census.schoolsByMSA[code] || 0;
+        lines.push(`    "${code}": { name: "${data.name}", medianWage: ${data.medianWage}, officeProperties: ${offices}, medicalFacilities: ${medical}, schools: ${schools} },`);
     }
     lines.push(`};`);
     lines.push(``);
@@ -357,12 +453,12 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
     lines.push(`};`);
     lines.push(``);
 
-    // National median for comparison
+    // National median
     lines.push(`/** National median hourly wage for janitors (BLS, ${BLS_YEAR}) */`);
     lines.push(`export const NATIONAL_MEDIAN_WAGE = 17.27;`);
     lines.push(``);
 
-    // Helper functions
+    // Helper function
     lines.push(`/** Get market data for a city by its slug */`);
     lines.push(`export function getCityMarketData(slug: string, stateCode: string) {`);
     lines.push(`    const msaCode = CITY_MSA_MAP[slug];`);
@@ -376,13 +472,14 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
     lines.push(`        metro,`);
     lines.push(`        state,`);
     lines.push(`        fips,`);
-    lines.push(`        /** Link to Census data for this state */`);
     lines.push(`        censusUrl: fips ? DATA_SOURCES.census.stateUrl(fips) : DATA_SOURCES.census.baseUrl,`);
-    lines.push(`        /** Link to BLS wage data */`);
     lines.push(`        blsUrl: DATA_SOURCES.bls.url,`);
-    lines.push(`        /** How this metro compares to national median */`);
     lines.push(`        wageVsNational: metro`);
     lines.push(`            ? Math.round(((metro.medianWage - NATIONAL_MEDIAN_WAGE) / NATIONAL_MEDIAN_WAGE) * 100)`);
+    lines.push(`            : undefined,`);
+    lines.push(`        /** Total potential commercial clients in this metro */`);
+    lines.push(`        totalPotentialClients: metro`);
+    lines.push(`            ? metro.officeProperties + metro.medicalFacilities + metro.schools`);
     lines.push(`            : undefined,`);
     lines.push(`    };`);
     lines.push(`}`);
@@ -392,15 +489,18 @@ function generateMarketDataFile(censusData: Record<string, number>): string {
 }
 
 async function main() {
-    const censusData = await fetchCensusCBP();
-    const output = generateMarketDataFile(censusData);
+    const census = await fetchAllCensusData();
+    const output = generateMarketDataFile(census);
 
-    const path = require("path");
-    const fs = require("fs");
     const outPath = path.resolve(__dirname, "../apps/marketing/lib/market-data.ts");
     fs.writeFileSync(outPath, output, "utf-8");
+
+    const msaCodes = Object.keys(MSA_DATA);
+    const withIndustry = msaCodes.filter(c => census.officesByMSA[c] || census.medicalByMSA[c] || census.schoolsByMSA[c]);
     console.log(`\n✅ Written to ${outPath}`);
-    console.log(`   ${Object.keys(censusData).length} states, ${Object.keys(MSA_DATA).length} metros, ${Object.keys(CITY_MSA).length} city mappings`);
+    console.log(`   ${Object.keys(census.janitorialByState).length} states (janitorial)`);
+    console.log(`   ${withIndustry.length}/${msaCodes.length} metros with industry data`);
+    console.log(`   ${Object.keys(CITY_MSA).length} city mappings`);
 }
 
 main().catch(console.error);
