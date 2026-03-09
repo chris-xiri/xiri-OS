@@ -149,7 +149,7 @@ export default async function CityServicePage({
             <section className="section" style={{ background: "#141829" }}>
                 <div className="section-inner">
                     <div className="section-header">
-                        <span className="section-label">Why {city.name} businesses choose xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
+                        <span className="section-label">Why {city.name} businesses choose <span style={{ whiteSpace: "nowrap" }}>xiri<span style={{ color: "#00d4aa" }}>OS</span></span></span>
                         <h2>
                             Everything you need to{" "}
                             <span style={{ color: "#00d4aa" }}>win &amp; deliver</span>
