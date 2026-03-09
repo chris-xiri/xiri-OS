@@ -10,15 +10,46 @@
     color: var(--text-primary, #e4e7f1);
 }
 
+/* Pulsing accent when user is over free-tier limits */
+.trial-banner-over {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(239, 68, 68, 0.08) 100%);
+    border-bottom-color: rgba(245, 158, 11, 0.25);
+}
+
+.trial-banner-over .trial-banner-content svg {
+    color: #f59e0b;
+}
+
 .trial-banner-content {
     display: flex;
     align-items: center;
     gap: 8px;
+    min-width: 0;
 }
 
 .trial-banner-content svg {
     color: #3b82f6;
     flex-shrink: 0;
+}
+
+.trial-banner-text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    align-items: baseline;
+}
+
+.trial-banner-usage {
+    color: var(--text-secondary, #a1a7c4);
+    font-size: 12px;
+}
+
+.trial-banner-over .trial-banner-usage {
+    color: #f59e0b;
+}
+
+.trial-banner-over .trial-banner-usage strong {
+    color: #fbbf24;
 }
 
 .trial-banner-btn {
@@ -36,4 +67,17 @@
 
 .trial-banner-btn:hover {
     background: #2563eb;
+}
+
+.trial-banner-btn:disabled {
+    opacity: 0.7;
+    cursor: wait;
+}
+
+.trial-banner-over .trial-banner-btn {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+}
+
+.trial-banner-over .trial-banner-btn:hover {
+    background: linear-gradient(135deg, #d97706, #dc2626);
 }

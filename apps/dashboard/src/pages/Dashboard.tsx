@@ -28,7 +28,9 @@ export default function Dashboard() {
     const navigate = useNavigate();
     const tierInfo = TIER_INFO[subscription.tier];
     const limits = getLimits(subscription.tier);
+    const freeLimits = getLimits("bid");
     const contactLimit = limits.contacts === -1 ? "∞" : limits.contacts;
+    const isTrial = subscription.status === "trialing";
 
     // Auto-create pending bid from public calculator after signup
     usePendingBid();
@@ -193,7 +195,13 @@ export default function Dashboard() {
                         </svg>
                     </div>
                     <div className="dash-card-value">{bidCount}</div>
-                    <div className="dash-card-sub">Unlimited on your plan</div>
+                    <div className="dash-card-sub">
+                        {isTrial && bidCount > freeLimits.bids ? (
+                            <span style={{ color: "#f59e0b", fontWeight: 600 }}>{bidCount}/{freeLimits.bids} — over free limit</span>
+                        ) : (
+                            "Unlimited on your plan"
+                        )}
+                    </div>
                 </div>
 
                 <div className="dash-card dash-card-link" onClick={() => navigate("/contacts")}>
@@ -205,7 +213,11 @@ export default function Dashboard() {
                     </div>
                     <div className="dash-card-value">{contactCount} <span className="dash-card-limit">/ {contactLimit}</span></div>
                     <div className="dash-card-sub">
-                        {limits.contacts === -1 ? "Unlimited contacts" : `${limits.contacts} contact limit`}
+                        {isTrial && contactCount > freeLimits.contacts ? (
+                            <span style={{ color: "#f59e0b", fontWeight: 600 }}>{contactCount}/{freeLimits.contacts} — over free limit</span>
+                        ) : (
+                            limits.contacts === -1 ? "Unlimited contacts" : `${limits.contacts} contact limit`
+                        )}
                     </div>
                 </div>
 
