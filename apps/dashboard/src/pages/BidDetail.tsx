@@ -42,6 +42,9 @@ export default function BidDetail() {
 
     const companyId = profile?.companyId;
 
+    // Company info completeness check — gate proposal actions
+    const companyProfileComplete = !!(companyData.name && companyData.name !== (profile?.displayName + "'s Company") && companyData.address);
+
     // Delete bid with confirmation
     const handleDeleteBid = async () => {
         if (!companyId || !bidId) return;
@@ -204,7 +207,12 @@ export default function BidDetail() {
 
     const handlePreview = useCallback(async () => {
         if (!bid) return;
-
+        if (!companyProfileComplete) {
+            if (window.confirm("Complete your company profile first — your company name and address appear on every proposal.\n\nGo to Company Info now?")) {
+                navigate("/company");
+            }
+            return;
+        }
         const fmtAddr = (addr: any): string | undefined => {
             if (!addr) return undefined;
             if (typeof addr === "string") return addr;
@@ -297,6 +305,12 @@ export default function BidDetail() {
 
     const handleDownloadPdf = useCallback(async () => {
         if (!bid) return;
+        if (!companyProfileComplete) {
+            if (window.confirm("Complete your company profile first — your company name and address appear on every proposal.\n\nGo to Company Info now?")) {
+                navigate("/company");
+            }
+            return;
+        }
 
         // Format structured address to a single string
         const fmtAddr = (addr: any): string | undefined => {
@@ -585,6 +599,18 @@ export default function BidDetail() {
                 </div>
             </div>
 
+            {/* Company info banner */}
+            {!companyProfileComplete && (
+                <div className="bd-company-banner">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    <span>Complete your <strong>company profile</strong> to generate professional proposals.</span>
+                    <button onClick={() => navigate("/company")}>Set Up Company Info</button>
+                </div>
+            )}
             {viewingVersion !== null && (
                 <div className="bd-version-banner">
                     Viewing version {viewingVersion} (saved {new Date(displayData?.savedAt).toLocaleDateString()})
