@@ -43,7 +43,7 @@ export default function TrialBanner() {
                 cancelUrl: window.location.href,
             });
             const { sessionUrl } = result.data as { sessionUrl: string };
-            if (sessionUrl) window.location.href = sessionUrl;
+            if (sessionUrl) (window.top || window).location.href = sessionUrl;
         } catch (err) {
             console.error("Checkout error:", err);
         } finally {

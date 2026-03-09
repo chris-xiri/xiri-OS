@@ -18,7 +18,7 @@ async function startCheckout(companyId: string, tier: string) {
         cancelUrl: window.location.href,
     });
     const { sessionUrl } = result.data as { sessionUrl: string };
-    if (sessionUrl) window.location.href = sessionUrl;
+    if (sessionUrl) (window.top || window).location.href = sessionUrl;
 }
 
 async function openPortal(companyId: string) {
