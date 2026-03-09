@@ -140,8 +140,8 @@ export default function PublicCalculator() {
                         <p className="calc-subtitle">Professional cleaning estimates powered by ISSA 612 standards</p>
                     </div>
                     <div style={{ display: "flex", gap: "0.75rem" }}>
-                        <a href="/app/login" className="calc-btn calc-btn-secondary" style={{ textDecoration: "none", fontSize: "0.875rem" }}>Sign In</a>
-                        <a href="/app/login?mode=signup" className="calc-btn calc-btn-primary" style={{ textDecoration: "none", fontSize: "0.875rem" }}>Start Free Trial</a>
+                        <button className="calc-btn calc-btn-secondary" style={{ fontSize: "0.875rem", cursor: "pointer" }} onClick={() => { (window.top || window).location.href = "/app/login"; }}>Sign In</button>
+                        <button className="calc-btn calc-btn-primary" style={{ fontSize: "0.875rem", cursor: "pointer" }} onClick={() => { (window.top || window).location.href = "/app/login?mode=signup"; }}>Start Free Trial</button>
                     </div>
                 </div>
             </div>
@@ -582,7 +582,7 @@ export default function PublicCalculator() {
                                 try {
                                     localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
                                 } catch { /* localStorage full or unavailable — proceed anyway */ }
-                                window.location.href = "/app/login?mode=signup";
+                                (window.top || window).location.href = "/app/login?mode=signup";
                             }}
                         >
                             Save Bid — Start 14-Day Free Trial
