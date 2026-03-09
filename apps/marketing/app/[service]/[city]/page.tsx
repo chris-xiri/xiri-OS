@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import PricingBlock from "../../components/PricingBlock";
+import MarketSnapshot from "../../components/MarketSnapshot";
 import { UNIQUE_CITIES } from "../../../lib/cities";
 import { SERVICES, fillTemplate } from "../../../lib/services";
 
@@ -198,6 +199,68 @@ export default async function CityServicePage({
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* Market Snapshot */}
+            <MarketSnapshot
+                cityName={city.name}
+                citySlug={city.slug}
+                stateCode={city.stateCode}
+                stateName={city.state}
+            />
+
+            {/* Calculator CTA */}
+            <section
+                className="section noise"
+                style={{
+                    background:
+                        "radial-gradient(ellipse 70% 50% at 50% 50%, rgba(0,212,170,0.06) 0%, transparent 70%), #0c0f1a",
+                }}
+            >
+                <div
+                    className="section-inner"
+                    style={{ textAlign: "center", maxWidth: "640px", margin: "0 auto" }}
+                >
+                    <div className="section-header">
+                        <span className="section-label">Free tool</span>
+                        <h2>
+                            Price a {city.name} cleaning job in{" "}
+                            <span style={{ color: "#00d4aa" }}>5 minutes</span>
+                        </h2>
+                    </div>
+                    <p
+                        style={{
+                            color: "#c4c9e0",
+                            fontSize: "1.0625rem",
+                            lineHeight: 1.7,
+                            margin: "-0.5rem auto 2rem",
+                            maxWidth: "520px",
+                        }}
+                    >
+                        Enter the building&apos;s square footage, select the type and
+                        cleaning frequency, and get an instant bid based on ISSA 612
+                        production rates.
+                    </p>
+                    <a
+                        href="/calculator"
+                        className="btn btn-primary"
+                        style={{
+                            fontSize: "1.0625rem",
+                            padding: "1rem 2.5rem",
+                        }}
+                    >
+                        Open Free Calculator →
+                    </a>
+                    <p
+                        style={{
+                            color: "#555d7e",
+                            fontSize: "0.8125rem",
+                            marginTop: "1rem",
+                        }}
+                    >
+                        No sign-up required · Generate PDF proposals instantly
+                    </p>
                 </div>
             </section>
 
