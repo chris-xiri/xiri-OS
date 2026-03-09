@@ -12,6 +12,13 @@ import {
 
 const PENDING_BID_KEY = "xiri_pendingBid";
 
+interface PendingContact {
+    name: string;
+    company: string;
+    email: string;
+    phone: string;
+}
+
 interface PendingBid {
     inputs: CalculatorInputs;
     roomScopes: RoomScope[];
@@ -20,11 +27,13 @@ interface PendingBid {
     selectedTasks: string[];
     results: ReturnType<typeof calculate>;
     savedAt: string;
+    contact?: PendingContact | null;
 }
 
 /**
  * Consumes a pending bid from localStorage (saved by PublicCalculator)
  * and creates it in Firestore once the user is authenticated.
+ * If contact info is present, also creates a contact and links it.
  *
  * Call this in Dashboard so it runs immediately after login/signup.
  */
@@ -68,15 +77,33 @@ export function usePendingBid() {
 
         const createBid = async () => {
             try {
-                const { inputs, roomScopes, priceOverride, selectedState, selectedTasks, results } = pending;
+                const { inputs, roomScopes, priceOverride, selectedState, selectedTasks, results, contact } = pending;
                 const buildingType = BUILDING_TYPES.find((b) => b.id === inputs.buildingTypeId);
                 const bidName = `Calculator Bid - ${buildingType?.name || "Building"} ${inputs.sqft.toLocaleString()} sqft`;
                 const now = new Date().toISOString();
 
+                // Auto-create contact if info was provided
+                let contactId = "";
+                if (contact && (contact.name || contact.company || contact.email || contact.phone)) {
+                    const contactRef = await addDoc(
+                        collection(db, "companies", companyId, "contacts"),
+                        {
+                            name: contact.name || "",
+                            company: contact.company || "",
+                            email: contact.email || "",
+                            phone: contact.phone || "",
+                            source: "public_calculator",
+                            createdAt: now,
+                            updatedAt: now,
+                        }
+                    );
+                    contactId = contactRef.id;
+                }
+
                 const bidRef = await addDoc(
                     collection(db, "companies", companyId, "bids"),
                     {
-                        contactId: "",
+                        contactId,
                         name: bidName,
                         status: "draft",
                         calculatorInputs: inputs,

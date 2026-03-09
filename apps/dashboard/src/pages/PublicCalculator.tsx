@@ -35,6 +35,12 @@ export default function PublicCalculator() {
     const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
     const [newCustomTask, setNewCustomTask] = useState<string>("");
 
+    // Contact info — saved along with the pending bid
+    const [clientName, setClientName] = useState("");
+    const [clientCompany, setClientCompany] = useState("");
+    const [clientEmail, setClientEmail] = useState("");
+    const [clientPhone, setClientPhone] = useState("");
+
     const results = useMemo(() => calculate(inputs, roomScopes), [inputs, roomScopes]);
     const isOneOff = inputs.frequency === "once";
 
@@ -562,10 +568,45 @@ export default function PublicCalculator() {
                             </div>
                         </div>
 
+                        {/* Client / Contact Info */}
+                        <div className="calc-section" style={{ marginTop: "1.25rem" }}>
+                            <h3 style={{ fontSize: "0.8125rem", color: "#a1a7c4", marginBottom: "0.5rem", fontWeight: 600 }}>
+                                Client Information <span style={{ fontWeight: 400, fontSize: "0.6875rem" }}>(optional)</span>
+                            </h3>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
+                                <input
+                                    className="calc-input"
+                                    placeholder="Contact Name"
+                                    value={clientName}
+                                    onChange={(e) => setClientName(e.target.value)}
+                                />
+                                <input
+                                    className="calc-input"
+                                    placeholder="Company Name"
+                                    value={clientCompany}
+                                    onChange={(e) => setClientCompany(e.target.value)}
+                                />
+                                <input
+                                    className="calc-input"
+                                    type="email"
+                                    placeholder="Email"
+                                    value={clientEmail}
+                                    onChange={(e) => setClientEmail(e.target.value)}
+                                />
+                                <input
+                                    className="calc-input"
+                                    type="tel"
+                                    placeholder="Phone"
+                                    value={clientPhone}
+                                    onChange={(e) => setClientPhone(e.target.value)}
+                                />
+                            </div>
+                        </div>
+
                         {/* CTA */}
                         <button
                             className="calc-btn calc-btn-primary calc-save-btn"
-                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem", cursor: "pointer" }}
+                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem", cursor: "pointer", marginTop: "1rem" }}
                             onClick={() => {
                                 // Save full calculator state so it can be auto-created after signup
                                 const selectedTasks = new Set<string>();
@@ -578,6 +619,13 @@ export default function PublicCalculator() {
                                     selectedTasks: Array.from(selectedTasks),
                                     results,
                                     savedAt: new Date().toISOString(),
+                                    // Contact info — usePendingBid will auto-create the contact
+                                    contact: (clientName || clientCompany || clientEmail || clientPhone) ? {
+                                        name: clientName,
+                                        company: clientCompany,
+                                        email: clientEmail,
+                                        phone: clientPhone,
+                                    } : null,
                                 };
                                 try {
                                     localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
