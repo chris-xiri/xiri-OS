@@ -31,7 +31,7 @@ export const SERVICES: ServiceType[] = [
             },
             {
                 q: "Is there a free plan for {city} cleaning companies?",
-                a: "Yes! Our Bid plan is 100% free forever. You get up to 3 active bids, PDF proposal generation, and a CRM for up to 5 contacts — no credit card required. When you're ready to grow, upgrade to Bid Plus for unlimited bids starting at $7/mo.",
+                a: "Yes! Our Bid plan is 100% free forever. You get up to 3 active bids, PDF proposal generation, and a CRM for up to 5 contacts — no credit card required. When you're ready to grow, upgrade to Bid Plus for unlimited bids at just $9/mo ($7/mo billed annually).",
             },
             {
                 q: "What size janitorial company in {city} is xiriOS best for?",
@@ -43,7 +43,7 @@ export const SERVICES: ServiceType[] = [
             },
             {
                 q: "How much does janitorial software cost in {city}?",
-                a: "xiriOS starts free with core bidding features. Paid plans range from $7/mo (Bid Plus for unlimited bids) to $95/mo (Business with inspections and client portal). That's 50–80% less than competitors like CleanGuru ($79–159/mo) or Janitorial Manager ($300+/mo).",
+                a: "xiriOS starts free with core bidding features. Bid Plus is $9/mo ($7/mo billed annually) for unlimited bids, contacts, and custom tasks. That's 50–80% less than competitors like CleanGuru ($79–159/mo) or Janitorial Manager ($300+/mo).",
             },
         ],
         metaTitleTemplate: "Janitorial Services Software in {city}, {stateCode} | xiriOS",
@@ -75,7 +75,7 @@ export const SERVICES: ServiceType[] = [
             },
             {
                 q: "How much does commercial cleaning software cost?",
-                a: "xiriOS starts free with unlimited bids. Paid plans begin at $39/mo for invoicing and CRM, with full operations plans at $79/mo — a fraction of what enterprises like CleanGuru charge.",
+                a: "xiriOS starts free with unlimited bids. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts and full CRM — a fraction of what competitors like CleanGuru charge.",
             },
         ],
         metaTitleTemplate: "Commercial Cleaning Software in {city}, {stateCode} | xiriOS",
@@ -113,38 +113,6 @@ export const SERVICES: ServiceType[] = [
         metaTitleTemplate: "Office Cleaning Software in {city}, {stateCode} | xiriOS",
         metaDescTemplate:
             "Manage office cleaning contracts in {city} with xiriOS. Per-sqft bidding, recurring schedules, inspection checklists, and GPS timekeeping. Free to start.",
-    },
-    {
-        slug: "building-maintenance",
-        name: "Building Maintenance",
-        h1Template: "Building Maintenance Software in {city}, {stateCode}",
-        subtitle:
-            "Manage building maintenance and janitorial operations across {city} properties with scheduling, work orders, and quality tracking.",
-        features: [
-            "Work order management for {city} properties",
-            "Preventive maintenance scheduling",
-            "Vendor and subcontractor coordination",
-            "Asset tracking and maintenance history",
-            "Quality inspection scoring and reporting",
-            "Budget tracking and cost analysis",
-        ],
-        faqs: [
-            {
-                q: "Is xiriOS good for building maintenance in {city}?",
-                a: "Yes. xiriOS handles both janitorial operations and building maintenance — scheduling preventive tasks, managing work orders, and tracking costs across all your {city} properties.",
-            },
-            {
-                q: "Can I track maintenance costs per building?",
-                a: "Absolutely. xiriOS tracks labor, materials, and vendor costs per property so you can see profitability at a glance and make data-driven decisions for your {city} portfolio.",
-            },
-            {
-                q: "Do you support subcontractor management?",
-                a: "Yes. You can assign work orders to subcontractors, track completion, and manage payments — all within the same platform you use for your in-house {city} crews.",
-            },
-        ],
-        metaTitleTemplate: "Building Maintenance Software in {city}, {stateCode} | xiriOS",
-        metaDescTemplate:
-            "Manage building maintenance across {city} with xiriOS. Work orders, preventive scheduling, vendor coordination, and cost tracking. Start free.",
     },
     {
         slug: "cleaning-company",

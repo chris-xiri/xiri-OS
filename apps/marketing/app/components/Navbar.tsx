@@ -46,7 +46,7 @@ export default function Navbar() {
                     textDecoration: "none",
                     display: "flex",
                     alignItems: "center",
-                    gap: "0.5rem",
+                    gap: "0.375rem",
                 }}
             >
                 <span

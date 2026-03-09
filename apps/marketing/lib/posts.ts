@@ -136,7 +136,7 @@ export const BLOG_POSTS: BlogPost[] = [
             },
             {
                 heading: "xiriOS — Purpose-Built for Janitorial Bidding",
-                body: "xiriOS was built from the ground up for janitorial and cleaning businesses. The bid calculator uses ISSA production rates, supports 15 building types, and generates room-by-room scope documents.\n\n**Pricing**: Free plan (unlimited calculator, 3 saved bids). Bid Plus at $29/month for unlimited bids, proposals, and CRM.\n\n**Strengths**: Industry-specific bidding, affordable pricing, modern interface, task-level scope control, state-based wage data.\n\n**Best for**: Solo cleaners and small teams (1–10 employees) who want professional bidding without enterprise pricing.",
+                body: "xiriOS was built from the ground up for janitorial and cleaning businesses. The bid calculator uses ISSA production rates, supports 15 building types, and generates room-by-room scope documents.\n\n**Pricing**: Free plan (unlimited calculator, 3 saved bids). Bid Plus at $9/month ($7/mo billed annually) for unlimited bids, proposals, and CRM.\n\n**Strengths**: Industry-specific bidding, affordable pricing, modern interface, task-level scope control, state-based wage data.\n\n**Best for**: Solo cleaners and small teams (1–10 employees) who want professional bidding without enterprise pricing.",
                 cta: { text: "Try xiriOS Free →", href: "/app/login?mode=signup" },
             },
             {
@@ -153,7 +153,7 @@ export const BLOG_POSTS: BlogPost[] = [
             },
             {
                 heading: "The Bottom Line",
-                body: "For small janitorial businesses, the choice comes down to what you need most:\n\n• **Just bidding?** → xiriOS (free) or CleanGuru ($79+/mo)\n• **Just operations?** → Swept ($24+/mo per location)\n• **General field service?** → Jobber ($39+/mo)\n• **All-in-one at the best price?** → xiriOS ($29/mo for Bid Plus)\n\nThe best approach: start with xiriOS's free calculator to price your next job. If you like how it works, upgrade to save bids and generate proposals.",
+                body: "For small janitorial businesses, the choice comes down to what you need most:\n\n• **Just bidding?** → xiriOS (free) or CleanGuru ($79+/mo)\n• **Just operations?** → Swept ($24+/mo per location)\n• **General field service?** → Jobber ($39+/mo)\n• **All-in-one at the best price?** → xiriOS ($9/mo for Bid Plus)\n\nThe best approach: start with xiriOS's free calculator to price your next job. If you like how it works, upgrade to save bids and generate proposals.",
                 cta: { text: "Start With the Free Calculator →", href: "/calculator" },
             },
         ],

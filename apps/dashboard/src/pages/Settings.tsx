@@ -190,13 +190,13 @@ export default function Settings() {
                                 </span>
                             </div>
 
-                            {currentTier !== "business" && (
+                            {currentTier === "bid" && (
                                 <button
                                     className="settings-btn settings-btn-upgrade"
                                     style={{ cursor: "pointer" }}
-                                    onClick={() => profile?.companyId && startCheckout(profile.companyId, getUpgradeTier(currentTier) || "bid_plus")}
+                                    onClick={() => profile?.companyId && startCheckout(profile.companyId, "bid_plus")}
                                 >
-                                    Upgrade Plan
+                                    Subscribe
                                 </button>
                             )}
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "../../components/Navbar";
+import PricingBlock from "../../components/PricingBlock";
 import { UNIQUE_CITIES } from "../../../lib/cities";
 import { SERVICES, fillTemplate } from "../../../lib/services";
 
@@ -148,7 +149,7 @@ export default async function CityServicePage({
             <section className="section" style={{ background: "#141829" }}>
                 <div className="section-inner">
                     <div className="section-header">
-                        <span className="section-label">Why {city.name} businesses choose xiriOS</span>
+                        <span className="section-label">Why {city.name} businesses choose xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
                         <h2>
                             Everything you need to{" "}
                             <span style={{ color: "#00d4aa" }}>win &amp; deliver</span>
@@ -210,52 +211,7 @@ export default async function CityServicePage({
                             <span style={{ color: "#00d4aa" }}>cleaning company</span>
                         </h2>
                     </div>
-                    <div
-                        style={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(3, 1fr)",
-                            gap: "1rem",
-                            marginTop: "2rem",
-                        }}
-                    >
-                        {[
-                            { name: "Bid", price: "Free", desc: "Unlimited bids & proposals" },
-                            { name: "Grow", price: "$39/mo", desc: "Invoicing, CRM, QuickBooks" },
-                            { name: "Pro", price: "$79/mo", desc: "Scheduling, timekeeping, checklists" },
-                        ].map((plan) => (
-                            <div key={plan.name} className="card" style={{ textAlign: "center", padding: "1.5rem" }}>
-                                <h3
-                                    style={{
-                                        fontFamily: "var(--font-outfit)",
-                                        fontSize: "1rem",
-                                        fontWeight: 700,
-                                        marginBottom: "0.5rem",
-                                    }}
-                                >
-                                    {plan.name}
-                                </h3>
-                                <div
-                                    style={{
-                                        fontFamily: "var(--font-outfit)",
-                                        fontSize: "1.5rem",
-                                        fontWeight: 800,
-                                        color: "#00d4aa",
-                                        marginBottom: "0.5rem",
-                                    }}
-                                >
-                                    {plan.price}
-                                </div>
-                                <p style={{ color: "#8b92b3", fontSize: "0.8125rem" }}>{plan.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <a
-                        href="/pricing"
-                        className="btn btn-primary"
-                        style={{ marginTop: "2rem", display: "inline-block" }}
-                    >
-                        See All Plans →
-                    </a>
+                    <PricingBlock variant="compact" />
                 </div>
             </section>
 

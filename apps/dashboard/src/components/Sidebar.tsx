@@ -153,11 +153,8 @@ export default function Sidebar() {
         <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
             {/* Logo + collapse toggle */}
             <div className="sidebar-logo">
-                <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
-                    <rect width="32" height="32" rx="8" fill="#00d4aa" fillOpacity="0.15" />
-                    <path d="M8 16L14 22L24 10" stroke="#00d4aa" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-                {!collapsed && <span>xiriOS</span>}
+                <span className="sidebar-logo-dot" />
+                {!collapsed && <span>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>}
                 <button className="sidebar-collapse-btn" onClick={toggleCollapse} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} style={{ cursor: "pointer" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         {collapsed ? (

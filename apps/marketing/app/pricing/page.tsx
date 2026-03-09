@@ -1,117 +1,25 @@
 import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
 import CheckoutButton from "../components/CheckoutButton";
+import { PLANS, BID_PLUS, formatPrice, type Plan } from "../../lib/plans";
 
 export const metadata: Metadata = {
     title: "Pricing — xiriOS | Janitorial Bidding & Business Management",
     description:
-        "Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from $9/mo. No credit card required. Save 60% vs competitors.",
+        `Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from ${formatPrice(BID_PLUS)}. No credit card required. Save 60% vs competitors.`,
     keywords:
         "xiriOS pricing, cleaning business software pricing, janitorial software cost, cleaning bidding software price",
     openGraph: {
         title: "Pricing — xiriOS | Janitorial Software Pricing",
-        description: "Simple, honest pricing for cleaning businesses. Free plan forever. Paid plans from $7/mo. Save 60% vs competitors.",
+        description: `Simple, honest pricing for cleaning businesses. Free plan forever. Paid plans from ${formatPrice(BID_PLUS)}. Save 60% vs competitors.`,
     },
     alternates: { canonical: "https://os.xiri.ai/pricing" },
 };
 
-const PLANS = [
-    {
-        name: "Bid",
-        slug: "bid",
-        price: 0,
-        annual: 0,
-        tagline: "Win jobs with professional bids",
-        users: "1 user",
-        featured: false,
-        features: [
-            "Up to 3 active bids",
-            "PDF proposal generation",
-            "CRM — up to 5 contacts",
-            "Mobile app (PWA)",
-            "Email support",
-        ],
-        cta: "Get Started Free",
-    },
-    {
-        name: "Bid Plus",
-        slug: "bid_plus",
-        price: 9,
-        annual: 7,
-        tagline: "Unlimited bidding for solo operators",
-        users: "1 user",
-        featured: false,
-        features: [
-            "Everything in Bid",
-            "Unlimited contacts & bids",
-            "Custom tasks & frequencies",
-            "PDF proposal generation",
-            "Priority email support",
-        ],
-        cta: "Start Free Trial",
-    },
-    {
-        name: "Grow",
-        slug: "grow",
-        price: 39,
-        annual: 31,
-        tagline: "Add invoicing & a small team",
-        users: "Up to 3 users",
-        featured: false,
-        comingSoon: true,
-        features: [
-            "Everything in Bid",
-            "Invoicing & payments",
-            "Full CRM & lead management",
-            "Email campaigns",
-            "QuickBooks sync",
-        ],
-        cta: "Start Free Trial",
-    },
-    {
-        name: "Pro",
-        slug: "pro",
-        price: 79,
-        annual: 63,
-        tagline: "Full operations for growing teams",
-        users: "Up to 10 users",
-        featured: true,
-        comingSoon: true,
-        features: [
-            "Everything in Grow",
-            "Scheduling & recurring jobs",
-            "Timekeeping with GPS geofence",
-            "Checklists & task management",
-            "QuickBooks integration",
-            "Priority support",
-        ],
-        cta: "Start Free Trial",
-    },
-    {
-        name: "Business",
-        slug: "business",
-        price: 119,
-        annual: 95,
-        tagline: "Scale with full visibility",
-        users: "Up to 25 users",
-        featured: false,
-        comingSoon: true,
-        features: [
-            "Everything in Pro",
-            "Inspections & quality scores",
-            "Client portal",
-            "Job costing & profitability",
-            "Work orders",
-            "Dedicated account manager",
-        ],
-        cta: "Start Free Trial",
-    },
-];
-
 const FAQ = [
     {
         q: "Is there a free plan?",
-        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 10 CRM contacts. No credit card required. Bid Plus starts at just $9/mo for unlimited contacts. Other paid plans start at $39/mo with a 14-day free trial.",
+        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 5 CRM contacts. No credit card required. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts, custom tasks, and full CRM. 14-day free trial included.",
     },
     {
         q: "Can I switch plans anytime?",
@@ -139,7 +47,7 @@ const FAQ = [
     },
     {
         q: "How does xiriOS compare to CleanGuru or Swept?",
-        a: "We offer more features at a lower price — and our Bid plan is completely free. Unlike Swept, we include bidding, invoicing, and CRM. Unlike CleanGuru at $79/mo, our full-featured Pro plan is just $79/mo with scheduling and time tracking included. See our comparison pages for details.",
+        a: "We offer more features at a lower price — and our Bid plan is completely free. Unlike Swept or CleanGuru, xiriOS includes professional bidding, PDF proposals, and CRM in every plan. Plus our Bid Plus plan is just $9/mo. See our comparison pages for details.",
     },
 ];
 

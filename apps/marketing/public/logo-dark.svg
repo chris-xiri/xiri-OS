@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 48" fill="none">
+  <!-- Dark background version -->
+  <rect width="200" height="48" rx="6" fill="#0c0f1a"/>
+  <!-- Green dot with glow -->
+  <circle cx="16" cy="24" r="5" fill="#00d4aa"/>
+  <circle cx="16" cy="24" r="8" fill="#00d4aa" opacity="0.15"/>
+  <!-- xiri (white) + OS (green) -->
+  <text x="32" y="34" font-family="'Outfit', system-ui, -apple-system, sans-serif" font-size="32" font-weight="800" letter-spacing="-0.02em">
+    <tspan fill="#e4e7f1">xiri</tspan><tspan fill="#00d4aa">OS</tspan>
+  </text>
+</svg>

@@ -480,7 +480,7 @@ export default function Calculator() {
                                 <p>You've used all {getLimits(subscription.tier).contacts} contacts on your {subscription.tier} plan. Select an existing contact or upgrade.</p>
                             </div>
                             <button className="calc-btn calc-btn-primary" onClick={() => navigate("/settings")} style={{ cursor: "pointer", whiteSpace: "nowrap" }}>
-                                Upgrade Plan
+                                Subscribe
                             </button>
                         </div>
                     )}

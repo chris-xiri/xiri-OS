@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
-import { getLimits, getUpgradeTier } from "../lib/rbac";
+import { getLimits } from "../lib/rbac";
 import { trackTrialBannerShown, trackSubscribeClicked } from "../lib/analytics";
 import "./TrialBanner.css";
 
@@ -55,7 +55,8 @@ export default function TrialBanner() {
     const handleSubscribe = async () => {
         if (!profile?.companyId || busy) return;
         setBusy(true);
-        const tier = getUpgradeTier(subscription.tier) || "bid_plus";
+        // During trial, subscribe to the CURRENT trial tier (e.g. bid_plus), not the next one up
+        const tier = subscription.tier === "bid" ? "bid_plus" : subscription.tier;
         trackSubscribeClicked(tier);
         try {
             const { httpsCallable } = await import("firebase/functions");
@@ -88,24 +89,17 @@ export default function TrialBanner() {
                     <span>
                         <strong>Bid Plus trial</strong> — {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining.
                     </span>
-                    {anyOverLimit && (
-                        <span className="trial-banner-usage">
-                            You're already past the free plan:{" "}
-                            {overBids && (
-                                <strong>{bidCount}/{freeLimits.bids} bids</strong>
-                            )}
-                            {overBids && overContacts && " and "}
-                            {overContacts && (
-                                <strong>{contactCount}/{freeLimits.contacts} contacts</strong>
-                            )}
-                            . Subscribe to keep everything.
-                        </span>
-                    )}
-                    {!anyOverLimit && (
-                        <span className="trial-banner-usage">
-                            Subscribe to keep your features.
-                        </span>
-                    )}
+                    <span className="trial-banner-usage">
+                        {anyOverLimit ? (
+                            <>
+                                You're past the free plan: <strong>{bidCount}/{freeLimits.bids} bids</strong> and <strong>{contactCount}/{freeLimits.contacts} contacts</strong>. Subscribe to keep everything.
+                            </>
+                        ) : (
+                            <>
+                                Using <strong>{bidCount}/{freeLimits.bids} bids</strong> and <strong>{contactCount}/{freeLimits.contacts} contacts</strong> on the free plan. Subscribe for unlimited.
+                            </>
+                        )}
+                    </span>
                 </div>
             </div>
             <button className="trial-banner-btn" onClick={handleSubscribe} disabled={busy}>

@@ -1,4 +1,6 @@
 import Navbar from "./components/Navbar";
+import PricingBlock from "./components/PricingBlock";
+import { ACTIVE_PLANS, formatPrice } from "../lib/plans";
 
 const YEAR = 2026; // Hardcoded to avoid hydration mismatch
 
@@ -31,11 +33,12 @@ const APP_LD = {
   url: "https://os.xiri.ai",
   description: "Professional bidding, scheduling, timekeeping, and CRM for janitorial businesses.",
   offers: [
-    { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Bid — Free forever" },
-    { "@type": "Offer", price: "7", priceCurrency: "USD", description: "Bid Plus — $7/mo" },
-    { "@type": "Offer", price: "31", priceCurrency: "USD", description: "Grow — $31/mo" },
-    { "@type": "Offer", price: "63", priceCurrency: "USD", description: "Pro — $63/mo" },
-    { "@type": "Offer", price: "95", priceCurrency: "USD", description: "Business — $95/mo" },
+    ...ACTIVE_PLANS.map((p) => ({
+      "@type": "Offer" as const,
+      price: String(p.price),
+      priceCurrency: "USD",
+      description: `${p.name} — ${p.price === 0 ? "Free forever" : formatPrice(p)}`,
+    })),
   ],
 };
 
@@ -336,117 +339,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-              gap: "1.5rem",
-              maxWidth: "900px",
-              margin: "0 auto",
-            }}
-          >
-            {/* Bid — Free */}
-            <div className="card" style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Bid</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Get started with professional bids</p>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>Free</span>
-                <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                  forever free
-                </div>
-              </div>
-              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
-                {["1 user", "3 bids", "5 contacts", "PDF proposal generation", "Mobile app (PWA)"].map((f) => (
-                  <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
-                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
-                      <path d="M4.5 9l3 3 6-6" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="/app/login?mode=signup" className="btn btn-secondary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
-                Get Started Free
-              </a>
-            </div>
-
-            {/* Bid Plus — Featured */}
-            <div className="card card-featured" style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <h3 style={{ color: "white", marginBottom: "0.375rem", fontSize: "1.125rem" }}>Bid Plus</h3>
-                <p style={{ fontSize: "0.8125rem", color: "#8b92b3" }}>Full bidding power for growing businesses</p>
-              </div>
-              <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>$29</span>
-                <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>
-                <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                  14-day free trial · $23/mo billed annually
-                </div>
-              </div>
-              <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0 }}>
-                {[
-                  "Up to 3 users",
-                  "Unlimited bids & proposals",
-                  "Unlimited contacts",
-                  "Custom tasks & scope",
-                  "Full CRM & lead management",
-                  "Email support",
-                ].map((f) => (
-                  <li key={f} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-start", color: "#c4c9e0", fontSize: "0.875rem" }}>
-                    <svg width="16" height="16" viewBox="0 0 18 18" fill="none" style={{ marginTop: "2px", flexShrink: 0 }}>
-                      <path d="M4.5 9l3 3 6-6" stroke="#00d4aa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <a href="/app/login?mode=signup" className="btn btn-primary" style={{ width: "100%", marginTop: "1.5rem", fontSize: "0.875rem" }}>
-                Start 14-Day Free Trial
-              </a>
-            </div>
-          </div>
-
-          {/* Coming Soon Plans */}
-          <div style={{ marginTop: "3rem", textAlign: "center" }}>
-            <p style={{ color: "#8b92b3", fontSize: "0.875rem", fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: "1.5rem" }}>
-              Coming Soon
-            </p>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: "1rem",
-                maxWidth: "900px",
-                margin: "0 auto",
-              }}
-            >
-              {[
-                { name: "Grow", price: "$39/mo", desc: "Invoicing, payments & team management" },
-                { name: "Pro", price: "$79/mo", desc: "Scheduling, timekeeping & full operations" },
-                { name: "Business", price: "$119/mo", desc: "Inspections, client portal & job costing" },
-              ].map((plan) => (
-                <div
-                  key={plan.name}
-                  className="card"
-                  style={{
-                    opacity: 0.5,
-                    textAlign: "center",
-                    padding: "1.5rem",
-                  }}
-                >
-                  <h4 style={{ color: "white", fontSize: "1rem", marginBottom: "0.25rem" }}>{plan.name}</h4>
-                  <div style={{ fontFamily: "var(--font-outfit)", fontSize: "1.25rem", fontWeight: 700, color: "#00d4aa", marginBottom: "0.5rem" }}>{plan.price}</div>
-                  <p style={{ color: "#8b92b3", fontSize: "0.8125rem", margin: 0 }}>{plan.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <p style={{ textAlign: "center", marginTop: "2rem", color: "#8b92b3", fontSize: "0.875rem" }}>
-            Need more than 25 users? <a href="#" style={{ color: "#00d4aa", textDecoration: "underline" }}>Contact us</a> for custom pricing. • Extra users: $3/mo each on any plan.
-          </p>
+          <PricingBlock />
         </div>
       </section>
 
