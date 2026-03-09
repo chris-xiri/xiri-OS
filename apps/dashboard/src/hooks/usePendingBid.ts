@@ -31,23 +31,27 @@ interface PendingBid {
 export function usePendingBid() {
     const { profile } = useAuth();
     const navigate = useNavigate();
-    const processing = useRef(false);
+    const processed = useRef(false);
 
     useEffect(() => {
-        if (!profile?.companyId || processing.current) return;
+        const companyId = profile?.companyId;
+        if (!companyId) return;
+
+        // Only process once per mount cycle
+        if (processed.current) return;
 
         const raw = localStorage.getItem(PENDING_BID_KEY);
         if (!raw) return;
 
-        // Prevent double-processing
-        processing.current = true;
+        // Mark as processed immediately to prevent double-processing
+        // (React 18 strict mode may fire effects twice)
+        processed.current = true;
 
         let pending: PendingBid;
         try {
             pending = JSON.parse(raw);
         } catch {
             localStorage.removeItem(PENDING_BID_KEY);
-            processing.current = false;
             return;
         }
 
@@ -55,9 +59,12 @@ export function usePendingBid() {
         const age = Date.now() - new Date(pending.savedAt).getTime();
         if (age > 60 * 60 * 1000) {
             localStorage.removeItem(PENDING_BID_KEY);
-            processing.current = false;
             return;
         }
+
+        // Remove from localStorage BEFORE the async call to prevent
+        // any other instance or re-render from picking it up
+        localStorage.removeItem(PENDING_BID_KEY);
 
         const createBid = async () => {
             try {
@@ -67,7 +74,7 @@ export function usePendingBid() {
                 const now = new Date().toISOString();
 
                 const bidRef = await addDoc(
-                    collection(db, "companies", profile.companyId, "bids"),
+                    collection(db, "companies", companyId, "bids"),
                     {
                         contactId: "",
                         name: bidName,
@@ -86,16 +93,15 @@ export function usePendingBid() {
                     }
                 );
 
-                // Clean up
-                localStorage.removeItem(PENDING_BID_KEY);
-
                 // Navigate to the newly created bid
                 navigate(`/bids/${bidRef.id}`);
             } catch (err) {
                 console.error("Failed to create pending bid:", err);
-                localStorage.removeItem(PENDING_BID_KEY);
-            } finally {
-                processing.current = false;
+                // Put it back so user can retry on next load
+                try {
+                    localStorage.setItem(PENDING_BID_KEY, JSON.stringify(pending));
+                } catch { /* ignore */ }
+                processed.current = false;
             }
         };
 
