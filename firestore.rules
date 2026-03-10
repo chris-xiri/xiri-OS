@@ -1,0 +1,64 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Helper: is the request from an authenticated user? ──
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // ── Helper: does the user belong to this company? ──
+    function belongsToCompany(companyId) {
+      return isSignedIn() &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+
+    // ── User profiles ──
+    match /users/{userId} {
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // ── Companies ──
+    match /companies/{companyId} {
+      allow read: if belongsToCompany(companyId);
+      allow create: if isSignedIn();
+      // Allow updates but protect subscription fields from client writes
+      allow update: if belongsToCompany(companyId) &&
+        (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['subscription']));
+
+      // ── Bids — only callable functions can create (enforced by deny) ──
+      match /bids/{bidId} {
+        allow read: if belongsToCompany(companyId);
+        allow create: if belongsToCompany(companyId);
+        allow update: if belongsToCompany(companyId);
+        allow delete: if belongsToCompany(companyId);
+      }
+
+      // ── Contacts ── 
+      match /contacts/{contactId} {
+        allow read: if belongsToCompany(companyId);
+        allow create: if belongsToCompany(companyId);
+        allow update: if belongsToCompany(companyId);
+        allow delete: if belongsToCompany(companyId);
+      }
+
+      // ── References ──
+      match /references/{refId} {
+        allow read, write: if belongsToCompany(companyId);
+      }
+
+      // ── Lead activities ──
+      match /lead_activities/{actId} {
+        allow read, write: if belongsToCompany(companyId);
+      }
+
+      // ── Catch-all for other subcollections ──
+      match /{subcollection}/{docId} {
+        allow read: if belongsToCompany(companyId);
+      }
+    }
+  }
+}

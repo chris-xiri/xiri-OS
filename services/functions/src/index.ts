@@ -8,6 +8,12 @@ export { createCheckoutSession, createPortalSession, handleStripeWebhook } from 
 // Trial expiry checker
 export { checkTrialExpiry } from "./checkTrialExpiry";
 
+// Trial reminder emails
+export { sendTrialReminders } from "./trialReminders";
+
+// Server-side limit enforcement
+export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
+
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.
