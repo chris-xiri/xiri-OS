@@ -1,3 +1,4 @@
+import { trackContactAdded } from "../lib/analytics";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, writeBatch } from "firebase/firestore";
@@ -642,6 +643,7 @@ export default function Contacts() {
                 createdAt: now,
                 updatedAt: now,
             });
+            trackContactAdded();
             setShowModal(false);
         },
         [companyId]

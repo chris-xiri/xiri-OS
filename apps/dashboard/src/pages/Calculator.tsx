@@ -1,3 +1,4 @@
+import { trackFirstBidCreated, trackContactAdded } from "../lib/analytics";
 import { useState, useMemo, useEffect } from "react";
 import { collection, addDoc, onSnapshot, query, orderBy, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
@@ -336,6 +337,7 @@ export default function Calculator() {
                     updatedAt: now,
                 });
                 contactId = contactRef.id;
+                trackContactAdded();
             }
 
             // Build bid name
@@ -389,6 +391,7 @@ export default function Calculator() {
                     version: 1,
                     versions: [],
                 });
+                trackFirstBidCreated();
                 navigate(`/bids/${newBidRef.id}`);
                 return;
             }

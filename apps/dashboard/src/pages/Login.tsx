@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { auth } from "../lib/firebase";
-import { trackSignupCompleted } from "../lib/analytics";
+import { trackSignupStarted, trackSignupCompleted } from "../lib/analytics";
 import "./Login.css";
 
 export default function Login() {
@@ -24,6 +24,7 @@ export default function Login() {
         setLoading(true);
         try {
             if (isSignup) {
+                trackSignupStarted("email");
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
                 // Set displayName so AuthContext uses it instead of email
                 if (fullName.trim()) {

@@ -11,6 +11,7 @@ import { saveAs } from "file-saver";
 import type { Bid, ProposalTerms } from "./Bids";
 import type { Contact } from "./Contacts";
 import { hasFeature } from "../lib/rbac";
+import { trackProposalGenerated } from "../lib/analytics";
 import "./BidDetail.css";
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -249,6 +250,7 @@ export default function BidDetail() {
             watermark: "DRAFT",
         });
 
+        trackProposalGenerated();
         const blob = pdfDoc.output("blob");
         const url = URL.createObjectURL(blob);
         setPreviewUrl(url);
@@ -348,6 +350,7 @@ export default function BidDetail() {
             references,
         });
 
+        trackProposalGenerated();
         const pdfBlob = pdfDoc.output("blob");
 
         // Try native Save As dialog first (guarantees correct filename)
@@ -443,6 +446,7 @@ export default function BidDetail() {
             });
 
             // Convert to base64 for the Cloud Function
+            trackProposalGenerated();
             const pdfBase64 = pdfDoc.output("datauristring").split(",")[1];
 
             // Call Cloud Function

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function TermsPage() {
-    const lastUpdated = "March 8, 2026";
+    const lastUpdated = "March 10, 2026";
 
     return (
         <>
@@ -45,7 +45,7 @@ export default function TermsPage() {
                         },
                         {
                             heading: "2. Description of Service",
-                            body: "xiriOS is a cloud-based platform for janitorial and cleaning businesses. The Service includes bid calculators, proposal generation, CRM, scheduling, time tracking, and related tools. We reserve the right to modify, suspend, or discontinue any part of the Service at any time.",
+                            body: "xiriOS is a cloud-based platform for janitorial and cleaning businesses. The Service includes bid calculators, proposal generation, CRM, scheduling, time tracking, and related tools. We reserve the right to modify, suspend, or discontinue any part of the Service at any time.\n\nWe improve our products and advertising by using Microsoft Clarity to see how you use our website. By using our site, you agree that we and Microsoft can collect and use this data. Our privacy policy at https://os.xiri.ai/privacy has more details.",
                         },
                         {
                             heading: "3. Account Registration",

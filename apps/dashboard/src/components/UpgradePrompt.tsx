@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import type { Feature } from "../lib/rbac";
 import { FEATURE_META, requiredTier } from "../lib/rbac";
+import { trackSubscribeClicked } from "../lib/analytics";
 import "./UpgradePrompt.css";
 
 interface UpgradePromptProps {
@@ -41,6 +42,7 @@ export default function UpgradePrompt({
 
             const { sessionUrl } = result.data as { sessionUrl: string };
             if (sessionUrl) {
+                trackSubscribeClicked(needed);
                 window.location.href = sessionUrl;
             }
         } catch (err) {

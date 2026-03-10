@@ -1,0 +1,36 @@
+type,site,url,why_theyd_link,priority,email_template
+coach,Cleaning Business Coaching,https://cleaningbusinesscoaching.com,Coaches need free tools to share with their clients,high,resource_page
+coach,Debbie Sardone (Cleaning Consultant),https://debbiesardone.com,Prominent cleaning biz coach — free tools help her audience,high,resource_page
+coach,Scale My Cleaning Business,https://scalemycleaningbusiness.com,Blog focused on growth — profit + pricing tools are perfect fit,high,resource_page
+coach,Cleaning Business Consulting Group,https://cleaningbusinessconsultinggroup.com,Consulting group — tools add value to their advisory,medium,resource_page
+coach,AMBPG Business Coaching,https://ambpgbusinesscoaching.com,Business coaching for cleaning — free tools support their clients,medium,resource_page
+coach,Gatekeepers Group,https://gatekeepersgroup.com,Consulting — helps with bidding/sales which aligns with calculator,medium,resource_page
+coach,Enjoy Life Cleaning Services (Coach),https://enjoylifecs.com,Cleaning biz coach — tools complement their training,medium,resource_page
+startup_guide,Jobber Blog,https://getjobber.com/academy,Field service blog (not cleaning-specific competitor) — huge audience,high,blog_mention
+startup_guide,Tailor Brands,https://tailorbrands.com/blog,Business formation site — "how to start" guides link to tools,high,blog_mention
+startup_guide,Venture Vault Blog,https://venturevaultblog.com,Entrepreneurship blog — cleaning biz guide could link to calculator,medium,blog_mention
+startup_guide,Starter Story,https://starterstory.com,Entrepreneur stories — could feature xiriOS as a tool/resource,high,blog_mention
+startup_guide,Growth Grid Blog,https://growth-grid.ai/blog,Startup guides — tools are natural resource links,medium,blog_mention
+startup_guide,Camelo HQ Blog,https://camelohq.com/blog,Workforce management blog — employee cost calculator fits,medium,blog_mention
+supply_company,JSI Supply Blog,https://jsisupply.com/blog,Cleaning supply company — tools help THEIR customers bid better,high,resource_page
+supply_company,DayPorter Blog,https://dayporter.com/blog,Janitorial supply + blog — calculators help their buyer audience,high,resource_page
+supply_company,Dobmeier Janitorial Supplies,https://dobmeierjanitorialsupplies.com/articles,Supply company with educational content — tools complement their articles,medium,resource_page
+supply_company,W.B. Mason Blog,https://thewbdelivery.com/blog,Office supply giant with janitorial content — broad audience,medium,blog_mention
+supply_company,Paper Mart Blog,https://papermart.com/blog,Packaging/janitorial supply — educational content audience,low,blog_mention
+supply_company,JanSan Hero,https://jansanhero.com,Janitorial supply trends blog — tools help their readers,medium,resource_page
+supply_company,Winston Industrial,https://winstonindustrial.com/blog,Industrial supply with cleaning guides — calculator adds value,medium,resource_page
+training,Janitorial Emporium,https://janitorialemporium.com/training,Training provider — free tools complement their programs,medium,resource_page
+training,Cleaning Masterclass,https://cleaningmasterclass.com,Training platform — calculators help students price jobs,medium,resource_page
+training,IJCSA (Training + Certification),https://ijcsa.org,Industry association with training — tools support their members,high,resource_page
+guest_post,Cleaners Elite,https://cleanerselite.com/guest-post,Accepts guest posts on cleaning biz tools + strategies,high,guest_post
+guest_post,BizBlog.org,https://bizblog.org/submit-article,"Submit article" in Cleaning category — broad business audience,medium,guest_post
+guest_post,The Clean Master (AU),https://thecleanmaster.com.au/write-for-us,Accepts 800-1000 word cleaning industry articles,medium,guest_post
+guest_post,Fantastic Cleaners Blog,https://fantasticcleaners.com/blog,Write for us — cleaning industry content,medium,guest_post
+guest_post,Posticy (Guest Post Marketplace),https://posticy.com,Aggregator — browse cleaning sites accepting posts,low,guest_post
+sba_local,SBA.gov Resource Partners,https://sba.gov/local-assistance,Small Business Admin — local offices link to niche tools,high,resource_page
+sba_local,SCORE.org,https://score.org,Free business mentoring — mentors share niche tools with mentees,high,resource_page
+community,r/CommercialCleaning,https://reddit.com/r/CommercialCleaning,Direct post — share tool as helpful resource,high,reddit
+community,r/smallbusiness,https://reddit.com/r/smallbusiness,Direct post — share as free niche tool,high,reddit
+community,r/Entrepreneur,https://reddit.com/r/Entrepreneur,Direct post — "I built a free tool" format works well,high,reddit
+community,r/janitorial,https://reddit.com/r/janitorial,Direct post — exact target audience,high,reddit
+community,r/sweatystartup,https://reddit.com/r/sweatystartup,Direct post — service business entrepreneurs,high,reddit

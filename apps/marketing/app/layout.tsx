@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   title: "xiriOS — Janitorial Bidding & Business Management Software",
   description:
     "Win more cleaning contracts, protect your margins, and run your crew — all in one place. Professional bidding, scheduling, timekeeping, and CRM for janitorial businesses.",
+  applicationName: "xiriOS",
   keywords: [
     "janitorial bidding software",
     "cleaning business management",
@@ -65,6 +66,13 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://os.xiri.ai" },
 };
 
+const WEBSITE_LD = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "xiriOS",
+  url: "https://os.xiri.ai",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -73,11 +81,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* WebSite schema — tells Google the site name is "xiriOS" */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
         {/* GA4 */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8V0GR4ESS" />
         <script
           dangerouslySetInnerHTML={{
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-Y8V0GR4ESS');`,
+          }}
+        />
+        {/* Microsoft Clarity */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","vtptoqsjih");`,
           }}
         />
       </head>

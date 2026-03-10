@@ -45,9 +45,42 @@
     color: #fff;
 }
 
-.bids-create-btn:hover {
+.bids-create-btn:hover:not(:disabled) {
     filter: brightness(1.1);
     transform: translateY(-1px);
+}
+
+.bids-create-btn.at-limit {
+    background: var(--bg-elevated);
+    color: var(--text-dim);
+}
+
+.bids-counter {
+    font-weight: 600;
+}
+
+/* Limit banner */
+.bids-limit-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-size: 0.8125rem;
+    color: var(--text-secondary);
+}
+
+.bids-limit-banner a {
+    color: #f59e0b;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.bids-limit-banner a:hover {
+    text-decoration: underline;
 }
 
 /* Empty state */

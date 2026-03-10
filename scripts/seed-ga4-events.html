@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GA4 Event Seeder — xiriOS</title>
+    <!-- GA4 tag — same measurement ID as production -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8V0GR4ESS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-Y8V0GR4ESS');
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #0d0f1a;
+            color: #e8eaf0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .card {
+            background: #151829;
+            border: 1px solid #1f2340;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 1.25rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .subtitle {
+            color: #8b92b3;
+            font-size: 0.8125rem;
+            margin-bottom: 1.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 1px solid #1f2340;
+            font-size: 0.8125rem;
+        }
+
+        th {
+            color: #8b92b3;
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.6875rem;
+            font-weight: 600;
+        }
+
+        .badge-critical {
+            background: #f8717118;
+            color: #f87171;
+        }
+
+        .badge-high {
+            background: #f59e0b18;
+            color: #f59e0b;
+        }
+
+        .badge-medium {
+            background: #10b98118;
+            color: #10b981;
+        }
+
+        .badge-micro {
+            background: #6366f118;
+            color: #818cf8;
+        }
+
+        .status {
+            color: #555d7e;
+        }
+
+        .status.done {
+            color: #10b981;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #00d4aa, #00b894);
+            color: #0d0f1a;
+            font-weight: 700;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .log {
+            margin-top: 1rem;
+            font-size: 0.75rem;
+            color: #8b92b3;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+        }
+
+        .log div {
+            padding: 2px 0;
+        }
+
+        .log .ok {
+            color: #10b981;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <h1>🌱 GA4 Event Seeder</h1>
+        <p class="subtitle">Fires all custom events once so they appear in GA4 Admin → Events</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody id="events"></tbody>
+        </table>
+
+        <button class="btn" id="seedBtn" onclick="seedAll()">Seed All Events</button>
+        <div class="log" id="log"></div>
+    </div>
+
+    <script>
+        const EVENTS = [
+            // Marketing site events
+            { name: 'tool_used', params: { tool_name: 'seed_test' }, type: 'micro' },
+            { name: 'cta_click', params: { button_text: 'Seed Test', location: 'seed' }, type: 'micro' },
+            { name: 'calc_building_type', params: { building_type: 'office' }, type: 'micro' },
+            { name: 'calc_result', params: { sqft: 5000, monthly_price: 1200, building_type: 'office' }, type: 'medium' },
+            { name: 'calc_save_bid', params: { sqft: 5000, monthly_price: 1200 }, type: 'high' },
+
+            // Signup funnel
+            { name: 'signup_started', params: { source: 'email' }, type: 'high' },
+            { name: 'signup_completed', params: { method: 'email' }, type: 'critical' },
+
+            // Onboarding funnel
+            { name: 'first_bid_created', params: {}, type: 'high' },
+            { name: 'proposal_generated', params: {}, type: 'medium' },
+            { name: 'contact_added', params: {}, type: 'micro' },
+
+            // Subscription funnel
+            { name: 'trial_banner_shown', params: { days_remaining: 14 }, type: 'micro' },
+            { name: 'subscribe_clicked', params: { plan: 'bid_plus' }, type: 'medium' },
+            { name: 'purchase_completed', params: { plan: 'bid_plus', value: 49, currency: 'USD' }, type: 'critical' },
+
+            // Feature usage
+            { name: 'feature_used', params: { feature_name: 'seed_test' }, type: 'micro' },
+            { name: 'bid_deleted', params: {}, type: 'micro' },
+
+            // Dashboard duplicates (different names)
+            { name: 'cta_clicked', params: { button_text: 'Seed Test', location: 'seed' }, type: 'micro' },
+            { name: 'calculator_used', params: { building_type: 'office', sqft: 5000 }, type: 'medium' },
+            { name: 'pricing_viewed', params: { source: 'seed' }, type: 'micro' },
+        ];
+
+        const BADGE_MAP = {
+            critical: '<span class="badge badge-critical">Key Event</span>',
+            high: '<span class="badge badge-high">Key Event</span>',
+            medium: '<span class="badge badge-medium">Track</span>',
+            micro: '<span class="badge badge-micro">Micro</span>',
+        };
+
+        // Render table
+        const tbody = document.getElementById('events');
+        EVENTS.forEach((ev, i) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+    <td><code>${ev.name}</code></td>
+    <td>${BADGE_MAP[ev.type]}</td>
+    <td class="status" id="s${i}">—</td>
+  `;
+            tbody.appendChild(tr);
+        });
+
+        function log(msg, ok) {
+            const d = document.createElement('div');
+            d.className = ok ? 'ok' : '';
+            d.textContent = `${new Date().toLocaleTimeString()} ${msg}`;
+            document.getElementById('log').prepend(d);
+        }
+
+        async function seedAll() {
+            const btn = document.getElementById('seedBtn');
+            btn.disabled = true;
+            btn.textContent = 'Seeding…';
+
+            for (let i = 0; i < EVENTS.length; i++) {
+                const ev = EVENTS[i];
+                try {
+                    gtag('event', ev.name, ev.params);
+                    document.getElementById(`s${i}`).textContent = '✓ Sent';
+                    document.getElementById(`s${i}`).className = 'status done';
+                    log(`✓ ${ev.name}`, true);
+                } catch (err) {
+                    document.getElementById(`s${i}`).textContent = '✗ Error';
+                    log(`✗ ${ev.name}: ${err.message}`, false);
+                }
+                // Small delay between events
+                await new Promise(r => setTimeout(r, 100));
+            }
+
+            btn.textContent = '✓ All Events Seeded';
+            log('Done! Check GA4 Realtime in ~30 seconds.', true);
+        }
+    </script>
+</body>
+
+</html>

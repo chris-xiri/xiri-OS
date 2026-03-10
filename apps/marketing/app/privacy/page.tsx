@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
-    const lastUpdated = "March 8, 2026";
+    const lastUpdated = "March 10, 2026";
 
     return (
         <>
@@ -64,8 +64,8 @@ export default function PrivacyPage() {
                             body: "We implement industry-standard security measures including encryption in transit (TLS), encryption at rest, and secure authentication via Firebase Authentication. However, no method of transmission over the Internet is 100% secure, and we cannot guarantee absolute security.",
                         },
                         {
-                            heading: "7. Cookies",
-                            body: "We use essential cookies for authentication and session management. We may use analytics cookies (e.g., Google Analytics) to understand usage patterns. You can control cookie preferences through your browser settings.",
+                            heading: "7. Cookies & Analytics",
+                            body: "We use essential cookies for authentication and session management.\n\nGoogle Analytics: We use Google Analytics 4 (GA4) to understand usage patterns, measure conversion events, and improve the Service. Google Analytics collects anonymized data about pages visited, features used, and user interactions.\n\nMicrosoft Clarity: We partner with Microsoft Clarity to capture how you use and interact with our website through behavioral metrics, heatmaps, and session replay to improve and market our products and services. Website usage data is captured using first and third-party cookies and other tracking technologies to determine the popularity of products/services and online activity. Additionally, we use this information for site optimization, fraud/security purposes, and advertising. For more information about how Microsoft collects and uses your data, visit the Microsoft Privacy Statement (https://www.microsoft.com/privacy/privacystatement).\n\nYou can control cookie preferences through your browser settings.",
                         },
                         {
                             heading: "8. Your Rights",

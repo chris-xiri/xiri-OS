@@ -3,6 +3,7 @@ import { collection, onSnapshot, query, orderBy, doc, updateDoc, deleteDoc, writ
 import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { isOverLimit, getLimits, TIER_INFO, getUpgradeTier } from "../lib/rbac";
 import type { CalculatorResults, CalculatorInputs, RoomScope } from "../lib/calculator";
 import "./Bids.css";
 
@@ -85,7 +86,7 @@ const STATUS_PRIORITY: Record<Bid["status"], number> = {
 };
 
 export default function Bids() {
-    const { profile } = useAuth();
+    const { profile, subscription } = useAuth();
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [bids, setBids] = useState<Bid[]>([]);
@@ -96,6 +97,11 @@ export default function Bids() {
     const [deleting, setDeleting] = useState(false);
     const [confirmModal, setConfirmModal] = useState<{ message: string; onConfirm: () => void } | null>(null);
     const activeFilter = searchParams.get("filter") || "all";
+
+    const limits = getLimits(subscription.tier);
+    const tierInfo = TIER_INFO[subscription.tier];
+    const atLimit = isOverLimit(subscription.tier, "bids", bids.length);
+    const upgradeTier = getUpgradeTier(subscription.tier);
 
     const filteredBids = useMemo(() => {
         if (activeFilter === "all") return bids;
@@ -284,16 +290,43 @@ export default function Bids() {
                     <h1>Bids</h1>
                     <p className="bids-subtitle">
                         Create and manage your cleaning bids
-                        {bids.length > 0 && <span className="bids-count"> · {bids.length} bid{bids.length !== 1 ? "s" : ""}</span>}
+                        {limits.bids !== -1 ? (
+                            <span className="bids-counter" style={{ color: atLimit ? "#f87171" : tierInfo.color }}>
+                                {" "}· {bids.length} / {limits.bids} bids
+                            </span>
+                        ) : (
+                            bids.length > 0 && <span className="bids-count"> · {bids.length} bid{bids.length !== 1 ? "s" : ""}</span>
+                        )}
                     </p>
                 </div>
-                <button className="bids-create-btn" onClick={() => navigate("/bids/new")} style={{ cursor: "pointer" }}>
+                <button
+                    className={`bids-create-btn ${atLimit ? "at-limit" : ""}`}
+                    disabled={atLimit}
+                    onClick={() => navigate("/bids/new")}
+                    style={{ cursor: atLimit ? "not-allowed" : "pointer" }}
+                >
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
                     </svg>
                     New Bid
                 </button>
             </div>
+
+            {/* Limit warning */}
+            {atLimit && upgradeTier && (
+                <div className="bids-limit-banner">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <span>
+                        You've reached the {limits.bids}-bid limit on the {tierInfo.name} plan.{" "}
+                        <a href="/settings" onClick={(e) => { e.preventDefault(); navigate("/settings"); }}>
+                            Upgrade to {TIER_INFO[upgradeTier].name} →
+                        </a>
+                    </span>
+                </div>
+            )}
 
             {/* Filter tabs */}
             {bids.length > 0 && (

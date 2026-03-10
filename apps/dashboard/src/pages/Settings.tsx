@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { trackSubscribeClicked, trackPurchaseCompleted } from "../lib/analytics";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { TIER_INFO, getLimits, getTierFeatures, FEATURE_META, getUpgradeTier, type Tier, type Feature } from "../lib/rbac";
@@ -18,6 +19,7 @@ async function startCheckout(companyId: string, tier: string) {
         cancelUrl: window.location.href,
     });
     const { sessionUrl } = result.data as { sessionUrl: string };
+    trackSubscribeClicked(tier);
     if (sessionUrl) (window.top || window).location.href = sessionUrl;
 }
 
@@ -48,6 +50,17 @@ export default function Settings() {
     const activeTab: Tab = VALID_TABS.includes(rawTab as Tab) ? (rawTab as Tab) : "account";
     const setActiveTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
     const [showPlans, setShowPlans] = useState(false);
+
+    // Track successful checkout return
+    useEffect(() => {
+        if (searchParams.get("upgraded") === "true") {
+            trackPurchaseCompleted(currentTier, 0);
+            // Clean up URL param
+            const next = new URLSearchParams(searchParams);
+            next.delete("upgraded");
+            setSearchParams(next, { replace: true });
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     return (
         <div className="settings-page">
