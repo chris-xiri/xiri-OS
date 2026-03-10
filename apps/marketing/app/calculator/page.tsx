@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import CalculatorEmbed from "./CalculatorEmbed";
 
 export const metadata: Metadata = {
     title: "Free Janitorial Bid Calculator — ISSA 612 Powered | xiriOS",
@@ -13,25 +14,5 @@ export const metadata: Metadata = {
 };
 
 export default function CalculatorPage() {
-    return (
-        <div
-            style={{
-                width: "100%",
-                height: "100vh",
-                overflow: "hidden",
-                background: "#0c0f1a",
-            }}
-        >
-            <iframe
-                src="/app/calculator"
-                title="Janitorial Bid Calculator"
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    border: "none",
-                }}
-                allow="clipboard-write"
-            />
-        </div>
-    );
+    return <CalculatorEmbed />;
 }

@@ -139,7 +139,7 @@ export default async function CityServicePage({
                         <a href="/pricing" className="btn btn-primary">
                             Start Free →
                         </a>
-                        <a href="/calculator" className="btn btn-secondary">
+                        <a href={`/calculator?state=${city.stateCode}`} className="btn btn-secondary">
                             Try the Calculator
                         </a>
                     </div>
@@ -243,7 +243,7 @@ export default async function CityServicePage({
                         production rates.
                     </p>
                     <a
-                        href="/calculator"
+                        href={`/calculator?state=${city.stateCode}`}
                         className="btn btn-primary"
                         style={{
                             fontSize: "1.0625rem",
@@ -401,7 +401,7 @@ export default async function CityServicePage({
                             Get Started Free →
                         </a>
                         <a
-                            href="/calculator"
+                            href={`/calculator?state=${city.stateCode}`}
                             className="btn btn-secondary"
                             style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}
                         >

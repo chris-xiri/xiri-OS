@@ -158,6 +158,180 @@ export const BLOG_POSTS: BlogPost[] = [
             },
         ],
     },
+
+    /* ──────────── NEW: Tool-funnel blog posts ──────────── */
+    {
+        slug: "cleaning-business-profit-margins",
+        title: "Cleaning Business Profit Margins: What to Expect in 2026",
+        metaTitle: "Cleaning Business Profit Margins — What to Expect (2026) | xiriOS",
+        metaDescription:
+            "What profit margins should a cleaning business target? Industry benchmarks, cost breakdowns, and a free calculator to model your numbers. BLS + ISSA data.",
+        publishedAt: "2026-03-09",
+        updatedAt: "2026-03-09",
+        readTime: "7 min read",
+        category: "Profitability",
+        excerpt:
+            "Most cleaning business owners don't know their real profit margin. They see revenue coming in and assume they're profitable — until tax season hits. Here's how to calculate it accurately.",
+        keywords: [
+            "cleaning business profit margins",
+            "janitorial profit margin",
+            "cleaning company profitability",
+            "commercial cleaning profit",
+            "how much profit cleaning business",
+        ],
+        sections: [
+            {
+                heading: "The Typical Cleaning Business Profit Margin",
+                body: "According to industry surveys from BSCAI and ISSA, the average janitorial business operates at a **10–28% net profit margin** depending on size and market. Smaller solo operators often hit 25–30% because they save on labor overhead — they're the labor. Mid-size companies (10–50 employees) typically land in the 8–15% range after accounting for supervisors, vehicle costs, and admin overhead.\n\nThe Bureau of Labor Statistics (BLS) reports the median janitor wage at **$16.29/hour** nationally, but your true labor cost is significantly higher once you factor in the employer's share of payroll taxes, workers' compensation insurance, and benefits.",
+            },
+            {
+                heading: "Revenue vs. Profit: Understanding the Difference",
+                body: "Revenue is what the client pays you. Profit is what's left after every expense. Here's how a typical $5,000/month contract breaks down:\n\n• **Revenue**: $5,000/month\n• **Labor** (direct cleaning hours): $2,500 (50%)\n• **Payroll taxes & workers comp**: $450 (9%)\n• **Supplies & equipment**: $200 (4%)\n• **Insurance & overhead**: $400 (8%)\n• **Vehicle & fuel**: $150 (3%)\n• **Profit**: $1,300 (26%)\n\nThat 26% looks great — but add a supervisor, an office, and a phone line, and it drops fast. This is why modeling your costs accurately matters more than any \"industry average.\"",
+            },
+            {
+                heading: "The 5 Costs That Eat Your Margins",
+                body: "**1. Payroll burden**: Most owners calculate labor as wage × hours. They forget the employer's share of FICA (7.65%), federal unemployment (FUTA at 0.6%), state unemployment (SUTA — varies from 1.2% to 4.1%), and workers' comp (3.7% average for janitorial, per NCCI class code 9014). These add 12–18% on top of the base wage.\n\n**2. Drive time**: If your crew drives 30 minutes between jobs, that's unpaid time eating into your margin. Route optimization can save 15–20% on fuel and labor.\n\n**3. Supplies**: Chemical, paper, and equipment costs should be 2–5% of revenue. If you're over 5%, you're overbuying or wasting.\n\n**4. Employee turnover**: The janitorial industry has one of the highest turnover rates in the U.S. economy — 200–400% annually according to ISSA. Each turnover costs $1,500–$3,000 in recruiting, training, and lost productivity.\n\n**5. Underbidding**: The most common margin killer. If you underbid by even $0.01/sqft, it compounds across every visit, every month, every year.",
+            },
+            {
+                heading: "How to Improve Your Profit Margin",
+                body: "**Price by formula, not by gut**: Use square footage × production rates × fully-loaded labor costs to calculate a defensible bid. This eliminates the guesswork that leads to underbidding.\n\n**Track actual vs. estimated hours**: If your bid assumed 3 hours but the job takes 4, you're losing 25% of your labor budget on that contract. Track it.\n\n**Specialize**: Medical, post-construction, and floor care services command 30–50% higher rates than general office cleaning. Specialization = higher margins.\n\n**Reduce turnover**: Paying $1/hour above market rate costs you $2,000/year per employee — but saves you $3,000+ in turnover costs. It's a net positive.\n\n**Use technology**: Automated bidding, digital proposals, and route optimization tools can save 5–10 hours per week of admin time — time that you can spend selling or managing.",
+            },
+            {
+                heading: "Model Your Numbers With the Profit Calculator",
+                body: "We built a free profit calculator that breaks down every cost layer: labor at your local BLS wage, FICA (per SSA rates), FUTA, workers' comp (NCCI data), supplies, overhead, and your target margin. Adjust the sliders and see your monthly P&L in real time.\n\nNo sign-up required. Built on government data.",
+                cta: { text: "Try the Profit Calculator →", href: "/tools/profit-calculator" },
+            },
+        ],
+    },
+    {
+        slug: "how-long-to-clean-commercial-building",
+        title: "How Long Does It Take to Clean a Commercial Building?",
+        metaTitle: "How Long to Clean a Commercial Building — ISSA Time Standards | xiriOS",
+        metaDescription:
+            "Calculate how long it takes to clean any commercial building using ISSA production rate standards. Offices, schools, medical, retail — with a free time estimator tool.",
+        publishedAt: "2026-03-09",
+        updatedAt: "2026-03-09",
+        readTime: "6 min read",
+        category: "Operations",
+        excerpt:
+            "Whether you're bidding a new contract or staffing a crew, you need to know how long cleaning actually takes. Here are the ISSA-standard production rates used by professional cleaning companies.",
+        keywords: [
+            "how long to clean commercial building",
+            "cleaning time per square foot",
+            "ISSA production rates",
+            "janitorial cleaning time calculator",
+            "how long to clean 10000 sq ft",
+        ],
+        sections: [
+            {
+                heading: "Why Cleaning Time Estimates Matter",
+                body: "Cleaning time is the foundation of every janitorial bid. If you underestimate how long a building takes to clean, you'll underpay your crew (leading to turnover) or absorb the loss yourself (killing your margin). If you overestimate, your bid price will be too high and you'll lose the contract.\n\nThe industry standard for estimating cleaning time comes from the **ISSA 612 Cleaning Times** publication, which provides benchmark production rates (square feet per hour) for different area types and soil levels. These rates are used by professional cleaning companies, facility managers, and bid consultants worldwide.",
+            },
+            {
+                heading: "ISSA Production Rates by Area Type",
+                body: "Here are the standard cleaning production rates, measured in cleanable square feet per hour per cleaner:\n\n• **General Office** — 4,200 sqft/hr\n• **Restrooms** — 1,000 sqft/hr (heavy soil, disinfection required)\n• **Lobbies & Corridors** — 5,500 sqft/hr\n• **Classrooms** — 3,800 sqft/hr\n• **Cafeteria / Break Room** — 3,200 sqft/hr\n• **Medical / Clinical** — 2,200 sqft/hr (infection control protocols)\n• **Warehouse / Industrial** — 6,000 sqft/hr (open floor, minimal fixtures)\n• **Retail / Storefront** — 4,500 sqft/hr\n• **Conference Rooms** — 3,500 sqft/hr\n• **Gym / Fitness** — 3,000 sqft/hr\n\n**Key insight**: Restrooms are 4× slower than offices because they require fixture-by-fixture cleaning and disinfection. This is why most underbids happen on buildings with a high restroom-to-office ratio.",
+            },
+            {
+                heading: "How to Calculate Cleaning Time for a Building",
+                body: "**Step 1: Break the building into area types.** A 10,000 sqft office might be 7,000 sqft of general office, 800 sqft of restrooms, 700 sqft of lobby, 500 sqft of conference rooms, and 1,000 sqft of cafeteria.\n\n**Step 2: Apply production rates.** Divide each area by its production rate:\n• Office: 7,000 ÷ 4,200 = 1.67 hours\n• Restrooms: 800 ÷ 1,000 = 0.80 hours\n• Lobby: 700 ÷ 5,500 = 0.13 hours\n• Conference: 500 ÷ 3,500 = 0.14 hours\n• Cafeteria: 1,000 ÷ 3,200 = 0.31 hours\n\n**Step 3: Sum it up.** Total = 3.05 hours per visit.\n\n**Step 4: Multiply by frequency.** For 5× per week: 3.05 × 21.7 visits/month = 66.2 hours/month.\n\nThis is the number you use to calculate labor cost, which becomes the foundation of your bid.",
+            },
+            {
+                heading: "Factors That Affect Cleaning Time",
+                body: "**Soil level**: A restaurant kitchen takes 50–100% longer than a light-duty office. ISSA provides adjustments for light, medium, and heavy soil.\n\n**Fixture density**: An office with 20 desks per room cleans slower than an open-plan space with 5 workstations. More obstacles = more time.\n\n**Floor type**: Carpet vacuuming is roughly 2× slower than hard floor mopping. Buildings with 70%+ carpet will need more time.\n\n**Crew size**: Two cleaners don't cut time exactly in half — coordination overhead means 2 cleaners do the work of about 1.8. Factor this into your staffing plan.\n\n**Equipment**: Auto-scrubbers clean hard floors 3–5× faster than a mop and bucket. If the facility allows auto-scrubbers, your production rate jumps significantly.",
+            },
+            {
+                heading: "Estimate Your Next Job",
+                body: "Use our free cleaning time estimator to calculate exactly how long any building should take. Select from 10 ISSA-standard area types, enter your square footage and frequency, and get hour estimates instantly.\n\nBuilt on ISSA 612 production standards. No login required.",
+                cta: { text: "Try the Time Estimator →", href: "/tools/time-estimator" },
+            },
+        ],
+    },
+    {
+        slug: "true-cost-of-janitorial-employee",
+        title: "The True Cost of a Janitorial Employee (Beyond the Hourly Wage)",
+        metaTitle: "True Cost of a Janitorial Employee — Beyond the Wage | xiriOS",
+        metaDescription:
+            "A $16/hour janitor actually costs $20-24/hour after FICA, FUTA, SUTA, workers comp, and benefits. Free calculator with state-specific rates. Government-sourced data.",
+        publishedAt: "2026-03-09",
+        updatedAt: "2026-03-09",
+        readTime: "6 min read",
+        category: "Operations",
+        excerpt:
+            "If you pay a janitor $16/hour, your actual cost is $20–24/hour. Where does the extra $4–8 go? Payroll taxes, insurance, benefits, and invisible costs that eat into your margins.",
+        keywords: [
+            "true cost of janitorial employee",
+            "janitor employee cost calculator",
+            "payroll taxes cleaning business",
+            "workers comp janitorial",
+            "cost to employ a janitor",
+        ],
+        sections: [
+            {
+                heading: "The Multiplier Every Cleaning Business Owner Needs to Know",
+                body: "When you hire a janitor at $16.29/hour (the BLS national median for SOC 37-2011, \"Janitors and Cleaners\"), your true cost is **1.25–1.40× that amount** — or $20.36 to $22.81 per hour. This multiplier comes from mandatory employer-side costs that are invisible on the employee's pay stub but very real on your P&L.\n\nMost cleaning business owners know about \"some\" extra costs but dramatically underestimate the total. The result? Bids that look profitable on paper but lose money in practice.",
+            },
+            {
+                heading: "Breaking Down the Employer-Side Costs",
+                body: "Here's every cost that sits on top of the base wage, with the exact rate and source:\n\n**FICA (7.65%)**: You match the employee's Social Security (6.2%) and Medicare (1.45%) contributions. On $16.29/hr, that's $1.25/hr. (Source: SSA — ssa.gov)\n\n**FUTA (0.6%)**: Federal Unemployment Tax on the first $7,000 of wages per employee. Works out to $42/year per employee max. (Source: IRS Publication 15)\n\n**SUTA (varies by state)**: State Unemployment Tax ranges from **1.2% in North Carolina to 4.1% in New York**. Applied to the first $8,500–$12,000 of wages depending on state. (Source: U.S. Department of Labor, Employment & Training Administration)\n\n**Workers' Compensation (3.7% avg)**: Janitorial falls under NCCI class code 9014. Your rate depends on your experience modifier and state, but the national average is about 3.7% of gross payroll. (Source: NCCI)\n\n**Paid Leave & Benefits (7.7%)**: Vacation, sick time, holidays, and miscellaneous benefits. BLS Employer Costs for Employee Compensation pegs this at 7.7% of total compensation for service workers.\n\n**Health Insurance (optional)**: If you offer coverage, the average employer share is $7,911/year for single coverage, or $659/month. (Source: BLS ECEC 2024)",
+            },
+            {
+                heading: "Real Example: Full-Time Janitor in Texas",
+                body: "Let's walk through a real example. A full-time janitor in Dallas, TX:\n\n• **Base wage**: $14.53/hr (BLS Dallas metro median) × 40 hrs × 52 weeks = **$30,222/year**\n• **FICA (7.65%)**: $2,312\n• **FUTA (0.6% on $7k)**: $42\n• **Texas SUTA (2.7% on $9k)**: $243\n• **Workers comp (3.7%)**: $1,118\n• **Paid leave (7.7%)**: $2,327\n• **Health insurance**: $0 (not offered)\n\n**Total annual cost**: $36,264\n**Effective hourly rate**: $17.43/hr\n**Multiplier**: 1.20×\n\nWithout health insurance, the multiplier is 1.20×. Add health insurance and it jumps to 1.46×. This is the number you must use when calculating your bid — not the base wage.",
+            },
+            {
+                heading: "Why This Changes Your Bidding",
+                body: "If you bid using the base wage ($14.53/hr in the Dallas example), you're immediately losing $2.90/hr per worker in unbilled costs. On a contract requiring 60 hours/month of labor, that's $174/month — or $2,088/year — lost on one contract.\n\nThe fix is simple: always use the fully-loaded rate when calculating bids. Most bidding software doesn't do this automatically — which is why we built it into xiriOS. Our calculator uses the true employer cost (including FICA, FUTA, SUTA, and workers comp) when calculating labor costs for your bids.",
+            },
+            {
+                heading: "Calculate Your True Employee Cost",
+                body: "Use our free employee cost calculator to see the real number. Select your state for the correct SUTA rate, input the hourly wage and hours per week, and optionally add health insurance. Every rate cites its government source.\n\nBuilt on SSA, IRS, DOL, BLS, and NCCI data.",
+                cta: { text: "Try the Employee Cost Calculator →", href: "/tools/employee-cost" },
+            },
+        ],
+    },
+    {
+        slug: "how-much-to-charge-cleaning-by-city",
+        title: "How Much to Charge for Commercial Cleaning in Your City (2026)",
+        metaTitle: "How Much to Charge for Cleaning by City — BLS Wage Data | xiriOS",
+        metaDescription:
+            "What should you charge for cleaning in your city? Compare prices across 40 U.S. metro areas using BLS median janitor wages. Free price checker tool.",
+        publishedAt: "2026-03-09",
+        updatedAt: "2026-03-09",
+        readTime: "7 min read",
+        category: "Pricing",
+        excerpt:
+            "Cleaning prices vary dramatically by city. A $15,000/month building in San Francisco is a $9,000/month building in Memphis — same scope, different market. Here's how to price for YOUR city.",
+        keywords: [
+            "how much to charge for cleaning by city",
+            "commercial cleaning prices by metro area",
+            "cleaning rates per square foot by city",
+            "janitorial pricing by state",
+            "cleaning market rate calculator",
+        ],
+        sections: [
+            {
+                heading: "Why Location Matters More Than You Think",
+                body: "The Bureau of Labor Statistics publishes median janitor wages for every major metro area in the country through the Occupational Employment and Wage Statistics (OEWS) program. The spread is enormous:\n\n• **New York City**: $21.44/hr median\n• **San Francisco**: $21.07/hr median\n• **Seattle**: $20.47/hr median\n• **Dallas**: $14.53/hr median\n• **San Antonio**: $13.66/hr median\n• **Memphis**: $14.10/hr median\n\nThat's a **57% gap** between the highest and lowest major metro areas. If you price your cleaning jobs using a national average or — worse — a number you heard at a networking event, you could be 20–30% off the mark in either direction.",
+            },
+            {
+                heading: "How Metro Wages Affect Your Bid Price",
+                body: "Your bid price is fundamentally driven by your labor cost, and labor cost is driven by what the local market pays janitors. Here's why:\n\n**If you pay below market**: You can't hire or retain cleaners. Turnover in janitorial cleaning already exceeds 200% annually (ISSA data). Paying below median makes it worse.\n\n**If you pay above market**: Great for retention, but your bids need to reflect the higher cost. Otherwise your margins evaporate.\n\n**The formula**: Your bid price should be the fully-loaded labor cost (local wage × employer burden) multiplied by a service multiplier that covers overhead + profit. Typical multipliers range from 1.8× (budget) to 3.0× (premium).\n\nFor example, in Dallas ($14.53/hr × 1.20 burden = $17.44 loaded):\n• Budget service: $17.44 × 1.8 = $31.39/hr billed\n• Standard service: $17.44 × 2.4 = $41.86/hr billed\n• Premium service: $17.44 × 3.0 = $52.32/hr billed",
+            },
+            {
+                heading: "Price Ranges by Metro Area",
+                body: "Here are estimated monthly cleaning costs for a standard 10,000 sqft office cleaned 5× per week (based on BLS wages and ISSA production rates):\n\n**Highest-cost metros** (monthly range):\n• New York: $3,900 – $6,500\n• San Francisco: $3,800 – $6,400\n• Boston: $3,600 – $6,000\n• Seattle: $3,700 – $6,200\n\n**Mid-cost metros**:\n• Chicago: $3,100 – $5,200\n• Denver: $3,200 – $5,400\n• Portland: $3,300 – $5,500\n• Philadelphia: $3,100 – $5,100\n\n**Lower-cost metros**:\n• Dallas: $2,600 – $4,400\n• Atlanta: $2,700 – $4,600\n• Memphis: $2,600 – $4,300\n• San Antonio: $2,500 – $4,100\n\nThese ranges cover budget to premium service levels. The exact price depends on building type, fixture count, scope, and frequency.",
+            },
+            {
+                heading: "How to Use This Data in Your Bidding",
+                body: "**Step 1**: Look up the BLS median janitor wage for your metro area. This is your baseline labor cost.\n\n**Step 2**: Apply the employer burden multiplier (typically 1.20–1.40×) to get your true loaded labor rate.\n\n**Step 3**: Use ISSA production rates to calculate how many labor hours the job requires.\n\n**Step 4**: Multiply loaded labor hours by your service multiplier (1.8× budget, 2.4× standard, 3.0× premium).\n\n**Step 5**: That's your monthly bid price. It's defensible because it's based on published government wage data and industry cleaning standards — not a guess.\n\nThis is exactly the methodology used by facility managers and bid consultants. Using BLS data in your proposal also adds credibility — you can cite the specific source to show the client your pricing is market-based.",
+            },
+            {
+                heading: "Check Prices in Your Market",
+                body: "Use our free price checker tool to see cleaning prices for your metro area. Select from 40 U.S. metros, enter your building size and cleaning frequency, and see budget/standard/premium price ranges — all based on BLS OEWS wage data.\n\nNo login required. Government-sourced data.",
+                cta: { text: "Try the Price Checker →", href: "/tools/price-checker" },
+            },
+        ],
+    },
 ];
 
 export function getPost(slug: string): BlogPost | undefined {

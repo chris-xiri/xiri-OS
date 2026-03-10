@@ -72,9 +72,10 @@ export default function Navbar() {
             >
                 <div style={{ display: "flex", gap: "2rem" }}>
                     {[
-                        { href: "/#features", label: "Features" },
+                        { href: "/features", label: "Features" },
                         { href: "/pricing", label: "Pricing" },
                         { href: "/calculator", label: "Calculator" },
+                        { href: "/tools", label: "Tools" },
                     ].map((link) => (
                         <a
                             key={link.href}
@@ -149,9 +150,10 @@ export default function Navbar() {
                     }}
                 >
                     {[
-                        { href: "/#features", label: "Features" },
+                        { href: "/features", label: "Features" },
                         { href: "/pricing", label: "Pricing" },
                         { href: "/calculator", label: "Calculator" },
+                        { href: "/tools", label: "Tools" },
                     ].map((link) => (
                         <a
                             key={link.href}

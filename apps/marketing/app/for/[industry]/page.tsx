@@ -226,6 +226,54 @@ export default async function IndustryPage({
                 </div>
             </section>
 
+            {/* Tools cross-link */}
+            <section className="section" style={{ background: "#141829" }}>
+                <div className="section-inner">
+                    <div className="section-header">
+                        <span className="section-label">Free tools</span>
+                        <h2>
+                            Free{" "}
+                            <span style={{ color: "#00d4aa" }}>calculators &amp; tools</span>
+                        </h2>
+                        <p style={{ color: "#8b92b3", maxWidth: "500px", margin: "0.5rem auto 0" }}>
+                            Government-backed data. No login required.
+                        </p>
+                    </div>
+                    <div
+                        style={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+                            gap: "1rem",
+                            maxWidth: "900px",
+                            margin: "0 auto",
+                        }}
+                    >
+                        {[
+                            { href: "/tools/profit-calculator", icon: "🧮", name: "Profit Calculator" },
+                            { href: "/tools/time-estimator", icon: "⏱️", name: "Time Estimator" },
+                            { href: "/tools/employee-cost", icon: "💵", name: "Employee Cost" },
+                            { href: "/tools/price-checker", icon: "📍", name: "Price Checker" },
+                        ].map((t) => (
+                            <a
+                                key={t.href}
+                                href={t.href}
+                                className="card"
+                                style={{
+                                    textDecoration: "none",
+                                    textAlign: "center",
+                                    transition: "border-color 0.2s, transform 0.2s",
+                                    padding: "1.25rem",
+                                }}
+                            >
+                                <div style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>{t.icon}</div>
+                                <div style={{ fontWeight: 700, fontSize: "0.875rem" }}>{t.name}</div>
+                                <span style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600 }}>Free →</span>
+                            </a>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* CTA */}
             <section
                 className="section"

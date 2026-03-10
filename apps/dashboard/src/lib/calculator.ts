@@ -270,9 +270,21 @@ export function getStateDefaults(stateCode: string): Partial<CalculatorInputs> |
 }
 
 // ============================================================
-// Cleaning Scope / Task Definitions
-// These define what's included in the bid proposal
+// Metro-Level BLS Wage Data
+// Imported from auto-generated metro-wages.ts (run: npx tsx scripts/generate-market-data.ts)
 // ============================================================
+
+export { METRO_WAGES as METROS, getMetrosForState, resolveZip } from "./metro-wages";
+export type { MetroWageData as MetroData } from "./metro-wages";
+import { METRO_WAGES } from "./metro-wages";
+
+/** Get recommended financial defaults for a given metro area */
+export function getMetroDefaults(metroId: string): Partial<CalculatorInputs> | null {
+    const metro = METRO_WAGES.find((m) => m.id === metroId);
+    if (!metro) return null;
+    return { wageRate: metro.medianWage };
+}
+
 
 export interface CleaningTask {
     id: string;

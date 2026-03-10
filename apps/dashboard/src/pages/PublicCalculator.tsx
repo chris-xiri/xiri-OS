@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
     BUILDING_TYPES,
     FREQUENCIES,
@@ -8,6 +8,9 @@ import {
     DEFAULT_INPUTS,
     calculate,
     getStateDefaults,
+    getMetrosForState,
+    getMetroDefaults,
+    resolveZip,
     ROOM_TYPES,
     getDefaultRooms,
     resolveTaskFrequency,
@@ -29,6 +32,8 @@ const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", curren
 export default function PublicCalculator() {
     const [inputs, setInputs] = useState<CalculatorInputs>({ ...DEFAULT_INPUTS });
     const [selectedState, setSelectedState] = useState("");
+    const [selectedMetro, setSelectedMetro] = useState("");
+    const [zipCode, setZipCode] = useState("");
     const [roomScopes, setRoomScopes] = useState<RoomScope[]>(() => getDefaultRooms("office", DEFAULT_INPUTS.sqft));
     const [priceOverride, setPriceOverride] = useState<number | null>(null);
     const [showAddRoom, setShowAddRoom] = useState(false);
@@ -63,11 +68,52 @@ export default function PublicCalculator() {
 
     const handleStateChange = (code: string) => {
         setSelectedState(code);
+        setSelectedMetro(""); // reset metro when state changes
         if (code) {
             const defaults = getStateDefaults(code);
             if (defaults) update(defaults);
         }
     };
+
+    const handleMetroChange = (metroId: string) => {
+        setSelectedMetro(metroId);
+        if (metroId) {
+            const defaults = getMetroDefaults(metroId);
+            if (defaults) update(defaults);
+        }
+    };
+
+    const handleZipChange = (zip: string) => {
+        const cleaned = zip.replace(/\D/g, "").slice(0, 5);
+        setZipCode(cleaned);
+        if (cleaned.length >= 3) {
+            const result = resolveZip(cleaned);
+            if (result) {
+                if (result.state !== selectedState) {
+                    handleStateChange(result.state);
+                }
+                if (result.metroId && result.metroId !== selectedMetro) {
+                    handleMetroChange(result.metroId);
+                }
+            }
+        }
+    };
+
+    // Metros filtered to selected state
+    const availableMetros = selectedState ? getMetrosForState(selectedState) : [];
+
+    // Auto-select from URL params (e.g. ?state=TX&metro=19100 from pSEO pages)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const stateParam = params.get("state");
+        const metroParam = params.get("metro");
+        if (stateParam && STATES.some((s) => s.code === stateParam.toUpperCase())) {
+            handleStateChange(stateParam.toUpperCase());
+            if (metroParam) {
+                setTimeout(() => handleMetroChange(metroParam), 0);
+            }
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const toggleRoomTask = (roomId: string, taskId: string) => {
         setRoomScopes((prev) =>
@@ -427,13 +473,37 @@ export default function PublicCalculator() {
                             </summary>
                             <div className="calc-financials-body">
                                 <div className="form-group">
-                                    <label>State (auto-fills recommended rates)</label>
-                                    <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
-                                        <option value="">— Select state —</option>
-                                        {STATES.map((s) => (
-                                            <option key={s.code} value={s.code}>{s.name}</option>
-                                        ))}
-                                    </select>
+                                    <label>ZIP Code (auto-fills local wage rates)</label>
+                                    <input
+                                        type="text"
+                                        value={zipCode}
+                                        onChange={(e) => handleZipChange(e.target.value)}
+                                        placeholder="e.g. 75001"
+                                        maxLength={5}
+                                        inputMode="numeric"
+                                    />
+                                </div>
+                                <div className="calc-financials-grid">
+                                    <div className="form-group">
+                                        <label>State</label>
+                                        <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
+                                            <option value="">— Select state —</option>
+                                            {STATES.map((s) => (
+                                                <option key={s.code} value={s.code}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {availableMetros.length > 0 && (
+                                        <div className="form-group">
+                                            <label>Metro Area</label>
+                                            <select value={selectedMetro} onChange={(e) => handleMetroChange(e.target.value)}>
+                                                <option value="">— Select metro —</option>
+                                                {availableMetros.map((m) => (
+                                                    <option key={m.id} value={m.id}>{m.name} — ${m.medianWage.toFixed(2)}/hr</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="calc-financials-grid">
                                     <div className="form-group">
@@ -570,36 +640,36 @@ export default function PublicCalculator() {
 
                         {/* Client / Contact Info */}
                         <div className="calc-section" style={{ marginTop: "1.25rem" }}>
-                            <h3 style={{ fontSize: "0.8125rem", color: "#a1a7c4", marginBottom: "0.5rem", fontWeight: 600 }}>
+                            <h3 style={{ fontSize: "0.8125rem", color: "#a1a7c4", marginBottom: "0.75rem", fontWeight: 600 }}>
                                 Client Information <span style={{ fontWeight: 400, fontSize: "0.6875rem" }}>(optional)</span>
                             </h3>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                                <input
-                                    className="calc-input"
-                                    placeholder="Contact Name"
-                                    value={clientName}
-                                    onChange={(e) => setClientName(e.target.value)}
-                                />
-                                <input
-                                    className="calc-input"
-                                    placeholder="Company Name"
-                                    value={clientCompany}
-                                    onChange={(e) => setClientCompany(e.target.value)}
-                                />
-                                <input
-                                    className="calc-input"
-                                    type="email"
-                                    placeholder="Email"
-                                    value={clientEmail}
-                                    onChange={(e) => setClientEmail(e.target.value)}
-                                />
-                                <input
-                                    className="calc-input"
-                                    type="tel"
-                                    placeholder="Phone"
-                                    value={clientPhone}
-                                    onChange={(e) => setClientPhone(e.target.value)}
-                                />
+                                {[
+                                    { placeholder: "Contact Name", value: clientName, set: setClientName, type: "text" },
+                                    { placeholder: "Company Name", value: clientCompany, set: setClientCompany, type: "text" },
+                                    { placeholder: "Email", value: clientEmail, set: setClientEmail, type: "email" },
+                                    { placeholder: "Phone", value: clientPhone, set: setClientPhone, type: "tel" },
+                                ].map((f) => (
+                                    <input
+                                        key={f.placeholder}
+                                        type={f.type}
+                                        placeholder={f.placeholder}
+                                        value={f.value}
+                                        onChange={(e) => f.set(e.target.value)}
+                                        style={{
+                                            padding: "0.5rem 0.75rem",
+                                            background: "#1a1f36",
+                                            border: "1px solid rgba(255,255,255,0.08)",
+                                            borderRadius: "8px",
+                                            color: "white",
+                                            fontSize: "0.8125rem",
+                                            fontFamily: "inherit",
+                                            outline: "none",
+                                            width: "100%",
+                                            boxSizing: "border-box",
+                                        }}
+                                    />
+                                ))}
                             </div>
                         </div>
 

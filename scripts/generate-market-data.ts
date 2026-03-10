@@ -148,6 +148,45 @@ const MSA_DATA: Record<string, { name: string; medianWage: number }> = {
     "42540": { name: "Scranton-Wilkes-Barre", medianWage: 15.05 },
 };
 
+// MSA → associated state codes (for filtering metros by state in the calculator)
+const MSA_STATES: Record<string, string[]> = {
+    "10420": ["OH"], "10580": ["NY"], "10740": ["NM"],
+    "10900": ["PA", "NJ"], "11260": ["AK"], "12060": ["GA"],
+    "12260": ["GA", "SC"], "12420": ["TX"], "12580": ["MD"],
+    "12940": ["LA"], "13140": ["TX"], "13820": ["AL"],
+    "14260": ["ID"], "14460": ["MA", "NH"], "14860": ["CT"],
+    "15180": ["TX"], "15380": ["NY"], "15980": ["FL"],
+    "16700": ["SC"], "16740": ["NC", "SC"], "16860": ["TN", "GA"],
+    "16980": ["IL", "IN", "WI"], "17140": ["OH", "KY", "IN"],
+    "17460": ["OH"], "17820": ["CO"], "17900": ["SC"],
+    "18140": ["OH"], "18580": ["TX"], "19100": ["TX"],
+    "19380": ["OH"], "19740": ["CO"], "19820": ["MI"],
+    "21340": ["TX"], "22180": ["NC"], "23420": ["CA"],
+    "24340": ["MI"], "24660": ["NC"], "24860": ["SC"],
+    "25540": ["CT"], "26420": ["TX"], "26620": ["HI"],
+    "26900": ["IN"], "27260": ["FL"], "28140": ["MO", "KS"],
+    "28940": ["TN"], "29460": ["FL"], "29820": ["NV"],
+    "30140": ["PA"], "30460": ["KY"], "30700": ["NE"],
+    "30780": ["AR"], "31080": ["CA"], "31140": ["KY", "IN"],
+    "31180": ["TX"], "32820": ["TN", "MS", "AR"],
+    "33100": ["FL"], "33340": ["WI"], "33460": ["MN", "WI"],
+    "34820": ["SC"], "34940": ["FL"], "34980": ["TN"],
+    "35300": ["CT"], "35380": ["LA"],
+    "35620": ["NY", "NJ", "PA"], "36420": ["OK"],
+    "36540": ["NE", "IA"], "36740": ["FL"], "37100": ["CA"],
+    "37980": ["PA", "NJ", "DE", "MD"], "38060": ["AZ"],
+    "38300": ["PA"], "38900": ["OR", "WA"], "39300": ["RI", "MA"],
+    "39580": ["NC"], "40060": ["VA"], "40140": ["CA"],
+    "40380": ["NY"], "40900": ["CA"], "41180": ["MO", "IL"],
+    "41620": ["UT"], "41700": ["TX"], "41740": ["CA"],
+    "41860": ["CA"], "41940": ["CA"], "42540": ["PA"],
+    "42660": ["WA"], "44140": ["MA"], "44700": ["CA"],
+    "45300": ["FL"], "46060": ["AZ"], "46140": ["OK"],
+    "46520": ["HI"], "47260": ["VA", "NC"],
+    "47900": ["DC", "VA", "MD", "WV"], "48620": ["KS"],
+    "49340": ["MA"],
+};
+
 // City → MSA code mapping
 const CITY_MSA: Record<string, string> = {
     // Texas
@@ -488,12 +527,328 @@ function generateMarketDataFile(census: CensusResults): string {
     return lines.join("\n");
 }
 
+/** Generate a lean metro-wages.ts for the dashboard calculator */
+function generateMetroWagesFile(): string {
+    const lines: string[] = [];
+    lines.push(`/**`);
+    lines.push(` * Metro-level BLS wage data for xiriOS Calculator`);
+    lines.push(` * `);
+    lines.push(` * AUTO-GENERATED — do not edit manually.`);
+    lines.push(` * Run: npx tsx scripts/generate-market-data.ts`);
+    lines.push(` * `);
+    lines.push(` * Source: Bureau of Labor Statistics OEWS (May ${BLS_YEAR}), SOC 37-2011`);
+    lines.push(` * Last refreshed: ${new Date().toISOString().split("T")[0]}`);
+    lines.push(` */`);
+    lines.push(``);
+
+    lines.push(`export interface MetroWageData {`);
+    lines.push(`    id: string;`);
+    lines.push(`    name: string;`);
+    lines.push(`    /** BLS median hourly wage for janitors in this metro */`);
+    lines.push(`    medianWage: number;`);
+    lines.push(`    /** State codes this metro belongs to (for dropdown filtering) */`);
+    lines.push(`    states: string[];`);
+    lines.push(`}`);
+    lines.push(``);
+
+    lines.push(`export const METRO_WAGES: MetroWageData[] = [`);
+    for (const [msaCode, msa] of Object.entries(MSA_DATA).sort((a, b) => a[1].name.localeCompare(b[1].name))) {
+        const states = MSA_STATES[msaCode] || [];
+        const statesArr = states.map((s: string) => `"${s}"`).join(", ");
+        lines.push(`    { id: "${msaCode}", name: "${msa.name}", medianWage: ${msa.medianWage}, states: [${statesArr}] },`);
+    }
+    lines.push(`];`);
+    lines.push(``);
+
+    lines.push(`/** Get metros available for a given state code */`);
+    lines.push(`export function getMetrosForState(stateCode: string): MetroWageData[] {`);
+    lines.push(`    return METRO_WAGES.filter((m) => m.states.includes(stateCode));`);
+    lines.push(`}`);
+    lines.push(``);
+
+    lines.push(`/** National median hourly wage for janitors (BLS, ${BLS_YEAR}) */`);
+    lines.push(`export const NATIONAL_MEDIAN_WAGE = 17.27;`);
+    lines.push(``);
+
+    // ── ZIP3 → state mapping (USPS standard ranges) ──
+    lines.push(`/**`);
+    lines.push(` * ZIP3 prefix → state code (USPS standard ranges)`);
+    lines.push(` * Used to resolve a 5-digit ZIP to a state code`);
+    lines.push(` */`);
+    lines.push(`const ZIP3_STATE: [number, number, string][] = [`);
+    // Standard USPS ZIP3 ranges per state (inclusive min, inclusive max, state code)
+    const ZIP3_RANGES: [number, number, string][] = [
+        [10, 14, "NY"], [60, 69, "CT"], [70, 89, "NJ"], [100, 149, "NY"],
+        [150, 196, "PA"], [197, 199, "DE"], [200, 205, "DC"], [206, 219, "MD"],
+        [220, 246, "VA"], [247, 268, "WV"], [270, 289, "NC"], [290, 299, "SC"],
+        [300, 319, "GA"], [320, 349, "FL"], [350, 369, "AL"],
+        [370, 385, "TN"], [386, 397, "MS"], [400, 427, "KY"],
+        [430, 459, "OH"], [460, 479, "IN"], [480, 499, "MI"],
+        [500, 528, "IA"], [530, 549, "WI"], [550, 567, "MN"],
+        [570, 577, "SD"], [580, 588, "ND"], [590, 599, "MT"],
+        [600, 629, "IL"], [630, 658, "MO"], [660, 679, "KS"],
+        [680, 693, "NE"], [700, 714, "LA"], [716, 729, "AR"],
+        [730, 749, "OK"], [750, 799, "TX"], [800, 816, "CO"],
+        [820, 831, "WY"], [832, 838, "ID"], [840, 847, "UT"],
+        [850, 865, "AZ"], [870, 884, "NM"], [889, 898, "NV"],
+        [900, 966, "CA"], [967, 968, "HI"], [970, 979, "OR"],
+        [980, 994, "WA"], [995, 999, "AK"],
+        [1, 5, "MA"], [6, 9, "PR"], [10, 14, "NY"],
+        [15, 19, "PA"], [20, 27, "MA"], [28, 29, "RI"],
+        [30, 38, "NH"], [39, 49, "ME"], [50, 54, "VT"],
+    ];
+    for (const [min, max, state] of ZIP3_RANGES) {
+        lines.push(`    [${min}, ${max}, "${state}"],`);
+    }
+    lines.push(`];`);
+    lines.push(``);
+
+    // ── ZIP3 → MSA code for our tracked metros ──
+    lines.push(`/** ZIP3 prefix → MSA code for tracked metros */`);
+    lines.push(`const ZIP3_MSA: Record<string, string> = {`);
+    // Map ZIP3 → MSA for our tracked metros
+    const ZIP3_MSA_MAP: Record<string, string> = {
+        // New York
+        "100": "35620", "101": "35620", "102": "35620", "103": "35620", "104": "35620",
+        "110": "35620", "111": "35620", "112": "35620", "113": "35620", "114": "35620",
+        "070": "35620", "071": "35620", "072": "35620", "073": "35620", "074": "35620",
+        "075": "35620", "076": "35620", "077": "35620", "078": "35620", "079": "35620",
+        // Los Angeles
+        "900": "31080", "901": "31080", "902": "31080", "903": "31080", "904": "31080",
+        "905": "31080", "906": "31080", "907": "31080", "908": "31080",
+        "910": "31080", "911": "31080", "912": "31080", "913": "31080", "914": "31080",
+        "915": "31080", "916": "31080", "917": "31080", "918": "31080",
+        // San Francisco / Oakland / Berkeley
+        "940": "41860", "941": "41860", "942": "41860", "943": "41860", "944": "41860",
+        "945": "41860", "948": "41860",
+        // San Jose
+        "950": "41940", "951": "41940",
+        // San Diego
+        "919": "41740", "920": "41740", "921": "41740",
+        // Sacramento
+        "956": "40900", "957": "40900", "958": "40900",
+        // Riverside-San Bernardino
+        "922": "40140", "923": "40140", "924": "40140", "925": "40140", "926": "40140",
+        // Fresno
+        "936": "23420", "937": "23420",
+        // Stockton
+        "952": "44700", "953": "44700",
+        // Oxnard-Ventura
+        "930": "37100", "931": "37100",
+        // Chicago
+        "600": "16980", "601": "16980", "602": "16980", "603": "16980", "604": "16980",
+        "605": "16980", "606": "16980", "607": "16980", "608": "16980",
+        // Dallas-Fort Worth
+        "750": "19100", "751": "19100", "752": "19100", "753": "19100",
+        "760": "19100", "761": "19100", "762": "19100",
+        // Houston
+        "770": "26420", "771": "26420", "772": "26420", "773": "26420",
+        "774": "26420", "775": "26420", "776": "26420", "777": "26420",
+        // San Antonio
+        "780": "41700", "781": "41700", "782": "41700",
+        // Austin
+        "786": "12420", "787": "12420",
+        // El Paso
+        "798": "21340", "799": "21340",
+        // Corpus Christi
+        "783": "18580", "784": "18580",
+        // Lubbock
+        "793": "31180", "794": "31180",
+        // Brownsville
+        "785": "15180",
+        // Phoenix
+        "850": "38060", "851": "38060", "852": "38060", "853": "38060",
+        // Tucson
+        "856": "46060", "857": "46060",
+        // Philadelphia
+        "190": "37980", "191": "37980", "192": "37980", "193": "37980",
+        "080": "37980", "081": "37980", "082": "37980", "083": "37980",
+        // Pittsburgh
+        "150": "38300", "151": "38300", "152": "38300",
+        // Atlanta
+        "300": "12060", "301": "12060", "302": "12060", "303": "12060",
+        "309": "12060", "310": "12060", "311": "12060",
+        // Miami-Fort Lauderdale
+        "330": "33100", "331": "33100", "332": "33100", "333": "33100", "334": "33100",
+        // Tampa-St. Petersburg
+        "335": "45300", "336": "45300", "337": "45300", "338": "45300",
+        // Orlando
+        "327": "36740", "328": "36740", "347": "36740", "348": "36740",
+        // Jacksonville
+        "320": "27260", "321": "27260", "322": "27260",
+        // Cape Coral-Fort Myers
+        "339": "15980",
+        // Naples
+        "341": "34940",
+        // Seattle
+        "980": "42660", "981": "42660", "982": "42660", "983": "42660", "984": "42660",
+        // Portland
+        "970": "38900", "971": "38900", "972": "38900", "973": "38900",
+        // Denver
+        "800": "19740", "801": "19740", "802": "19740", "803": "19740", "804": "19740",
+        // Colorado Springs
+        "808": "17820", "809": "17820",
+        // Washington DC
+        "200": "47900", "201": "47900", "202": "47900", "203": "47900",
+        "204": "47900", "205": "47900", "206": "47900", "207": "47900",
+        "208": "47900", "209": "47900", "220": "47900", "221": "47900",
+        "222": "47900",
+        // Baltimore
+        "210": "12580", "211": "12580", "212": "12580",
+        // Boston
+        "021": "14460", "022": "14460", "023": "14460", "024": "14460",
+        // Minneapolis
+        "550": "33460", "551": "33460", "553": "33460", "554": "33460", "555": "33460",
+        // Detroit
+        "480": "19820", "481": "19820", "482": "19820", "483": "19820", "484": "19820",
+        // Nashville
+        "370": "34980", "371": "34980", "372": "34980",
+        // Charlotte
+        "280": "16740", "281": "16740", "282": "16740",
+        // Indianapolis
+        "460": "26900", "461": "26900", "462": "26900",
+        // Columbus
+        "430": "18140", "431": "18140", "432": "18140",
+        // Cleveland
+        "440": "17460", "441": "17460", "442": "17460",
+        // Cincinnati
+        "450": "17140", "451": "17140", "452": "17140",
+        // Kansas City
+        "640": "28140", "641": "28140", "660": "28140", "661": "28140", "662": "28140",
+        // St. Louis
+        "630": "41180", "631": "41180", "633": "41180",
+        // Salt Lake City
+        "840": "41620", "841": "41620", "842": "41620",
+        // Las Vegas
+        "889": "29820", "890": "29820", "891": "29820",
+        // Oklahoma City
+        "730": "36420", "731": "36420",
+        // Tulsa
+        "740": "46140", "741": "46140",
+        // Milwaukee
+        "530": "33340", "531": "33340", "532": "33340",
+        // Honolulu
+        "967": "26620", "968": "26620",
+        // Birmingham
+        "350": "13820", "351": "13820", "352": "13820",
+        // Memphis
+        "380": "32820", "381": "32820",
+        // Louisville
+        "400": "31140", "401": "31140", "402": "31140",
+        // Raleigh
+        "275": "39580", "276": "39580",
+        // Richmond
+        "230": "40060", "231": "40060", "232": "40060",
+        // Virginia Beach-Norfolk
+        "233": "47260", "234": "47260", "235": "47260", "236": "47260",
+        // Baton Rouge
+        "707": "12940", "708": "12940",
+        // New Orleans
+        "700": "35380", "701": "35380",
+        // Omaha
+        "680": "36540", "681": "36540",
+        // Albuquerque
+        "870": "10740", "871": "10740",
+        // Buffalo
+        "140": "15380", "141": "15380", "142": "15380", "143": "15380",
+        // Rochester NY
+        "144": "40380", "145": "40380", "146": "40380",
+        // Albany
+        "120": "10580", "121": "10580", "122": "10580",
+        // Hartford
+        "060": "25540", "061": "25540",
+        // New Haven
+        "064": "35300", "065": "35300",
+        // Bridgeport-Stamford
+        "066": "14860", "068": "14860", "069": "14860",
+        // Providence
+        "028": "39300", "029": "39300",
+        // Anchorage
+        "995": "11260",
+        // Boise
+        "836": "14260", "837": "14260",
+        // Grand Rapids
+        "493": "24340", "494": "24340", "495": "24340",
+        // Charleston SC
+        "294": "16700",
+        // Columbia SC
+        "290": "17900", "291": "17900",
+        // Greenville SC
+        "296": "24860",
+        // Chattanooga
+        "374": "16860",
+        // Knoxville
+        "377": "28940", "378": "28940", "379": "28940",
+        // Greensboro
+        "271": "24660", "272": "24660",
+        // Fayetteville NC
+        "283": "22180",
+        // Little Rock
+        "720": "30780", "721": "30780", "722": "30780",
+        // Lincoln NE
+        "683": "30700", "684": "30700", "685": "30700",
+        // Lexington KY
+        "403": "30460", "405": "30460",
+        // Wichita
+        "670": "48620", "671": "48620", "672": "48620",
+        // Akron
+        "443": "10420", "444": "10420",
+        // Dayton
+        "453": "19380", "454": "19380",
+        // Lancaster PA
+        "175": "30140", "176": "30140",
+        // Scranton
+        "184": "42540", "185": "42540", "186": "42540",
+        // Springfield MA
+        "010": "44140", "011": "44140",
+        // Worcester MA
+        "015": "49340", "016": "49340",
+    };
+    for (const [zip3, msa] of Object.entries(ZIP3_MSA_MAP).sort()) {
+        lines.push(`    "${zip3}": "${msa}",`);
+    }
+    lines.push(`};`);
+    lines.push(``);
+
+    // resolveZip function
+    lines.push(`/** Resolve a 5-digit ZIP code to state code and optional metro area */`);
+    lines.push(`export function resolveZip(zip: string): { state: string; metroId?: string; metro?: MetroWageData } | null {`);
+    lines.push(`    if (!zip || zip.length < 3) return null;`);
+    lines.push(`    const z3 = zip.slice(0, 3);`);
+    lines.push(`    const z3num = parseInt(z3, 10);`);
+    lines.push(`    if (isNaN(z3num)) return null;`);
+    lines.push(``);
+    lines.push(`    // Find state from ZIP3 ranges`);
+    lines.push(`    let state = "";`);
+    lines.push(`    for (const [min, max, st] of ZIP3_STATE) {`);
+    lines.push(`        if (z3num >= min && z3num <= max) { state = st; break; }`);
+    lines.push(`    }`);
+    lines.push(`    if (!state) return null;`);
+    lines.push(``);
+    lines.push(`    // Find metro from ZIP3 → MSA mapping`);
+    lines.push(`    const msaCode = ZIP3_MSA[z3];`);
+    lines.push(`    const metro = msaCode ? METRO_WAGES.find((m) => m.id === msaCode) : undefined;`);
+    lines.push(``);
+    lines.push(`    return { state, metroId: msaCode, metro };`);
+    lines.push(`}`);
+    lines.push(``);
+
+    return lines.join("\n");
+}
+
+
 async function main() {
     const census = await fetchAllCensusData();
     const output = generateMarketDataFile(census);
 
+    // Write marketing market-data.ts
     const outPath = path.resolve(__dirname, "../apps/marketing/lib/market-data.ts");
     fs.writeFileSync(outPath, output, "utf-8");
+
+    // Write dashboard metro-wages.ts
+    const metroWagesOutput = generateMetroWagesFile();
+    const metroWagesPath = path.resolve(__dirname, "../apps/dashboard/src/lib/metro-wages.ts");
+    fs.writeFileSync(metroWagesPath, metroWagesOutput, "utf-8");
 
     const msaCodes = Object.keys(MSA_DATA);
     const withIndustry = msaCodes.filter(c => census.officesByMSA[c] || census.medicalByMSA[c] || census.schoolsByMSA[c]);
@@ -501,6 +856,9 @@ async function main() {
     console.log(`   ${Object.keys(census.janitorialByState).length} states (janitorial)`);
     console.log(`   ${withIndustry.length}/${msaCodes.length} metros with industry data`);
     console.log(`   ${Object.keys(CITY_MSA).length} city mappings`);
+    console.log(`\n✅ Written to ${metroWagesPath}`);
+    console.log(`   ${msaCodes.length} metros with BLS wage data`);
 }
 
 main().catch(console.error);
+

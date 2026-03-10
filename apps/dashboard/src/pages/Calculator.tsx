@@ -13,6 +13,9 @@ import {
     DEFAULT_INPUTS,
     calculate,
     getStateDefaults,
+    getMetrosForState,
+    getMetroDefaults,
+    resolveZip,
     ROOM_TYPES,
     getDefaultRooms,
     ROOM_AREA_RATIOS,
@@ -40,6 +43,8 @@ export default function Calculator() {
     // Calculator state
     const [inputs, setInputs] = useState<CalculatorInputs>({ ...DEFAULT_INPUTS });
     const [selectedState, setSelectedState] = useState("");
+    const [selectedMetro, setSelectedMetro] = useState("");
+    const [zipCode, setZipCode] = useState("");
     const [roomScopes, setRoomScopes] = useState<RoomScope[]>(() => getDefaultRooms("office", DEFAULT_INPUTS.sqft));
     const [priceOverride, setPriceOverride] = useState<number | null>(null);
     const [showAddRoom, setShowAddRoom] = useState(false);
@@ -251,11 +256,34 @@ export default function Calculator() {
 
     const handleStateChange = (stateCode: string) => {
         setSelectedState(stateCode);
+        setSelectedMetro("");
         if (stateCode) {
             const defaults = getStateDefaults(stateCode);
             if (defaults) update(defaults);
         }
     };
+
+    const handleMetroChange = (metroId: string) => {
+        setSelectedMetro(metroId);
+        if (metroId) {
+            const defaults = getMetroDefaults(metroId);
+            if (defaults) update(defaults);
+        }
+    };
+
+    const handleZipChange = (zip: string) => {
+        const cleaned = zip.replace(/\D/g, "").slice(0, 5);
+        setZipCode(cleaned);
+        if (cleaned.length >= 3) {
+            const result = resolveZip(cleaned);
+            if (result) {
+                if (result.state !== selectedState) handleStateChange(result.state);
+                if (result.metroId && result.metroId !== selectedMetro) handleMetroChange(result.metroId);
+            }
+        }
+    };
+
+    const availableMetros = selectedState ? getMetrosForState(selectedState) : [];
 
     // Re-seed rooms when building type changes
     const handleBuildingTypeChange = (buildingTypeId: string) => {
@@ -833,13 +861,37 @@ export default function Calculator() {
                             </summary>
                             <div className="calc-financials-body">
                                 <div className="form-group">
-                                    <label>State (auto-fills recommended rates)</label>
-                                    <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
-                                        <option value="">— Select state —</option>
-                                        {STATES.map((s) => (
-                                            <option key={s.code} value={s.code}>{s.name}</option>
-                                        ))}
-                                    </select>
+                                    <label>ZIP Code (auto-fills local wage rates)</label>
+                                    <input
+                                        type="text"
+                                        value={zipCode}
+                                        onChange={(e) => handleZipChange(e.target.value)}
+                                        placeholder="e.g. 75001"
+                                        maxLength={5}
+                                        inputMode="numeric"
+                                    />
+                                </div>
+                                <div className="calc-financials-grid">
+                                    <div className="form-group">
+                                        <label>State</label>
+                                        <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
+                                            <option value="">— Select state —</option>
+                                            {STATES.map((s) => (
+                                                <option key={s.code} value={s.code}>{s.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {availableMetros.length > 0 && (
+                                        <div className="form-group">
+                                            <label>Metro Area</label>
+                                            <select value={selectedMetro} onChange={(e) => handleMetroChange(e.target.value)}>
+                                                <option value="">— Select metro —</option>
+                                                {availableMetros.map((m) => (
+                                                    <option key={m.id} value={m.id}>{m.name} — ${m.medianWage.toFixed(2)}/hr</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="calc-financials-grid">
                                     <div className="form-group">
