@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Navbar from "../../components/Navbar";
+import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 
 /* ── Embedded data (BLS tax + overhead rates) ── */
 const PAYROLL_TAX = 0.0765;          // FICA (Social Security 6.2% + Medicare 1.45%)
@@ -60,6 +61,13 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
             cleaningsPerMonth,
         };
     }, [sqft, pricePerSqFt, frequency, laborRate, productionRate, overheadPct]);
+
+    /* Track tool usage when user interacts (debounced via dependency) */
+    useEffect(() => {
+        if (calc.monthlyRevenue > 0) {
+            trackToolUsed("profit_calculator", { sqft, monthly_profit: Math.round(calc.profit) });
+        }
+    }, [calc.monthlyRevenue]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const fmt = (v: number) => v.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
@@ -230,8 +238,8 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
                         Our full calculator breaks down bids by room, task, and frequency — with BLS metro-specific wages for your area.
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary">Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary">View Plans</a>
+                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "profit_calculator")}>Try Full Calculator →</a>
+                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "profit_calculator")}>View Plans</a>
                     </div>
                 </div>
             </section>

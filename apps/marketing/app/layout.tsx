@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Outfit, DM_Sans } from "next/font/google";
+import CtaTracker from "./components/CtaTracker";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -81,8 +82,10 @@ export default function RootLayout({
         />
       </head>
       <body className={`${outfit.variable} ${dmSans.variable}`}>
+        <CtaTracker />
         {children}
       </body>
     </html>
   );
 }
+

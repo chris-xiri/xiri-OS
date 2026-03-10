@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 import Navbar from "../../components/Navbar";
 
 /* ── Federal & state employer cost data (government sources) ── */
@@ -185,8 +186,8 @@ export default function EmployeeCostTool({ faqs }: { faqs?: { q: string; a: stri
                     <h2>Use this in your <span style={{ color: "#00d4aa" }}>bid calculations</span></h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>xiriOS automatically factors in payroll taxes and overhead when calculating your bid price.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary">Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary">View Plans</a>
+                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "employee_cost")}>Try Full Calculator →</a>
+                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "employee_cost")}>View Plans</a>
                     </div>
                 </div>
             </section>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 import Navbar from "../../components/Navbar";
 
 /* ── ISSA 612 production rates by area type (sq ft per hour) ── */
@@ -169,8 +170,8 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
                     <h2>Need a <span style={{ color: "#00d4aa" }}>full bid</span> with room-by-room scope?</h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>Our full calculator lets you break buildings into individual rooms, each with custom tasks and frequencies.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary">Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary">View Plans</a>
+                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "time_estimator")}>Try Full Calculator →</a>
+                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "time_estimator")}>View Plans</a>
                     </div>
                 </div>
             </section>

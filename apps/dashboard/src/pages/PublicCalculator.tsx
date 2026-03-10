@@ -21,6 +21,7 @@ import {
     type CustomTask,
     type SupplyPolicy,
 } from "../lib/calculator";
+import { trackCalculatorUsed, trackCtaClicked } from "../lib/analytics";
 import "./Calculator.css";
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -54,6 +55,8 @@ export default function PublicCalculator() {
     };
 
     const handleBuildingTypeChange = (id: string) => {
+        const bt = BUILDING_TYPES.find((b) => b.id === id);
+        trackCalculatorUsed(bt?.name || id, inputs.sqft);
         update({ buildingTypeId: id });
         setRoomScopes(getDefaultRooms(id, inputs.sqft));
     };
@@ -700,6 +703,7 @@ export default function PublicCalculator() {
                                 try {
                                     localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
                                 } catch { /* localStorage full or unavailable — proceed anyway */ }
+                                trackCtaClicked("Save Bid — Start Free Trial", "public_calculator");
                                 (window.top || window).location.href = "/app/login?mode=signup";
                             }}
                         >

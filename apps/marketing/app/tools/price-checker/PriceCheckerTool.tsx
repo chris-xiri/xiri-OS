@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 import Navbar from "../../components/Navbar";
 
 /* ── BLS metro median janitor wages — sourced from OEWS May 2024 ── */
@@ -217,8 +218,8 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
                     <h2>Build a <span style={{ color: "#00d4aa" }}>detailed bid</span> for this building</h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>Our full calculator uses room-by-room scope, per-task frequencies, and BLS metro wages to build accurate bids.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary">Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary">View Plans</a>
+                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "price_checker")}>Try Full Calculator →</a>
+                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "price_checker")}>View Plans</a>
                     </div>
                 </div>
             </section>
