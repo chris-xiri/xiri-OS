@@ -105,7 +105,7 @@ export default function Home() {
                 </svg>
               </a>
               <a href="/calculator" className="btn btn-secondary" style={{ fontSize: "1.0625rem", padding: "1rem 2.25rem" }}>
-                Try Free Calculator
+                Try Free Bid Calculator
               </a>
             </div>
 
@@ -371,7 +371,7 @@ export default function Home() {
               padding: "1rem 2.5rem",
             }}
           >
-            Try the Free Calculator
+            Try the Free Cleaning Bid Calculator
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -454,7 +454,7 @@ export default function Home() {
             <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
               <a href="/blog" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Blog</a>
               <a href="/blog/how-to-price-janitorial-cleaning" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Pricing Guide</a>
-              <a href="/calculator" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Free Calculator</a>
+              <a href="/calculator" style={{ color: "#8b92b3", textDecoration: "none", fontSize: "0.9375rem" }}>Free Bid Calculator</a>
             </div>
           </div>
         </div>

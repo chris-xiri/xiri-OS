@@ -66,7 +66,7 @@ export const BLOG_POSTS: BlogPost[] = [
             {
                 heading: "Use a Calculator to Price Your Next Bid",
                 body: "The fastest way to get an accurate janitorial bid is to use a purpose-built calculator that factors in building type, square footage, cleaning frequency, labor rates, and overhead — automatically.\n\nxiriOS offers a free janitorial bid calculator that uses ISSA production rates and lets you customize every variable. No sign-up required.",
-                cta: { text: "Try the Free Calculator →", href: "/calculator" },
+                cta: { text: "Try the Free Janitorial Bid Calculator →", href: "/calculator" },
             },
             {
                 heading: "Starting a Cleaning Business?",
@@ -383,7 +383,7 @@ export const BLOG_POSTS: BlogPost[] = [
             {
                 heading: "Step 3: Set Data-Backed Pricing",
                 body: 'This is where most new cleaning businesses fail. They guess at pricing, underbid, and can\'t pay their bills. Instead, use data.\n\nThe Bureau of Labor Statistics publishes median hourly wages for janitors by metro area. If you\'re in Dallas, the median is $15.36/hr. Your <strong>fully-loaded labor cost</strong> includes:\n\n• Base wage: $15.36/hr\n• FICA (7.65%): $1.17/hr\n• Workers\' Comp (~3.7%): $0.57/hr\n• SUTA (~2.5%): $0.38/hr\n• <strong>Total loaded cost: ~$17.48/hr</strong>\n\nThen apply ISSA 612 Cleaning Times to estimate how long each building takes. A standard 10,000 sqft office takes roughly 3.5 labor hours per cleaning. At 5x/week, that\'s 17.5 hours.\n\n17.5 hrs × $17.48 loaded cost = $305.90/week in labor\nAdd overhead (12%) and profit (15%): <strong>~$391/week or ~$1,695/month</strong>\n\nThis is the scientific method. Our free calculator does this math automatically using your local BLS data.',
-                cta: { text: "Try the Free Calculator →", href: "/calculator" },
+                cta: { text: "Try the Free Cleaning Estimate Calculator →", href: "/calculator" },
             },
             {
                 heading: "Step 4: Find Your First Clients",
@@ -470,7 +470,7 @@ export const BLOG_POSTS: BlogPost[] = [
             {
                 heading: "Week 3: Pricing and Proposals",
                 body: "<strong>☐ Research local wage data</strong> — Use our calculator or check BLS.gov for median janitor wages in your metro. This determines your pricing.\n\n<strong>☐ Calculate your loaded labor rate</strong> — Base wage + FICA (7.65%) + Workers' Comp (~3.7%) + SUTA (~2.5%) + benefits. Typically 1.2–1.3x the base wage.\n\n<strong>☐ Learn ISSA production rates</strong> — These industry-standard times tell you how long each cleaning task takes per 1,000 sqft. Essential for accurate bidding.\n\n<strong>☐ Create your proposal template</strong> — A branded PDF with your company name, scope of work, frequency, pricing, and terms. First impressions matter.\n\n<strong>☐ Price 3 practice buildings</strong> — Walk through buildings you know (your office, a friend's office, a church) and create practice bids. Get comfortable with the process.",
-                cta: { text: "Try the Free Calculator →", href: "/calculator" },
+                cta: { text: "Try the Free Bid Calculator →", href: "/calculator" },
             },
             {
                 heading: "Week 4: Get Your First Client",

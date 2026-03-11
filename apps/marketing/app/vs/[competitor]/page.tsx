@@ -128,7 +128,7 @@ export default async function CompetitorPage({
                                     padding: "1rem 2.25rem",
                                 }}
                             >
-                                Try Free Calculator
+                                Try Free Bid Calculator
                             </a>
                         </div>
 
@@ -427,7 +427,7 @@ export default async function CompetitorPage({
                                 padding: "1rem 2.5rem",
                             }}
                         >
-                            Try the Free Calculator
+                            Try the Free Cleaning Bid Calculator
                         </a>
                     </div>
                 </div>
