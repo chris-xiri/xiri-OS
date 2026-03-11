@@ -368,6 +368,68 @@ export default async function CityServicePage({
                 </section>
             )}
 
+            {/* Startup guide cross-link */}
+            <section
+                className="section"
+                style={{
+                    background: "linear-gradient(135deg, rgba(245,166,35,0.06), rgba(0,212,170,0.04)), #0c0f1a",
+                    borderTop: "1px solid rgba(245,166,35,0.12)",
+                    borderBottom: "1px solid rgba(245,166,35,0.12)",
+                }}
+            >
+                <div
+                    className="section-inner"
+                    style={{
+                        maxWidth: "640px",
+                        margin: "0 auto",
+                        textAlign: "center",
+                    }}
+                >
+                    <span
+                        style={{
+                            fontSize: "0.6875rem",
+                            fontWeight: 700,
+                            textTransform: "uppercase",
+                            letterSpacing: "0.08em",
+                            color: "#f5a623",
+                            background: "rgba(245,166,35,0.1)",
+                            padding: "0.25rem 0.75rem",
+                            borderRadius: "100px",
+                        }}
+                    >
+                        Startup Guide
+                    </span>
+                    <h2 style={{ marginTop: "1rem" }}>
+                        Starting a cleaning business in{" "}
+                        <span style={{ color: "#f5a623" }}>{city.name}</span>?
+                    </h2>
+                    <p
+                        style={{
+                            color: "#c4c9e0",
+                            fontSize: "1rem",
+                            lineHeight: 1.7,
+                            margin: "0.75rem auto 1.5rem",
+                            maxWidth: "520px",
+                        }}
+                    >
+                        Our free step-by-step guide covers LLC setup, insurance,
+                        data-backed pricing, and finding your first clients — all with{" "}
+                        {city.state} market data.
+                    </p>
+                    <a
+                        href={`/start-cleaning-business/${city.slug}`}
+                        className="btn btn-primary"
+                        style={{
+                            fontSize: "0.9375rem",
+                            padding: "0.75rem 2rem",
+                            background: "linear-gradient(135deg, #f5a623, #e08e10)",
+                        }}
+                    >
+                        Read the {city.name} Startup Guide →
+                    </a>
+                </div>
+            </section>
+
             {/* Bottom CTA */}
             <section
                 className="section"

@@ -50,4 +50,16 @@ export function trackCalcSaveBid(sqft: number, monthlyPrice: number) {
     track("calc_save_bid", { sqft, monthly_price: monthlyPrice });
 }
 
+/* ── Startup Content Events ── */
+
+/** pSEO startup guide page viewed */
+export function trackStartupGuideViewed(city: string) {
+    track("startup_guide_viewed", { city, content_group: "startup" });
+}
+
+/** Blog post viewed */
+export function trackBlogViewed(slug: string, category: string) {
+    track("blog_viewed", { slug, category, content_group: category.toLowerCase() });
+}
+
 export default track;

@@ -68,6 +68,11 @@ export const BLOG_POSTS: BlogPost[] = [
                 body: "The fastest way to get an accurate janitorial bid is to use a purpose-built calculator that factors in building type, square footage, cleaning frequency, labor rates, and overhead — automatically.\n\nxiriOS offers a free janitorial bid calculator that uses ISSA production rates and lets you customize every variable. No sign-up required.",
                 cta: { text: "Try the Free Calculator →", href: "/calculator" },
             },
+            {
+                heading: "Starting a Cleaning Business?",
+                body: "If you're just getting started, check out our complete startup guide. It covers LLC registration, insurance, data-backed pricing, finding your first clients, and scaling from solo operator to team — with BLS wage data for your specific city.\n\nWe also have a detailed cost breakdown and a 30-day launch checklist.",
+                cta: { text: "Read the Complete Startup Guide →", href: "/blog/how-to-start-a-cleaning-business" },
+            },
         ],
     },
     {
@@ -287,6 +292,11 @@ export const BLOG_POSTS: BlogPost[] = [
                 body: "Use our free employee cost calculator to see the real number. Select your state for the correct SUTA rate, input the hourly wage and hours per week, and optionally add health insurance. Every rate cites its government source.\n\nBuilt on SSA, IRS, DOL, BLS, and NCCI data.",
                 cta: { text: "Try the Employee Cost Calculator →", href: "/tools/employee-cost" },
             },
+            {
+                heading: "Planning to Start a Cleaning Business?",
+                body: "Knowing your true employee costs is step one. Our complete startup guide walks you through everything from registering your LLC to landing your first commercial contract — including how to use loaded labor rates to price profitably from day one.",
+                cta: { text: "Read the Startup Cost Breakdown →", href: "/blog/cost-to-start-cleaning-business" },
+            },
         ],
     },
     {
@@ -329,6 +339,147 @@ export const BLOG_POSTS: BlogPost[] = [
                 heading: "Check Prices in Your Market",
                 body: "Use our free price checker tool to see cleaning prices for your metro area. Select from 40 U.S. metros, enter your building size and cleaning frequency, and see budget/standard/premium price ranges — all based on BLS OEWS wage data.\n\nNo login required. Government-sourced data.",
                 cta: { text: "Try the Price Checker →", href: "/tools/price-checker" },
+            },
+            {
+                heading: "Starting a Cleaning Business in Your City?",
+                body: "We've built city-specific startup guides for 188 U.S. cities. Each guide includes local wage data, step-by-step instructions for LLC setup and insurance, and tips for landing your first accounts — all backed by BLS market data for your area.",
+                cta: { text: "Find Your City's Startup Guide →", href: "/start-cleaning-business" },
+            },
+        ],
+    },
+
+    /* ─── Startup series ─── */
+    {
+        slug: "how-to-start-a-cleaning-business",
+        title: "How to Start a Cleaning Business in 2026: Complete Guide",
+        metaTitle: "How to Start a Cleaning Business in 2026 (Step-by-Step) | xiriOS",
+        metaDescription:
+            "Step-by-step guide to starting a cleaning business in 2026. LLC setup, insurance, pricing with ISSA rates, finding clients, and scaling from solo to team.",
+        publishedAt: "2026-03-10",
+        updatedAt: "2026-03-10",
+        readTime: "12 min read",
+        category: "Startup",
+        excerpt:
+            "Everything you need to launch a profitable cleaning company — from registering your LLC to landing your first commercial contract. Based on BLS data and ISSA standards.",
+        keywords: [
+            "how to start a cleaning business",
+            "start a janitorial company",
+            "cleaning business startup guide",
+            "start cleaning business 2026",
+        ],
+        sections: [
+            {
+                heading: "Why Start a Cleaning Business in 2026?",
+                body: 'The commercial cleaning industry generates over $90 billion annually in the U.S. — and it\'s growing. With low startup costs ($2K–$10K), recurring revenue, and no formal degree requirements, a cleaning business is one of the most accessible routes to entrepreneurship.\n\nUnlike tech startups, cleaning companies generate revenue from day one. Your first contract can cover your initial investment within weeks. The Bureau of Labor Statistics projects 6% job growth for janitors and cleaners through 2032, faster than the national average.\n\nBetter yet, commercial cleaning clients pay monthly and renew annually. One 10,000 sqft office building cleaned 5x/week can generate $3,000–$5,000/month — that\'s $36,000–$60,000/year from a single account.',
+            },
+            {
+                heading: "Step 1: Choose Your Niche and Register Your Business",
+                body: 'Before you buy a single mop, decide what you\'re cleaning. The two main paths:\n\n<strong>Residential Cleaning</strong>: Homes, apartments, move-in/out cleaning. Lower ticket sizes ($100–$300/visit) but easier to start.\n\n<strong>Commercial/Janitorial</strong>: Offices, medical facilities, schools, warehouses. Higher ticket ($2,000–$10,000+/mo) and recurring contracts.\n\nMost successful cleaning businesses start commercial or transition quickly. For registration:\n\n• File an <strong>LLC</strong> through your state\'s Secretary of State ($50–$500)\n• Get a free <strong>EIN</strong> from the IRS (irs.gov/ein)\n• Obtain a local <strong>business license</strong> from city hall\n• Open a business bank account (separates personal/business finances)\n\nThe whole process takes 1–2 weeks and can be done entirely online in most states.',
+            },
+            {
+                heading: "Step 2: Get Insurance and Bonding",
+                body: 'No property manager will hire an uninsured cleaning company. The basics:\n\n<strong>General Liability Insurance</strong>: Covers damages and accidents on client property. Expect $500–$1,200/year for a small operation.\n\n<strong>Workers\' Compensation</strong>: Required in most states once you hire employees. NCCI class code 9014 (Janitorial Services) averages 3.7% of payroll.\n\n<strong>Surety Bond</strong>: Some commercial contracts require a janitorial bond ($100–$500/year). This ensures you\'ll fulfill your contract.\n\n<strong>Commercial Auto Insurance</strong>: Required if you\'re using a vehicle for business. Typical cost: $1,200–$2,500/year.\n\nGet quotes from multiple providers. Many agencies specialize in cleaning company insurance and can bundle policies.',
+            },
+            {
+                heading: "Step 3: Set Data-Backed Pricing",
+                body: 'This is where most new cleaning businesses fail. They guess at pricing, underbid, and can\'t pay their bills. Instead, use data.\n\nThe Bureau of Labor Statistics publishes median hourly wages for janitors by metro area. If you\'re in Dallas, the median is $15.36/hr. Your <strong>fully-loaded labor cost</strong> includes:\n\n• Base wage: $15.36/hr\n• FICA (7.65%): $1.17/hr\n• Workers\' Comp (~3.7%): $0.57/hr\n• SUTA (~2.5%): $0.38/hr\n• <strong>Total loaded cost: ~$17.48/hr</strong>\n\nThen apply ISSA 612 Cleaning Times to estimate how long each building takes. A standard 10,000 sqft office takes roughly 3.5 labor hours per cleaning. At 5x/week, that\'s 17.5 hours.\n\n17.5 hrs × $17.48 loaded cost = $305.90/week in labor\nAdd overhead (12%) and profit (15%): <strong>~$391/week or ~$1,695/month</strong>\n\nThis is the scientific method. Our free calculator does this math automatically using your local BLS data.',
+                cta: { text: "Try the Free Calculator →", href: "/calculator" },
+            },
+            {
+                heading: "Step 4: Find Your First Clients",
+                body: "Your first 3 clients are the hardest — and the most important. Here's where to look:\n\n<strong>Property Management Companies</strong>: Google \"[your city] commercial property management\" and call the top 20. They always need cleaning vendors.\n\n<strong>Small Professional Offices</strong>: Dentists, law firms, real estate offices, accounting firms. They often use whoever knocks on the door with a professional proposal.\n\n<strong>Your Network</strong>: Tell everyone you know. Ask for introductions to office managers.\n\n<strong>Google Business Profile</strong>: Set this up immediately (free). It's the #1 way local businesses find cleaning services.\n\n<strong>Cold Email/Door-to-Door</strong>: Walk into offices with a one-page flyer offering a free walk-through and estimate.\n\nThe key: show up with a <strong>professional, data-backed proposal</strong> — not a handwritten quote on a napkin. Price based on the building's actual square footage and cleaning requirements.",
+            },
+            {
+                heading: "Step 5: Scale from Solo Operator to Team",
+                body: "Once you have 4–5 accounts, you physically can't do it all yourself. That's the inflection point.\n\n<strong>Hiring</strong>: Pay at or $1–2 above the local median wage. In most metros that's $14–18/hr. Better pay = less turnover = happier clients.\n\n<strong>Scheduling</strong>: Route your cleaners efficiently. A poorly scheduled crew wastes hours in transit.\n\n<strong>Quality Control</strong>: Inspect every building monthly. Use a photo-documented checklist.\n\n<strong>Bidding</strong>: With your first accounts running profitably, you now have data. You know your actual labor costs, your overhead percentage, and your profit margins. Use this to bid the next 10 accounts confidently.\n\nThe math is simple: each additional $3,000/month contract with 15% margins adds $450/month to your bottom line. Ten contracts = $4,500/month in profit. That's a six-figure business.\n\nTools like xiriOS automate the bidding, proposals, scheduling, and CRM — so you can focus on growing instead of paperwork.",
+                cta: { text: "Start Your Cleaning Business Free →", href: "/app/login?mode=signup" },
+            },
+        ],
+    },
+    {
+        slug: "cost-to-start-cleaning-business",
+        title: "How Much Does It Cost to Start a Cleaning Business?",
+        metaTitle: "Cleaning Business Startup Costs: Complete Breakdown (2026) | xiriOS",
+        metaDescription:
+            "Detailed cost breakdown for starting a cleaning business. Budget scenarios at $2K, $5K, and $10K with line-item details for equipment, insurance, licensing, and marketing.",
+        publishedAt: "2026-03-10",
+        updatedAt: "2026-03-10",
+        readTime: "8 min read",
+        category: "Startup",
+        excerpt:
+            "Realistic startup cost breakdown with three budget scenarios. Know exactly what you'll spend on LLC, insurance, equipment, and marketing before investing a dollar.",
+        keywords: [
+            "cost to start cleaning business",
+            "cleaning business startup costs",
+            "how much to start a cleaning company",
+            "janitorial business startup budget",
+        ],
+        sections: [
+            {
+                heading: "The Real Cost (Not the Guru Version)",
+                body: "Every YouTube guru says you can start a cleaning business for $200. Let's be honest: you can technically start with a bucket and some rags, but you won't land professional clients that way.\n\nThe real answer depends on whether you're doing residential or commercial cleaning, and how fast you want to grow. Here are three realistic scenarios based on conversations with hundreds of cleaning company owners.",
+            },
+            {
+                heading: "Scenario 1: The Lean Start ($2,000–$3,000)",
+                body: "This is the solo residential operator. You're cleaning homes, Airbnbs, and small offices yourself.\n\n<strong>Business Registration</strong>\n• LLC filing: $50–$150 (varies by state)\n• EIN: Free (IRS.gov)\n• Local business license: $25–$100\n<strong>Subtotal: $75–$250</strong>\n\n<strong>Insurance</strong>\n• General liability (first year): $500–$800\n• Workers' comp: Not needed yet (solo)\n<strong>Subtotal: $500–$800</strong>\n\n<strong>Equipment</strong>\n• Vacuum cleaner: $150–$250\n• Mop and bucket system: $40–$60\n• Cleaning chemicals (starter kit): $80–$120\n• Microfiber cloths, dusters, spray bottles: $40–$60\n• Carrying caddy/bag: $20–$30\n<strong>Subtotal: $330–$520</strong>\n\n<strong>Marketing</strong>\n• Google Business Profile: Free\n• Business cards (500): $20–$40\n• Flyers (200): $30–$60\n• Basic website (DIY): $0–$100/year\n<strong>Subtotal: $50–$200</strong>\n\n<strong>Total: $955–$1,770</strong> (round to ~$2,000 with a small buffer for gas and unexpected costs)",
+            },
+            {
+                heading: "Scenario 2: The Commercial Starter ($5,000–$7,000)",
+                body: "This is the operator targeting small commercial accounts — offices, clinics, small retail. You plan to hire within 2–3 months.\n\n<strong>Business Registration</strong>\n• LLC filing: $50–$500\n• EIN: Free\n• Local business license: $25–$100\n• DBA (if needed): $10–$50\n<strong>Subtotal: $85–$650</strong>\n\n<strong>Insurance</strong>\n• General liability: $800–$1,200\n• Workers' comp (first quarter): $300–$600\n• Surety bond (janitorial): $100–$300\n<strong>Subtotal: $1,200–$2,100</strong>\n\n<strong>Equipment</strong>\n• Commercial upright vacuum: $250–$400\n• Backpack vacuum: $200–$350\n• Mop/bucket w/ wringer: $50–$80\n• Commercial chemicals (case lots): $150–$250\n• Microfiber system: $60–$100\n• PPE (gloves, goggles): $30–$50\n• Signage for vehicle: $100–$300\n<strong>Subtotal: $840–$1,530</strong>\n\n<strong>Marketing & Software</strong>\n• Business cards + brochures: $50–$100\n• Website: $0–$200\n• CRM/bidding software: $0–$50/mo\n• First month advertising: $200–$500\n<strong>Subtotal: $250–$850</strong>\n\n<strong>Total: $2,375–$5,130</strong> (round to ~$5,000–$7,000 with operating buffer)",
+                cta: { text: "Calculate Your Employee Costs →", href: "/tools/employee-cost-estimator" },
+            },
+            {
+                heading: "Scenario 3: The Serious Operator ($8,000–$12,000)",
+                body: "This is the ambitious founder going straight to commercial with 2–3 employees, professional branding, and a vehicle.\n\nEverything in Scenario 2, plus:\n\n<strong>Additional Equipment</strong>\n• Floor machine/burnisher: $500–$1,200\n• Carpet extractor (portable): $400–$800\n• Restroom cleaning cart: $150–$300\n• Uniform shirts (5): $75–$150\n<strong>Subtotal: $1,125–$2,450</strong>\n\n<strong>Vehicle</strong>\n• Used cargo van or truck: $3,000–$5,000 (or use personal vehicle + wrap)\n• Vehicle wrap: $500–$2,000\n<strong>Subtotal: $3,500–$7,000</strong>\n\n<strong>Additional Insurance</strong>\n• Commercial auto: $1,200–$2,500/year\n<strong>Subtotal: $1,200–$2,500</strong>\n\n<strong>Total: $8,200–$17,080</strong> (the vehicle is the biggest variable — skip it if you already have one)\n\nRemember: these are startup costs. Your ongoing monthly costs (labor, supplies, insurance) are covered by client revenue. A single 15,000 sqft office contract at $4,000/month covers most ongoing expenses.",
+            },
+            {
+                heading: "The Cost Most People Forget: Your Time",
+                body: "The biggest expense isn't cash — it's the hours you spend guessing at pricing, creating proposals in Word, tracking leads in a spreadsheet, and manually scheduling crews.\n\nBuilding a $5,000/month proposal from scratch takes 2–3 hours. Using a calculator with ISSA production rates takes 5 minutes. Multiply that across 20 proposals/month, and you're saving 40+ hours.\n\nxiriOS gives you the calculator, proposal generator, CRM, and scheduling built specifically for janitorial businesses. Start free and upgrade when you grow.",
+                cta: { text: "Start Your Cleaning Business Free →", href: "/app/login?mode=signup" },
+            },
+        ],
+    },
+    {
+        slug: "cleaning-business-startup-checklist",
+        title: "Cleaning Business Startup Checklist: Launch in 30 Days",
+        metaTitle: "Cleaning Business Startup Checklist (30-Day Launch Plan) | xiriOS",
+        metaDescription:
+            "Actionable 30-day checklist to start a cleaning business. Week-by-week tasks: registration, insurance, equipment, pricing, first clients. Free printable checklist.",
+        publishedAt: "2026-03-10",
+        updatedAt: "2026-03-10",
+        readTime: "6 min read",
+        category: "Startup",
+        excerpt:
+            "A week-by-week action plan to go from zero to cleaning clients in 30 days. Registration, insurance, equipment, pricing, and your first proposal.",
+        keywords: [
+            "cleaning business checklist",
+            "cleaning business startup checklist",
+            "start cleaning company checklist",
+            "30 day cleaning business plan",
+        ],
+        sections: [
+            {
+                heading: "Week 1: Legal Foundation",
+                body: "Get the paperwork out of the way first so you can operate legally from day one.\n\n<strong>☐ Choose your business name</strong> — Check your state's Secretary of State website for availability. Keep it professional: \"[City] Commercial Cleaning\" or \"[Your Name] Janitorial Services.\"\n\n<strong>☐ File your LLC</strong> — Go to your state's Secretary of State website. Cost: $50–$500. Processing: 1–7 business days. An LLC protects your personal assets.\n\n<strong>☐ Get your EIN</strong> — Free from IRS.gov. Takes 5 minutes online. You need this for bank accounts, taxes, and hiring.\n\n<strong>☐ Open a business bank account</strong> — Bring your LLC papers and EIN. Separate business and personal finances from day one.\n\n<strong>☐ Get a local business license</strong> — Check your city/county website. Typically $25–$100/year.",
+            },
+            {
+                heading: "Week 2: Insurance and Setup",
+                body: "<strong>☐ Get General Liability insurance</strong> — Contact 3+ agents for quotes. $500–$1,200/year. You need this before you step foot in a client's building.\n\n<strong>☐ Get Workers' Comp quotes</strong> — Even if you're not hiring yet, know the cost. NCCI code 9014. Average: 3.7% of payroll.\n\n<strong>☐ Buy essential equipment</strong> — Start with the basics: commercial vacuum, mop/bucket, chemicals, microfiber cloths, PPE. Budget: $500–$1,500.\n\n<strong>☐ Set up Google Business Profile</strong> — This is free and it's the #1 way local businesses find cleaning services. Add photos of your equipment, your face, and your service area.\n\n<strong>☐ Create a simple website</strong> — Even a single page with your name, services, service area, and a contact form. Can be free with Google Sites or under $20/month with Squarespace.\n\n<strong>☐ Set up your CRM</strong> — Even a free tool works. Track every lead, every proposal, every follow-up. Don't rely on memory.",
+                cta: { text: "Get Free CRM + Calculator →", href: "/app/login?mode=signup" },
+            },
+            {
+                heading: "Week 3: Pricing and Proposals",
+                body: "<strong>☐ Research local wage data</strong> — Use our calculator or check BLS.gov for median janitor wages in your metro. This determines your pricing.\n\n<strong>☐ Calculate your loaded labor rate</strong> — Base wage + FICA (7.65%) + Workers' Comp (~3.7%) + SUTA (~2.5%) + benefits. Typically 1.2–1.3x the base wage.\n\n<strong>☐ Learn ISSA production rates</strong> — These industry-standard times tell you how long each cleaning task takes per 1,000 sqft. Essential for accurate bidding.\n\n<strong>☐ Create your proposal template</strong> — A branded PDF with your company name, scope of work, frequency, pricing, and terms. First impressions matter.\n\n<strong>☐ Price 3 practice buildings</strong> — Walk through buildings you know (your office, a friend's office, a church) and create practice bids. Get comfortable with the process.",
+                cta: { text: "Try the Free Calculator →", href: "/calculator" },
+            },
+            {
+                heading: "Week 4: Get Your First Client",
+                body: "<strong>☐ Make a prospect list of 50 targets</strong> — Search Google Maps for offices, clinics, churches, and property managers in your area. Write down the business name, address, and phone.\n\n<strong>☐ Cold call or visit 10 prospects per day</strong> — Ask to speak with the office manager. Offer a free walk-through and estimate. Professional, not pushy.\n\n<strong>☐ Email 20 property management companies</strong> — Subject line: \"Janitorial vendor for [City] properties — insured, bonded, data-backed pricing.\" Attach your insurance certificate.\n\n<strong>☐ Post in local Facebook groups</strong> — Business networking groups, property management groups, neighborhood groups. Offer a free first cleaning or discounted first month.\n\n<strong>☐ Do 2–3 free walk-throughs</strong> — Measure the square footage, count restrooms, note special requirements. Deliver a professional proposal within 24 hours.\n\n<strong>☐ Close your first contract</strong> — Follow up within 48 hours. If they say the price is too high, explain your data: \"This price is based on ISSA production rates and local BLS wage data — here's how I calculated it.\" Confidence wins.",
+            },
+            {
+                heading: "After Launch: Growth Milestones",
+                body: "Once you have your first client, the hard part is over. Here's your next 90 days:\n\n<strong>Month 2</strong>: Land 2–3 more accounts. Learn what works for prospecting and double down.\n\n<strong>Month 3</strong>: Hire your first employee. Train them on your process. Delegate one route.\n\n<strong>Month 4–6</strong>: Reach $5,000–$10,000/month in revenue. You now have a real business.\n\n<strong>Month 6–12</strong>: Optimize routes, add employees, increase profit margins. Invest in better equipment.\n\nThe cleaning business is a simple business — the math works if you price correctly and deliver quality. Use data to price, systems to manage, and relationships to grow.\n\nReady to skip the guesswork? xiriOS gives you the calculator, proposals, CRM, and scheduling tools built for janitorial businesses.",
+                cta: { text: "Start Your Cleaning Business Free →", href: "/app/login?mode=signup" },
             },
         ],
     },

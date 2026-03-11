@@ -76,5 +76,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         }
     }
 
-    return [...staticPages, ...blogPages, ...vsPages, ...industryPages, ...featurePages, ...toolPages, ...cityPages];
+    /* ── Start Cleaning Business pSEO pages ── */
+    const startupHub: MetadataRoute.Sitemap = [
+        { url: `${BASE}/start-cleaning-business`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+    ];
+    const startupCityPages: MetadataRoute.Sitemap = UNIQUE_CITIES.map((city) => ({
+        url: `${BASE}/start-cleaning-business/${city.slug}`,
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+    }));
+
+    return [...staticPages, ...blogPages, ...vsPages, ...industryPages, ...featurePages, ...toolPages, ...cityPages, ...startupHub, ...startupCityPages];
 }

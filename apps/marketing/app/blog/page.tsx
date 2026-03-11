@@ -24,6 +24,7 @@ const CATEGORY_COLORS: Record<string, string> = {
     Pricing: "#00d4aa",
     Tools: "#6c63ff",
     Software: "#ff6b6b",
+    Startup: "#f5a623",
 };
 
 export default function BlogIndex() {

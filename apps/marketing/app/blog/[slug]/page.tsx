@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Navbar from "../../components/Navbar";
+import BlogViewTracker from "../../components/BlogViewTracker";
 import { BLOG_POSTS, getPost } from "../../../lib/posts";
 
 export async function generateStaticParams() {
@@ -62,6 +63,7 @@ export default async function BlogPostPage({
     return (
         <>
             <Navbar />
+            <BlogViewTracker slug={slug} category={post.category} />
 
             {/* JSON-LD */}
             <script
