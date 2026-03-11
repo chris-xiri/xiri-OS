@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Navbar from "../../components/Navbar";
+import PurchaseTracker from "./PurchaseTracker";
 
 export const metadata: Metadata = {
     title: "Welcome to xiriOS! — Subscription Confirmed",
@@ -10,6 +11,7 @@ export default function CheckoutSuccess() {
     return (
         <>
             <Navbar />
+            <PurchaseTracker />
             <main
                 style={{
                     minHeight: "100vh",

@@ -44,9 +44,11 @@ export function trackSignupStarted(source: string) {
     track("signup_started", { source });
 }
 
-/** Signup completed (account created) */
+/** Signup completed (account created) — custom event */
 export function trackSignupCompleted(method: string) {
     track("signup_completed", { method });
+    // GA4 recommended event — unlocks built-in Acquisition reports
+    track("sign_up", { method });
 }
 
 // ─── Onboarding funnel ─────────────────────────────────────
@@ -78,9 +80,16 @@ export function trackSubscribeClicked(plan: string) {
     track("subscribe_clicked", { plan });
 }
 
-/** Purchase completed (Stripe checkout success) */
+/** Purchase completed (Stripe checkout success) — custom event */
 export function trackPurchaseCompleted(plan: string, value: number) {
     track("purchase_completed", { plan, value, currency: "USD" });
+    // GA4 recommended event — unlocks built-in Monetization reports
+    track("purchase", {
+        transaction_id: `${plan}_${Date.now()}`,
+        value,
+        currency: "USD",
+        items: plan,
+    });
 }
 
 // ─── Feature usage ─────────────────────────────────────────
