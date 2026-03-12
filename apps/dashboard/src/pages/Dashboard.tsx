@@ -249,7 +249,7 @@ export default function Dashboard() {
             <div className="dash-section">
                 <h2>Quick Actions</h2>
                 <div className="dash-actions">
-                    <a href="/bids/new" className="dash-action">
+                    <div className="dash-action" onClick={() => navigate("/bids/new")}>
                         <div className="dash-action-icon" style={{ background: "rgba(0, 212, 170, 0.1)" }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00d4aa" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                 <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
@@ -259,8 +259,8 @@ export default function Dashboard() {
                             <div className="dash-action-title">Create New Bid</div>
                             <div className="dash-action-desc">Calculate and send a professional bid</div>
                         </div>
-                    </a>
-                    <a href="/contacts?add=true" className="dash-action">
+                    </div>
+                    <div className="dash-action" onClick={() => navigate("/contacts?add=true")}>
                         <div className="dash-action-icon" style={{ background: "rgba(99, 102, 241, 0.1)" }}>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6366f1" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" />
@@ -271,7 +271,7 @@ export default function Dashboard() {
                             <div className="dash-action-title">Add Contact</div>
                             <div className="dash-action-desc">Add a prospect or client ({limits.contacts === -1 ? "unlimited" : `${contactLimit} max`})</div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
 
