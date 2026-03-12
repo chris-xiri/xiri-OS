@@ -84,8 +84,23 @@ export default function Calculator() {
             if (snap.exists()) {
                 const d = snap.data();
                 const stateCode = d.address?.state || "";
+                const companyZip = d.address?.zip || "";
                 const patchInputs: Partial<CalculatorInputs> = {};
-                if (stateCode) {
+                if (companyZip) {
+                    // Zip auto-fill also resolves state + metro
+                    setZipCode(companyZip);
+                    const result = resolveZip(companyZip);
+                    if (result) {
+                        setSelectedState(result.state);
+                        const stateDefaults = getStateDefaults(result.state);
+                        if (stateDefaults) Object.assign(patchInputs, stateDefaults);
+                        if (result.metroId) {
+                            setSelectedMetro(result.metroId);
+                            const metroDefaults = getMetroDefaults(result.metroId);
+                            if (metroDefaults) Object.assign(patchInputs, metroDefaults);
+                        }
+                    }
+                } else if (stateCode) {
                     setSelectedState(stateCode);
                     const defaults = getStateDefaults(stateCode);
                     if (defaults) Object.assign(patchInputs, defaults);
