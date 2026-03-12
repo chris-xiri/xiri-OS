@@ -36,8 +36,8 @@ export const metadata: Metadata = {
     "cleaning company software",
   ],
   icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
   },
   openGraph: {
     title: "xiriOS — Win More Bids. Protect Your Margins.",
