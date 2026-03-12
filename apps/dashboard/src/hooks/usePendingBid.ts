@@ -8,7 +8,7 @@ import {
     calculate,
     type CalculatorInputs,
     type RoomScope,
-} from "../lib/calculator";
+} from "@xiri-facility-solutions/shared";
 
 const PENDING_BID_KEY = "xiri_pendingBid";
 

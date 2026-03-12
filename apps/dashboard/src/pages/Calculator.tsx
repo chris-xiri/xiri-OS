@@ -27,7 +27,7 @@ import {
     type RoomScope,
     type CustomTask,
     type SupplyPolicy,
-} from "../lib/calculator";
+} from "@xiri-facility-solutions/shared";
 import type { Contact } from "./Contacts";
 import "./Calculator.css";
 

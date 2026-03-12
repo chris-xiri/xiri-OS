@@ -20,7 +20,7 @@ import {
     type RoomScope,
     type CustomTask,
     type SupplyPolicy,
-} from "../lib/calculator";
+} from "@xiri-facility-solutions/shared";
 import { trackCalculatorUsed, trackCtaClicked } from "../lib/analytics";
 import "./Calculator.css";
 

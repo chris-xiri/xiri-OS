@@ -4,28 +4,10 @@ import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { isOverLimit, getLimits, TIER_INFO, getUpgradeTier } from "../lib/rbac";
-import type { CalculatorResults, CalculatorInputs, RoomScope } from "../lib/calculator";
+import type { CalculatorResults, CalculatorInputs, RoomScope, ProposalTerms } from "@xiri-facility-solutions/shared";
 import "./Bids.css";
 
-export interface ProposalTerms {
-    legalName: string;
-    employeeStatus: string;
-    supervisionApproach: string;
-    companyPhilosophy: string;
-    cancellationPolicy: string;
-    serviceGuarantee: string;
-    lateFeePolicy: string;
-    equipmentDescription: string;
-    specialServices: string;
-    suppliesPolicy: string;
-    suppliesWeProvide: string;
-    suppliesCustomerProvides: string;
-    contractTerm: string;
-    additionalTerms: string;
-    bonded: boolean;
-    bondAmount: string;
-    uniformedPersonnel: boolean;
-}
+export type { ProposalTerms };
 
 export interface Bid {
     id: string;
