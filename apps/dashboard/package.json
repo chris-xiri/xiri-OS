@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@microsoft/clarity": "^1.0.2",
+    "@xiri-facility-solutions/shared": "^0.2.0",
     "file-saver": "^2.0.5",
     "firebase": "^12.10.0",
     "jspdf": "^4.2.0",
