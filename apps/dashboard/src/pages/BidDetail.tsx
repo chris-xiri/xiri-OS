@@ -824,6 +824,38 @@ export default function BidDetail() {
                                 Sent on {new Date((bid as any).sentAt).toLocaleDateString()}
                             </p>
                         )}
+                        {/* Email engagement tracking */}
+                        {(bid as any).emailDelivered && (
+                            <div style={{ marginTop: "0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem" }}>
+                                <p style={{ fontSize: "0.75rem", color: "#10b981", margin: 0, display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Delivered
+                                </p>
+                                {(bid as any).emailOpened && (
+                                    <p style={{ fontSize: "0.75rem", color: "#3b82f6", margin: 0, display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        Opened {(bid as any).emailOpenCount > 1 ? `${(bid as any).emailOpenCount}×` : ""}
+                                        {(bid as any).emailLastOpenedAt && (
+                                            <span style={{ color: "var(--text-dim)", marginLeft: "0.25rem" }}>
+                                                · {new Date((bid as any).emailLastOpenedAt).toLocaleDateString()}
+                                            </span>
+                                        )}
+                                    </p>
+                                )}
+                                {(bid as any).emailClicked && (
+                                    <p style={{ fontSize: "0.75rem", color: "#8b5cf6", margin: 0, display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/></svg>
+                                        Clicked
+                                    </p>
+                                )}
+                                {(bid as any).emailBounced && (
+                                    <p style={{ fontSize: "0.75rem", color: "#ef4444", margin: 0, display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                                        Bounced
+                                    </p>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Contact */}

@@ -17,6 +17,9 @@ export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
 // Admin notifications (new signup + new subscription alerts)
 export { onNewUserSignup } from "./adminNotifications";
 
+// Resend email engagement webhooks (open/click tracking)
+export { resendWebhook } from "./resendWebhook";
+
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.
@@ -115,6 +118,7 @@ export const sendProposal = onCall(
                 status: "sent",
                 sentAt: new Date().toISOString(),
                 sentToEmail: data.toEmail,
+                emailId: emailResult?.data?.id || null,
                 updatedAt: new Date().toISOString(),
             });
 
