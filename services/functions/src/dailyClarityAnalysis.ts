@@ -113,7 +113,7 @@ async function postToChat(webhookUrl: string, text: string) {
  */
 export const dailyClarityAnalysis = onSchedule(
     {
-        schedule: "0 12 * * *", // 8 AM ET = 12:00 UTC
+        schedule: "every day 08:00",
         timeZone: "America/New_York",
         secrets: [clarityApiToken, geminiApiKey, chatWebhookUrl],
         region: "us-central1",
