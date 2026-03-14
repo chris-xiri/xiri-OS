@@ -46,7 +46,7 @@ async function postToChat(
  * This happens right after a user signs up and the app creates their company doc.
  * Creates a NEW THREAD in Google Chat for this user.
  */
-export const onNewUserSignup = onDocumentCreated(
+export const notifyNewCompany = onDocumentCreated(
     {
         document: "companies/{companyId}",
         secrets: [chatWebhookUrl],

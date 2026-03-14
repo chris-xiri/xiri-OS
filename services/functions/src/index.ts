@@ -15,7 +15,7 @@ export { sendTrialReminders } from "./trialReminders";
 export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
 
 // Admin notifications (new signup + new subscription alerts)
-export { onNewUserSignup } from "./adminNotifications";
+export { notifyNewCompany } from "./adminNotifications";
 
 // Resend email engagement webhooks (open/click tracking)
 export { resendWebhook } from "./resendWebhook";
