@@ -1,0 +1,204 @@
+/* ─── Bottom Nav (mobile only) ─── */
+
+/* Hidden on desktop */
+.bottom-nav,
+.bottom-more-overlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+
+    /* ─── Tab bar ─── */
+    .bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: var(--bg-base);
+        border-top: 1px solid var(--border);
+        z-index: 300;
+        padding: 0;
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    .bottom-nav-tab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 6px 0;
+        color: var(--text-dim);
+        text-decoration: none;
+        font-size: 0.625rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        border: none;
+        background: none;
+        cursor: pointer;
+        transition: color 150ms ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .bottom-nav-tab svg {
+        width: 22px;
+        height: 22px;
+        flex-shrink: 0;
+    }
+
+    .bottom-nav-tab.active {
+        color: #00d4aa;
+    }
+
+    .bottom-nav-tab:hover {
+        color: var(--text-secondary);
+    }
+
+    .bottom-nav-tab.active:hover {
+        color: #00d4aa;
+    }
+
+    /* ─── More sheet overlay ─── */
+    .bottom-more-overlay {
+        display: flex;
+        position: fixed;
+        inset: 0;
+        z-index: 350;
+        background: rgba(0, 0, 0, 0.5);
+        align-items: flex-end;
+        justify-content: center;
+        animation: fadeIn 200ms ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .bottom-more-sheet {
+        width: 100%;
+        max-width: 480px;
+        background: var(--bg-surface);
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        padding: 1rem 1.25rem;
+        padding-bottom: calc(1rem + 64px + env(safe-area-inset-bottom, 0px));
+        animation: slideUp 250ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes slideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+
+    .bottom-more-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .bottom-more-tier {
+        font-size: 0.8125rem;
+        font-weight: 600;
+    }
+
+    .bottom-more-close {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: var(--bg-elevated);
+        border-radius: 50%;
+        color: var(--text-muted);
+        font-size: 1rem;
+        cursor: pointer;
+    }
+
+    /* ─── More nav links ─── */
+    .bottom-more-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .bottom-more-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        border-radius: 10px;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        transition: background 150ms ease, color 150ms ease;
+    }
+
+    .bottom-more-link:hover,
+    .bottom-more-link:active {
+        background: var(--bg-surface-hover);
+        color: var(--text-primary);
+    }
+
+    .bottom-more-link.active {
+        color: var(--accent);
+    }
+
+    .bottom-more-logout {
+        color: #ef4444;
+    }
+
+    .bottom-more-logout:hover {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+
+    /* ─── User info in More sheet ─── */
+    .bottom-more-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border-top: 1px solid var(--border);
+        padding-top: 1rem;
+    }
+
+    .bottom-more-avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--accent-bg);
+        color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+
+    .bottom-more-name {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .bottom-more-email {
+        font-size: 0.6875rem;
+        color: var(--text-dim);
+    }
+}

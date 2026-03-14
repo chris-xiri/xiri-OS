@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
-import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
 import TrialBanner from "./components/TrialBanner";
+import BottomNav from "./components/BottomNav";
 import FeatureGate from "./components/FeatureGate";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -20,7 +20,6 @@ import "./index.css";
 /* ─── Auth Guard ─── */
 function ProtectedRoute() {
   const { user, loading } = useAuth();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (loading) {
     return (
@@ -35,33 +34,24 @@ function ProtectedRoute() {
 
   return (
     <div className="app-layout">
-      {/* Mobile top bar — logo + hamburger side by side */}
+      {/* Mobile top bar — logo only */}
       <div className="mobile-topbar">
         <div className="mobile-topbar-logo">
           <span className="sidebar-logo-dot" />
           <span>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
         </div>
-        <button
-          className="sidebar-mobile-toggle"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileOpen ? "✕" : "☰"}
-        </button>
       </div>
 
-      {/* Backdrop when sidebar is open on mobile */}
-      {mobileOpen && (
-        <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} />
-      )}
-
-      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
+      <Sidebar />
       <div className="app-content-wrapper">
         <TrialBanner />
         <main className="app-main">
           <Outlet />
         </main>
       </div>
+
+      {/* Mobile bottom tab bar */}
+      <BottomNav />
     </div>
   );
 }
