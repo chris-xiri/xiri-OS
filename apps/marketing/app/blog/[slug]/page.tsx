@@ -48,6 +48,12 @@ export default async function BlogPostPage({
         description: post.metaDescription,
         datePublished: post.publishedAt,
         dateModified: post.updatedAt,
+        mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": `https://os.xiri.ai/blog/${slug}`,
+        },
+        image: "https://os.xiri.ai/og-image.png",
+        articleSection: post.category,
         author: {
             "@type": "Organization",
             name: "xiriOS",
@@ -57,6 +63,10 @@ export default async function BlogPostPage({
             "@type": "Organization",
             name: "xiriOS",
             url: "https://os.xiri.ai",
+            logo: {
+                "@type": "ImageObject",
+                url: "https://os.xiri.ai/favicon.svg",
+            },
         },
     };
 

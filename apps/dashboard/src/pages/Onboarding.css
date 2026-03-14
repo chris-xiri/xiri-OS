@@ -1,0 +1,155 @@
+.onboarding-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0, 212, 170, 0.06) 0%, transparent 60%),
+        var(--bg-base);
+    padding: 1rem;
+}
+
+.onboarding-card {
+    width: 100%;
+    max-width: 440px;
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--bg-elevated);
+    border-radius: 16px;
+    padding: 2.5rem;
+    backdrop-filter: blur(12px);
+    animation: fadeInUp 0.4s ease-out;
+    text-align: center;
+}
+
+.onboarding-icon {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.onboarding-card h1 {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.onboarding-subtitle {
+    color: var(--text-muted);
+    font-size: 0.9375rem;
+    margin: 0 0 2rem;
+    line-height: 1.5;
+}
+
+.onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    text-align: left;
+}
+
+.onboarding-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.onboarding-form .form-group label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.onboarding-form .form-group input {
+    padding: 0.875rem 1rem;
+    background: var(--bg-surface-hover);
+    border: 1px solid var(--border-hover);
+    border-radius: 8px;
+    color: var(--text-primary);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.onboarding-form .form-group input::placeholder {
+    color: var(--text-dim);
+}
+
+.onboarding-form .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+}
+
+.onboarding-submit {
+    padding: 0.875rem;
+    background: var(--accent);
+    color: var(--bg-base);
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+}
+
+.onboarding-submit:hover:not(:disabled) {
+    background: #00e4b8;
+    transform: translateY(-1px);
+}
+
+.onboarding-submit:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.onboarding-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.onboarding-skip {
+    display: inline-block;
+    margin-top: 1.25rem;
+    padding: 0;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.8125rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.onboarding-skip:hover {
+    color: var(--text-secondary);
+    text-decoration: underline;
+}
+
+.onboarding-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(12, 15, 26, 0.3);
+    border-top-color: var(--bg-base);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

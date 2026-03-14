@@ -106,67 +106,9 @@ export default function Login() {
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="login-form">
-                    {isSignup && (
-                        <div className="form-group">
-                            <label htmlFor="fullName">Full Name</label>
-                            <input
-                                id="fullName"
-                                type="text"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
-                                placeholder="John Smith"
-                                required
-                                autoComplete="name"
-                                autoFocus
-                            />
-                        </div>
-                    )}
-
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="you@company.com"
-                            required
-                            autoComplete="email"
-                            autoFocus={!isSignup}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="password">Password</label>
-                        <input
-                            id="password"
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            required
-                            autoComplete={isSignup ? "new-password" : "current-password"}
-                        />
-                    </div>
-
-                    <button type="submit" className="login-btn" disabled={loading || googleLoading}>
-                        {loading ? (
-                            <span className="login-spinner" />
-                        ) : isSignup ? (
-                            "Create Account"
-                        ) : (
-                            "Sign In"
-                        )}
-                    </button>
-                </form>
-
-                <div className="login-divider">
-                    <span>or</span>
-                </div>
-
+                {/* ── Google Sign-In — PRIMARY ── */}
                 <button
-                    className="login-google-btn"
+                    className="login-google-btn login-google-primary"
                     onClick={handleGoogleSignIn}
                     disabled={loading || googleLoading}
                 >
@@ -184,6 +126,65 @@ export default function Login() {
                         </>
                     )}
                 </button>
+
+                {/* ── Divider ── */}
+                <div className="login-divider">
+                    <span>or continue with email</span>
+                </div>
+
+                {/* ── Email/Password — SECONDARY ── */}
+                <form onSubmit={handleSubmit} className="login-form">
+                    {isSignup && (
+                        <div className="form-group">
+                            <label htmlFor="fullName">Full Name</label>
+                            <input
+                                id="fullName"
+                                type="text"
+                                value={fullName}
+                                onChange={(e) => setFullName(e.target.value)}
+                                placeholder="John Smith"
+                                required
+                                autoComplete="name"
+                            />
+                        </div>
+                    )}
+
+                    <div className="form-group">
+                        <label htmlFor="email">Email</label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="you@company.com"
+                            required
+                            autoComplete="email"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            placeholder="••••••••"
+                            required
+                            autoComplete={isSignup ? "new-password" : "current-password"}
+                        />
+                    </div>
+
+                    <button type="submit" className="login-btn login-email-btn" disabled={loading || googleLoading}>
+                        {loading ? (
+                            <span className="login-spinner" />
+                        ) : isSignup ? (
+                            "Create Account"
+                        ) : (
+                            "Sign In"
+                        )}
+                    </button>
+                </form>
 
                 <p className="login-footer">
                     {isSignup ? (
@@ -206,4 +207,3 @@ export default function Login() {
         </div>
     );
 }
-

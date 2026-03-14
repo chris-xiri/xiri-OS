@@ -40,8 +40,10 @@ interface AuthState {
     profile: UserProfile | null;
     subscription: CompanySubscription;
     loading: boolean;
+    needsOnboarding: boolean;
     login: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
+    completeOnboarding: () => void;
 }
 
 const DEFAULT_SUBSCRIPTION: CompanySubscription = {
@@ -57,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [profile, setProfile] = useState<UserProfile | null>(null);
     const [subscription, setSubscription] = useState<CompanySubscription>(DEFAULT_SUBSCRIPTION);
     const [loading, setLoading] = useState(true);
+    const [needsOnboarding, setNeedsOnboarding] = useState(false);
 
     useEffect(() => {
         let unsubCompany: (() => void) | null = null;
@@ -138,6 +141,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         ]);
 
                         setProfile(newProfile);
+                        setNeedsOnboarding(true);
 
                         // Start listening to the new company
                         unsubCompany = onSnapshot(
@@ -177,8 +181,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         await signOut(auth);
     };
 
+    const completeOnboarding = () => {
+        setNeedsOnboarding(false);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, profile, subscription, loading, login, logout }}>
+        <AuthContext.Provider value={{ user, profile, subscription, loading, needsOnboarding, login, logout, completeOnboarding }}>
             {children}
         </AuthContext.Provider>
     );

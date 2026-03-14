@@ -7,6 +7,7 @@ import PwaInstallPrompt from "./components/PwaInstallPrompt";
 import BottomNav from "./components/BottomNav";
 import FeatureGate from "./components/FeatureGate";
 import Login from "./pages/Login";
+import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Bids from "./pages/Bids";
 import BidDetail from "./pages/BidDetail";
@@ -20,7 +21,7 @@ import "./index.css";
 
 /* ─── Auth Guard ─── */
 function ProtectedRoute() {
-  const { user, loading } = useAuth();
+  const { user, loading, needsOnboarding } = useAuth();
 
   if (loading) {
     return (
@@ -32,6 +33,7 @@ function ProtectedRoute() {
   }
 
   if (!user) return <Navigate to="/login" replace />;
+  if (needsOnboarding) return <Navigate to="/onboarding" replace />;
 
   return (
     <div className="app-layout">
@@ -94,6 +96,7 @@ export default function App() {
         />
         <Routes>
           <Route path="/login" element={<LoginRoute />} />
+          <Route path="/onboarding" element={<OnboardingRoute />} />
           <Route path="/calculator" element={<PublicCalculator />} />
 
           <Route element={<ProtectedRoute />}>
@@ -127,4 +130,13 @@ function LoginRoute() {
   if (loading) return null;
   if (user) return <Navigate to="/" replace />;
   return <Login />;
+}
+
+/* ─── Onboarding route guard ─── */
+function OnboardingRoute() {
+  const { user, loading, needsOnboarding } = useAuth();
+  if (loading) return null;
+  if (!user) return <Navigate to="/login" replace />;
+  if (!needsOnboarding) return <Navigate to="/" replace />;
+  return <Onboarding />;
 }

@@ -73,6 +73,25 @@ const WEBSITE_LD = {
   url: "https://os.xiri.ai",
 };
 
+const ORGANIZATION_LD = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "xiriOS",
+  url: "https://os.xiri.ai",
+  logo: "https://os.xiri.ai/favicon.svg",
+  description:
+    "Modern janitorial bidding and business management software. Free ISSA 612-powered bid calculator, CRM, proposals, and scheduling for cleaning businesses.",
+  foundingDate: "2024",
+  sameAs: [
+    "https://xiri.ai",
+  ],
+  contactPoint: {
+    "@type": "ContactPoint",
+    contactType: "customer support",
+    url: "https://os.xiri.ai",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -83,6 +102,8 @@ export default function RootLayout({
       <head>
         {/* WebSite schema — tells Google the site name is "xiriOS" */}
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(WEBSITE_LD) }} />
+        {/* Organization schema — tells LLMs who xiriOS is */}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORGANIZATION_LD) }} />
         {/* GA4 */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y8V0GR4ESS" />
         <script
