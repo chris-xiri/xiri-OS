@@ -82,6 +82,24 @@
     background: linear-gradient(135deg, #d97706, #dc2626);
 }
 
+.trial-banner-dismiss {
+    background: none;
+    border: none;
+    color: var(--text-muted, #8b92b3);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: color 0.15s, background 0.15s;
+}
+
+.trial-banner-dismiss:hover {
+    color: var(--text-primary, #e4e7f1);
+    background: rgba(255, 255, 255, 0.08);
+}
+
 /* Mobile: stack banner content vertically */
 @media (max-width: 768px) {
     .trial-banner {

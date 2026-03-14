@@ -14,6 +14,7 @@ import "./TrialBanner.css";
 export default function TrialBanner() {
     const { subscription, profile } = useAuth();
     const [busy, setBusy] = useState(false);
+    const [dismissed, setDismissed] = useState(() => sessionStorage.getItem("trial-banner-dismissed") === "1");
     const [bidCount, setBidCount] = useState(0);
     const [contactCount, setContactCount] = useState(0);
 
@@ -33,7 +34,7 @@ export default function TrialBanner() {
         return () => { unsubBids(); unsubContacts(); };
     }, [companyId]);
 
-    if (subscription.status !== "trialing" || !subscription.trialEnd) {
+    if (subscription.status !== "trialing" || !subscription.trialEnd || dismissed) {
         return null;
     }
 
@@ -104,6 +105,13 @@ export default function TrialBanner() {
             </div>
             <button className="trial-banner-btn" onClick={handleSubscribe} disabled={busy}>
                 {busy ? "Loading…" : "Subscribe Now"}
+            </button>
+            <button
+                className="trial-banner-dismiss"
+                onClick={() => { setDismissed(true); sessionStorage.setItem("trial-banner-dismissed", "1"); }}
+                aria-label="Dismiss trial banner"
+            >
+                ✕
             </button>
         </div>
     );
