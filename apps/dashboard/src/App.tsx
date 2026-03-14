@@ -35,14 +35,20 @@ function ProtectedRoute() {
 
   return (
     <div className="app-layout">
-      {/* Mobile hamburger menu button */}
-      <button
-        className="sidebar-mobile-toggle"
-        onClick={() => setMobileOpen(true)}
-        aria-label="Open menu"
-      >
-        ☰
-      </button>
+      {/* Mobile top bar — logo + hamburger side by side */}
+      <div className="mobile-topbar">
+        <div className="mobile-topbar-logo">
+          <span className="sidebar-logo-dot" />
+          <span>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
+        </div>
+        <button
+          className="sidebar-mobile-toggle"
+          onClick={() => setMobileOpen(!mobileOpen)}
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+        >
+          {mobileOpen ? "✕" : "☰"}
+        </button>
+      </div>
 
       {/* Backdrop when sidebar is open on mobile */}
       {mobileOpen && (

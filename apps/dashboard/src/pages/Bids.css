@@ -681,9 +681,18 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .bids-page {
+        padding: 1rem;
+    }
+
     .bids-header {
         flex-direction: column;
         gap: 1rem;
+    }
+
+    .bids-filter-tabs {
+        width: 100%;
+        overflow-x: auto;
     }
 
     .bids-group-header {
@@ -693,8 +702,19 @@
     }
 
     .bids-group-right {
+        width: 100%;
         flex-wrap: wrap;
         gap: 0.5rem;
+        flex-shrink: 1;
+    }
+
+    .bids-group-price {
+        font-size: 1rem;
+    }
+
+    .bids-group-sqft {
+        min-width: unset;
+        text-align: left;
     }
 
     .bids-child-row {
@@ -702,6 +722,26 @@
         align-items: flex-start;
         gap: 0.5rem;
         padding-left: 1.5rem;
+    }
+
+    .bids-child-right {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        flex-shrink: 1;
+    }
+
+    .bids-child-date {
+        min-width: unset;
+        text-align: left;
+    }
+
+    .bids-group-actions {
+        position: static;
+        transform: none;
+        opacity: 1;
+        padding: 0.5rem 1rem;
+        border-top: 1px solid var(--border);
     }
 
     .bids-batch-bar {

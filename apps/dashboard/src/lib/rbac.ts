@@ -22,7 +22,7 @@ export type Feature =
 /* ─── Feature Matrix ─── */
 const TIER_FEATURES: Record<Tier, Feature[]> = {
     bid: ["bids", "proposals", "pdf_proposals", "crm"],
-    bid_plus: ["bids", "proposals", "pdf_proposals", "crm", "custom_tasks", "task_frequency_overrides"],
+    bid_plus: ["bids", "proposals", "pdf_proposals", "crm", "custom_tasks", "task_frequency_overrides", "email_campaigns"],
     grow: ["bids", "proposals", "pdf_proposals", "crm", "custom_tasks", "task_frequency_overrides", "invoicing", "email_campaigns", "quickbooks"],
     pro: [
         "bids", "proposals", "pdf_proposals", "crm",

@@ -264,3 +264,10 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* Mobile: hide sidebar logo since topbar shows it */
+@media (max-width: 768px) {
+    .sidebar-logo {
+        display: none;
+    }
+}
