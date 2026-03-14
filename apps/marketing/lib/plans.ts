@@ -46,7 +46,7 @@ export const PLANS: Plan[] = [
             "Everything in Bid",
             "Unlimited contacts & bids",
             "Custom tasks & frequencies",
-            "PDF proposal generation",
+            "One-click proposal delivery to clients",
             "Priority email support",
         ],
         cta: "Start Free Trial",
