@@ -37,6 +37,8 @@ export default function Navbar() {
             {/* Logo */}
             <Link
                 href="/"
+                translate="no"
+                className="notranslate"
                 style={{
                     fontFamily: "var(--font-outfit), system-ui, sans-serif",
                     fontSize: "1.5rem",

@@ -94,6 +94,12 @@
     color: inherit;
     text-decoration: none;
   }
+
+  /* Prevent browser auto-translate from mangling brand names.
+     Chrome and Google Translate recognize the 'notranslate' class name. */
+  .notranslate {
+    /* intentionally empty — class name is the signal */
+  }
 }
 
 /* ============================================================
