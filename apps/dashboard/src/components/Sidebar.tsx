@@ -110,7 +110,7 @@ function SidebarIcon({ name }: { name: string }) {
     return icons[name] || null;
 }
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: boolean; onMobileClose?: () => void }) {
     const { subscription, profile, logout } = useAuth();
     const navigate = useNavigate();
     const tierInfo = TIER_INFO[subscription.tier];
@@ -150,7 +150,7 @@ export default function Sidebar() {
     };
 
     return (
-        <aside className={`sidebar ${collapsed ? "collapsed" : ""}`}>
+        <aside className={`sidebar ${collapsed ? "collapsed" : ""} ${mobileOpen ? "open" : ""}`}>
             {/* Logo + collapse toggle */}
             <div className="sidebar-logo">
                 <span className="sidebar-logo-dot" />
@@ -191,6 +191,7 @@ export default function Sidebar() {
                                     e.preventDefault();
                                     navigate(item.path); // Will show FeatureGate
                                 }
+                                onMobileClose?.();
                             }}
                             title={collapsed ? item.label : undefined}
                         >

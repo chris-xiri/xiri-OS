@@ -870,9 +870,181 @@
     .calc-financials-grid {
         grid-template-columns: 1fr;
     }
+}
 
+/* ─── Mobile-specific enhancements ─── */
+@media (max-width: 768px) {
+    .calc-page {
+        padding: 1rem;
+    }
+
+    .calc-header h1 {
+        font-size: 1.25rem;
+    }
+
+    /* Building type grid — 2 columns on mobile */
+    .calc-building-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.375rem;
+    }
+
+    .calc-building-btn {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+        min-height: 44px;
+    }
+
+    /* Frequency pills — allow wrap, bigger touch targets */
     .calc-freq-strip {
         flex-wrap: wrap;
+        gap: 0.125rem;
+        padding: 0.25rem;
+    }
+
+    .calc-freq-pill {
+        font-size: 0.8125rem;
+        padding: 0.5rem 0.375rem;
+        min-height: 40px;
+    }
+
+    .calc-freq-once {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .calc-freq-divider {
+        display: none;
+    }
+
+    /* Financials grid — single column */
+    .calc-financials-grid,
+    .calc-page .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .calc-page .form-group input,
+    .calc-page .form-group select {
+        padding: 0.625rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    /* Room cards — bigger touch targets */
+    .calc-room-header {
+        padding: 0.75rem;
+        gap: 0.625rem;
+        flex-wrap: wrap;
+        min-height: 48px;
+    }
+
+    .calc-room-icon {
+        font-size: 1.25rem;
+    }
+
+    .calc-room-name {
+        font-size: 0.875rem;
+    }
+
+    .calc-room-sqft-input {
+        width: 80px;
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8125rem;
+        min-height: 36px;
+    }
+
+    .calc-room-count {
+        font-size: 0.75rem;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    .calc-room-remove {
+        font-size: 1rem;
+        padding: 0.5rem;
+        min-width: 44px;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .calc-room-chevron {
+        font-size: 1rem;
+        padding: 0.25rem;
+    }
+
+    /* Task items — bigger checkboxes and padding */
+    .calc-room-task-item {
+        padding: 0.375rem 0.375rem;
+        font-size: 0.875rem;
+        min-height: 40px;
+    }
+
+    .calc-room-task-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+
+    .calc-task-freq {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.375rem;
+        min-height: 32px;
+    }
+
+    /* Results panel */
+    .calc-results-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.375rem;
+    }
+
+    .calc-result-label {
+        font-size: 0.6875rem;
+    }
+
+    .calc-result-value {
+        font-size: 0.8125rem;
+    }
+
+    /* Breakdown rows — larger text */
+    .calc-breakdown-row {
+        font-size: 0.875rem;
+        padding: 0.4rem 0;
+    }
+
+    /* Financials preview text — bigger */
+    .calc-financials-preview {
+        font-size: 0.75rem;
+    }
+
+    /* Add room grid — responsive */
+    .calc-add-room-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .calc-add-room-btn {
+        padding: 0.625rem;
+        font-size: 0.75rem;
+        min-height: 44px;
+    }
+
+    /* Save button */
+    .calc-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.875rem;
+        min-height: 44px;
+    }
+
+    /* Contact step */
+    .calc-contact-step {
+        padding: 1rem 0;
+    }
+
+    .calc-contact-actions {
+        flex-direction: column;
+    }
+
+    .calc-contact-actions .calc-btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 

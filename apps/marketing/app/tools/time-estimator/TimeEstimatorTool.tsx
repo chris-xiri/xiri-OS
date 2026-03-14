@@ -60,7 +60,13 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
             {/* Calculator */}
             <section className="section" style={{ background: "#141829", paddingTop: "2rem" }}>
                 <div className="section-inner" style={{ maxWidth: "900px", margin: "0 auto" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                    <style>{`
+                        .te-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+                        @media (max-width: 768px) {
+                            .te-grid { grid-template-columns: 1fr; gap: 1.25rem; }
+                        }
+                    `}</style>
+                    <div className="te-grid">
                         {/* Inputs */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                             <h2 style={{ fontFamily: "var(--font-outfit)", fontSize: "1.25rem", fontWeight: 700 }}>Building Details</h2>

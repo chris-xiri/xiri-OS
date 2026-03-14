@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
@@ -19,6 +20,7 @@ import "./index.css";
 /* ─── Auth Guard ─── */
 function ProtectedRoute() {
   const { user, loading } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (loading) {
     return (
@@ -33,7 +35,21 @@ function ProtectedRoute() {
 
   return (
     <div className="app-layout">
-      <Sidebar />
+      {/* Mobile hamburger menu button */}
+      <button
+        className="sidebar-mobile-toggle"
+        onClick={() => setMobileOpen(true)}
+        aria-label="Open menu"
+      >
+        ☰
+      </button>
+
+      {/* Backdrop when sidebar is open on mobile */}
+      {mobileOpen && (
+        <div className="sidebar-backdrop" onClick={() => setMobileOpen(false)} />
+      )}
+
+      <Sidebar mobileOpen={mobileOpen} onMobileClose={() => setMobileOpen(false)} />
       <div className="app-content-wrapper">
         <TrialBanner />
         <main className="app-main">

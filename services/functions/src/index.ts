@@ -14,6 +14,9 @@ export { sendTrialReminders } from "./trialReminders";
 // Server-side limit enforcement
 export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
 
+// Admin notifications (new signup + new subscription alerts)
+export { onNewUserSignup } from "./adminNotifications";
+
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.

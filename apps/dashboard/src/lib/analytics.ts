@@ -20,6 +20,16 @@ function track(eventName: string, params?: Record<string, string | number | bool
     }
 }
 
+// ─── User identity ──────────────────────────────────────────
+
+/** Set the GA4 User-ID so all events are tied to this user.
+ *  Call once after login / auth state change. */
+export function setUserId(uid: string) {
+    if (typeof window !== "undefined" && window.gtag) {
+        window.gtag("set", { user_id: uid });
+    }
+}
+
 // ─── Marketing site events ──────────────────────────────────
 
 /** CTA button clicked anywhere on the marketing site */

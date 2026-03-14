@@ -9,9 +9,11 @@ import { onCall, onRequest, HttpsError } from "firebase-functions/v2/https";
 import { defineSecret } from "firebase-functions/params";
 import * as admin from "firebase-admin";
 import Stripe from "stripe";
+import { notifyAdminSubscription } from "./adminNotifications";
 
 const stripeSecretKey = defineSecret("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = defineSecret("STRIPE_WEBHOOK_SECRET");
+const chatWebhookUrl = defineSecret("GOOGLE_CHAT_WEBHOOK_URL");
 
 /* ─── Price ID → Tier mapping ─── */
 const PRICE_TO_TIER: Record<string, string> = {
@@ -154,7 +156,7 @@ export const createPortalSession = onCall(
 // STRIPE WEBHOOK HANDLER
 // ─────────────────────────────────────────────────
 export const handleStripeWebhook = onRequest(
-    { secrets: [stripeSecretKey, stripeWebhookSecret], region: "us-central1" },
+    { secrets: [stripeSecretKey, stripeWebhookSecret, chatWebhookUrl], region: "us-central1" },
     async (req, res) => {
         if (req.method !== "POST") {
             res.status(405).send("Method not allowed");
@@ -203,6 +205,23 @@ export const handleStripeWebhook = onRequest(
                     });
 
                     console.log(`✅ Company ${companyId} upgraded to ${tier}`);
+
+                    // Notify admin of new subscription
+                    const ownerSnap = await db.doc(`companies/${companyId}`).get();
+                    const ownerData = ownerSnap.data();
+                    const ownerId = ownerData?.ownerId;
+                    if (ownerId) {
+                        const ownerProfile = await db.doc(`users/${ownerId}`).get();
+                        const ownerEmail = ownerProfile.data()?.email || session.customer_details?.email || "unknown";
+                        const ownerCompanyName = ownerData?.name || "Unknown Company";
+                        await notifyAdminSubscription(chatWebhookUrl.value(), {
+                            email: ownerEmail,
+                            companyName: ownerCompanyName,
+                            tier,
+                            companyId,
+                            uid: ownerId,
+                        });
+                    }
                     break;
                 }
 

@@ -13,6 +13,8 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
+import { setUserId } from "../lib/analytics";
+import { getAcquisitionSource } from "../lib/acquisition";
 import type { Tier } from "../lib/rbac";
 
 /* ─── Types ─── */
@@ -68,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
             if (firebaseUser) {
                 setUser(firebaseUser);
+                setUserId(firebaseUser.uid);
 
                 try {
                     const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
@@ -114,6 +117,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         };
 
                         // Write user + company docs
+                        // Capture how the user found us
+                        const acquisition = getAcquisitionSource();
+
                         await Promise.all([
                             setDoc(doc(db, "users", firebaseUser.uid), {
                                 email: newProfile.email,
@@ -121,6 +127,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                                 companyId: newProfile.companyId,
                                 role: newProfile.role,
                                 createdAt: new Date().toISOString(),
+                                ...(acquisition && { acquisition }),
                             }),
                             setDoc(doc(db, "companies", companyId), {
                                 name: newProfile.displayName + "'s Company",

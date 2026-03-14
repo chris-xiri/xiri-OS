@@ -47,8 +47,10 @@ const https_1 = require("firebase-functions/v2/https");
 const params_1 = require("firebase-functions/params");
 const admin = __importStar(require("firebase-admin"));
 const stripe_1 = __importDefault(require("stripe"));
+const adminNotifications_1 = require("./adminNotifications");
 const stripeSecretKey = (0, params_1.defineSecret)("STRIPE_SECRET_KEY");
 const stripeWebhookSecret = (0, params_1.defineSecret)("STRIPE_WEBHOOK_SECRET");
+const chatWebhookUrl = (0, params_1.defineSecret)("GOOGLE_CHAT_WEBHOOK_URL");
 /* ─── Price ID → Tier mapping ─── */
 const PRICE_TO_TIER = {
     // Monthly
@@ -154,7 +156,7 @@ exports.createPortalSession = (0, https_1.onCall)({ secrets: [stripeSecretKey], 
 // ─────────────────────────────────────────────────
 // STRIPE WEBHOOK HANDLER
 // ─────────────────────────────────────────────────
-exports.handleStripeWebhook = (0, https_1.onRequest)({ secrets: [stripeSecretKey, stripeWebhookSecret], region: "us-central1" }, async (req, res) => {
+exports.handleStripeWebhook = (0, https_1.onRequest)({ secrets: [stripeSecretKey, stripeWebhookSecret, chatWebhookUrl], region: "us-central1" }, async (req, res) => {
     if (req.method !== "POST") {
         res.status(405).send("Method not allowed");
         return;
@@ -192,6 +194,22 @@ exports.handleStripeWebhook = (0, https_1.onRequest)({ secrets: [stripeSecretKey
                     "subscription.trialEnd": admin.firestore.FieldValue.delete(),
                 });
                 console.log(`✅ Company ${companyId} upgraded to ${tier}`);
+                // Notify admin of new subscription
+                const ownerSnap = await db.doc(`companies/${companyId}`).get();
+                const ownerData = ownerSnap.data();
+                const ownerId = ownerData?.ownerId;
+                if (ownerId) {
+                    const ownerProfile = await db.doc(`users/${ownerId}`).get();
+                    const ownerEmail = ownerProfile.data()?.email || session.customer_details?.email || "unknown";
+                    const ownerCompanyName = ownerData?.name || "Unknown Company";
+                    await (0, adminNotifications_1.notifyAdminSubscription)(chatWebhookUrl.value(), {
+                        email: ownerEmail,
+                        companyName: ownerCompanyName,
+                        tier,
+                        companyId,
+                        uid: ownerId,
+                    });
+                }
                 break;
             }
             case "customer.subscription.updated": {

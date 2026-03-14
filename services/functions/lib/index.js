@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendProposal = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
+exports.sendProposal = exports.onNewUserSignup = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
 // Stripe integration
 var stripe_1 = require("./stripe");
 Object.defineProperty(exports, "createCheckoutSession", { enumerable: true, get: function () { return stripe_1.createCheckoutSession; } });
@@ -52,6 +52,9 @@ Object.defineProperty(exports, "sendTrialReminders", { enumerable: true, get: fu
 var limitEnforcement_1 = require("./limitEnforcement");
 Object.defineProperty(exports, "createBidWithLimit", { enumerable: true, get: function () { return limitEnforcement_1.createBidWithLimit; } });
 Object.defineProperty(exports, "createContactWithLimit", { enumerable: true, get: function () { return limitEnforcement_1.createContactWithLimit; } });
+// Admin notifications (new signup + new subscription alerts)
+var adminNotifications_1 = require("./adminNotifications");
+Object.defineProperty(exports, "onNewUserSignup", { enumerable: true, get: function () { return adminNotifications_1.onNewUserSignup; } });
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.
