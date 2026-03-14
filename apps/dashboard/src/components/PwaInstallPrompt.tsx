@@ -17,7 +17,17 @@ interface BeforeInstallPromptEvent extends Event {
 export default function PwaInstallPrompt() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [showIosPrompt, setShowIosPrompt] = useState(false);
-    const [dismissed, setDismissed] = useState(() => localStorage.getItem("pwa-install-dismissed") === "1");
+    const [dismissed, setDismissed] = useState(() => {
+        const data = localStorage.getItem("pwa-install-dismissed");
+        if (!data) return false;
+        try {
+            const { count, until } = JSON.parse(data);
+            // Permanent after 3 dismissals
+            if (count >= 3) return true;
+            // Otherwise check if the cooldown has passed
+            return Date.now() < until;
+        } catch { return false; }
+    });
     const [isStandalone, setIsStandalone] = useState(false);
 
     useEffect(() => {
@@ -55,7 +65,15 @@ export default function PwaInstallPrompt() {
 
     const handleDismiss = () => {
         setDismissed(true);
-        localStorage.setItem("pwa-install-dismissed", "1");
+        const data = localStorage.getItem("pwa-install-dismissed");
+        let count = 1;
+        try { count = (JSON.parse(data || "{}").count || 0) + 1; } catch { /* first dismiss */ }
+        // 1st dismiss: 3 days, 2nd: 14 days, 3rd+: permanent
+        const days = count === 1 ? 3 : count === 2 ? 14 : 365 * 10;
+        localStorage.setItem("pwa-install-dismissed", JSON.stringify({
+            count,
+            until: Date.now() + days * 24 * 60 * 60 * 1000,
+        }));
     };
 
     // Don't render if: already installed, dismissed, or no prompt available
