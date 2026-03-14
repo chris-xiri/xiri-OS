@@ -61,7 +61,7 @@ export const PLANS: Plan[] = [
         featured: false,
         comingSoon: true,
         features: [
-            "Everything in Bid",
+            "Everything in Bid Plus",
             "Invoicing & payments",
             "Full CRM & lead management",
             "Email campaigns",
