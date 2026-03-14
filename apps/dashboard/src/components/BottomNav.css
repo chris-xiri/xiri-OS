@@ -81,7 +81,7 @@
     .bottom-more-sheet {
         width: 100%;
         max-width: 480px;
-        background: var(--bg-surface);
+        background: var(--bg-base, #0c0f1a);
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
         padding: 1rem 1.25rem;

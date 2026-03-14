@@ -332,16 +332,16 @@ function ContactDrawer({
     onClose: () => void;
 }) {
     const [form, setForm] = useState({
-        name: contact.name,
-        company: contact.company,
-        email: contact.email,
-        phone: contact.phone,
-        address: contact.address,
-        city: contact.city,
-        state: contact.state,
-        zip: contact.zip,
-        type: contact.type as Contact["type"],
-        notes: contact.notes,
+        name: contact.name || "",
+        company: contact.company || "",
+        email: contact.email || "",
+        phone: contact.phone || "",
+        address: contact.address || "",
+        city: contact.city || "",
+        state: contact.state || "",
+        zip: contact.zip || "",
+        type: (contact.type || "prospect") as Contact["type"],
+        notes: contact.notes || "",
     });
     const [saving, setSaving] = useState(false);
     const [dirty, setDirty] = useState(false);
@@ -498,12 +498,25 @@ export default function Contacts() {
     const [showModal, setShowModal] = useState(false);
 
     // Auto-open add modal when navigating with ?add=true (from Dashboard quick action)
+    // Auto-open drawer when navigating with ?edit=CONTACT_ID (from BidDetail send email)
     useEffect(() => {
         if (searchParams.get("add") === "true") {
             setShowModal(true);
             setSearchParams({}, { replace: true }); // clean up URL
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Open drawer for a specific contact when ?edit=ID is present and contacts are loaded
+    useEffect(() => {
+        const editId = searchParams.get("edit");
+        if (editId && contacts.length > 0) {
+            const found = contacts.find((c) => c.id === editId);
+            if (found) {
+                setDrawerContact(found);
+                setSearchParams({}, { replace: true });
+            }
+        }
+    }, [contacts, searchParams, setSearchParams]);
     const [editContact, setEditContact] = useState<Contact | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());

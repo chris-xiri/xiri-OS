@@ -387,11 +387,13 @@ export default function BidDetail() {
 
     const handleSendEmail = useCallback(async () => {
         if (!hasFeature(subscription.tier, "email_campaigns")) {
-            alert("Email sending is available on the Grow plan and above. Upgrade to unlock!");
+            alert("Email sending is available on the Bid Plus plan and above. Upgrade to unlock!");
             return;
         }
         if (!bid || !contact?.email) {
-            alert("This bid needs a contact with an email address to send a proposal.");
+            if (contact?.id && window.confirm("This contact doesn't have an email address. Would you like to add one now?")) {
+                navigate(`/contacts?edit=${contact.id}`);
+            }
             return;
         }
         if (!companyData.email) {
