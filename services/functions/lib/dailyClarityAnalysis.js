@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Daily Clarity UX Report — Scheduled Cloud Function
  *
@@ -11,76 +12,46 @@
  *   firebase functions:secrets:set CLARITY_API_TOKEN
  *   firebase functions:secrets:set GOOGLE_CHAT_WEBHOOK_URL
  */
-
-import { onSchedule } from "firebase-functions/v2/scheduler";
-import { defineSecret } from "firebase-functions/params";
-
-const clarityApiToken = defineSecret("CLARITY_API_TOKEN");
-const chatWebhookUrl = defineSecret("GOOGLE_CHAT_WEBHOOK_URL");
-
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.dailyClarityAnalysis = void 0;
+const scheduler_1 = require("firebase-functions/v2/scheduler");
+const params_1 = require("firebase-functions/params");
+const clarityApiToken = (0, params_1.defineSecret)("CLARITY_API_TOKEN");
+const chatWebhookUrl = (0, params_1.defineSecret)("GOOGLE_CHAT_WEBHOOK_URL");
 const CLARITY_PROJECT_ID = "vtptoqsjih";
 const CLARITY_DASHBOARD = `https://clarity.microsoft.com/projects/view/${CLARITY_PROJECT_ID}/dashboard`;
-
-/* ─── Clarity API ─────────────────────── */
-
-interface ClarityMetric {
-    metricName: string;
-    information: Array<Record<string, unknown>>;
-}
-
-function fmtDate(d: Date): string {
+function fmtDate(d) {
     return d.toISOString().split("T")[0];
 }
-
-async function fetchClarityData(
-    token: string,
-    dimension: string,
-    startDate: string,
-    endDate: string
-): Promise<ClarityMetric[] | null> {
-    const url =
-        `https://www.clarity.ms/export-data/api/v1/project-live-insights` +
+async function fetchClarityData(token, dimension, startDate, endDate) {
+    const url = `https://www.clarity.ms/export-data/api/v1/project-live-insights` +
         `?projectId=${CLARITY_PROJECT_ID}&startDate=${startDate}&endDate=${endDate}&dimension=${dimension}`;
-
     const res = await fetch(url, {
         headers: { Authorization: `Bearer ${token}` },
     });
-
     if (!res.ok) {
         console.error(`Clarity ${dimension}: ${res.status} ${await res.text()}`);
         return null;
     }
-    return (await res.json()) as ClarityMetric[];
+    return (await res.json());
 }
-
 /* ─── Metric extractors ──────────────── */
-
-function findMetric(data: ClarityMetric[], name: string): Record<string, unknown> | null {
+function findMetric(data, name) {
     const metric = data.find((m) => m.metricName === name);
-    return metric?.information?.[0] as Record<string, unknown> ?? null;
+    return metric?.information?.[0] ?? null;
 }
-
-function findMetricList(data: ClarityMetric[], name: string): Array<Record<string, unknown>> {
+function findMetricList(data, name) {
     const metric = data.find((m) => m.metricName === name);
-    return (metric?.information ?? []) as Array<Record<string, unknown>>;
+    return (metric?.information ?? []);
 }
-
 /* ─── Clarity dashboard deep-links ──── */
-
-function clarityFilter(filterType: string): string {
+function clarityFilter(filterType) {
     return `https://clarity.microsoft.com/projects/view/${CLARITY_PROJECT_ID}/recordings?filterType=${filterType}`;
 }
-
 /* ─── Report builder ─────────────────── */
-
-function buildReport(
-    urlData: ClarityMetric[],
-    deviceData: ClarityMetric[],
-    dateRange: string
-): string {
-    const lines: string[] = [];
+function buildReport(urlData, deviceData, dateRange) {
+    const lines = [];
     lines.push(`📊 *Daily Clarity Report — ${dateRange}*\n`);
-
     // ── Traffic summary
     const traffic = findMetric(urlData, "Traffic");
     if (traffic) {
@@ -94,13 +65,11 @@ function buildReport(
         lines.push(`Sessions: *${sessions}* · Unique users: *${users}* · Bot sessions: ${bots}`);
         lines.push(`Pages/session: *${pagesPerSession}*\n`);
     }
-
     // ── Scroll depth
     const scroll = findMetric(urlData, "ScrollDepth");
     if (scroll && typeof scroll.scrollDepth === "number") {
         lines.push(`*📜 Avg Scroll Depth:* ${scroll.scrollDepth.toFixed(0)}%\n`);
     }
-
     // ── UX signals (dead clicks, rage clicks, quick-backs, errors)
     const signals = [
         { metric: "DeadClickCount", emoji: "💀", label: "Dead Clicks", filter: "DeadClick" },
@@ -109,8 +78,7 @@ function buildReport(
         { metric: "ErrorClickCount", emoji: "🔴", label: "Error Clicks", filter: "ErrorClick" },
         { metric: "ScriptErrorCount", emoji: "⚠️", label: "JS Errors", filter: "JavascriptError" },
     ];
-
-    const uxLines: string[] = [];
+    const uxLines = [];
     for (const s of signals) {
         const m = findMetric(urlData, s.metric);
         if (m) {
@@ -127,7 +95,6 @@ function buildReport(
         lines.push(...uxLines);
         lines.push("");
     }
-
     // ── Top pages
     const pages = findMetricList(urlData, "PopularPages");
     if (pages.length > 0) {
@@ -140,12 +107,9 @@ function buildReport(
         }
         lines.push("");
     }
-
     // ── Referrers
     const referrers = findMetricList(urlData, "ReferrerUrl");
-    const externalRefs = referrers.filter(
-        (r) => r.name && !String(r.name).includes("xiri.ai")
-    );
+    const externalRefs = referrers.filter((r) => r.name && !String(r.name).includes("xiri.ai"));
     if (externalRefs.length > 0) {
         lines.push(`*🔗 External Referrers*`);
         for (const r of externalRefs.slice(0, 5)) {
@@ -153,7 +117,6 @@ function buildReport(
         }
         lines.push("");
     }
-
     // ── Devices
     const deviceTraffic = findMetricList(deviceData, "Traffic");
     if (deviceTraffic.length > 0) {
@@ -169,17 +132,13 @@ function buildReport(
             lines.push("");
         }
     }
-
     // ── Dashboard link
     lines.push(`<${CLARITY_DASHBOARD}|📈 Open Clarity Dashboard>`);
     lines.push(`\n_Auto-generated from Microsoft Clarity_`);
-
     return lines.join("\n");
 }
-
 /* ─── Google Chat ─────────────────────── */
-
-async function postToChat(webhookUrl: string, text: string): Promise<void> {
+async function postToChat(webhookUrl, text) {
     const res = await fetch(webhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json; charset=UTF-8" },
@@ -189,46 +148,35 @@ async function postToChat(webhookUrl: string, text: string): Promise<void> {
         throw new Error(`Chat webhook failed: ${res.status} ${await res.text()}`);
     }
 }
-
 /* ─── Scheduled function ──────────────── */
-
-export const dailyClarityAnalysis = onSchedule(
-    {
-        schedule: "every day 08:00",
-        timeZone: "America/New_York",
-        secrets: [clarityApiToken, chatWebhookUrl],
-        region: "us-central1",
-    },
-    async () => {
-        const token = clarityApiToken.value();
-        const webhook = chatWebhookUrl.value();
-
-        // Yesterday's data
-        const end = new Date();
-        end.setDate(end.getDate() - 1);
-        const start = new Date();
-        start.setDate(start.getDate() - 1);
-
-        const startDate = fmtDate(start);
-        const endDate = fmtDate(end);
-        const dateRange = startDate;
-
-        console.log(`Fetching Clarity data for ${dateRange}`);
-
-        const [urlData, deviceData] = await Promise.all([
-            fetchClarityData(token, "Url", startDate, endDate),
-            fetchClarityData(token, "Device", startDate, endDate),
-        ]);
-
-        if (!urlData) {
-            console.error("Failed to fetch Clarity URL data — skipping report.");
-            return;
-        }
-
-        const report = buildReport(urlData, deviceData ?? [], dateRange);
-        console.log("Report:\n", report);
-
-        await postToChat(webhook, report);
-        console.log("✅ Daily Clarity report posted to Google Chat.");
+exports.dailyClarityAnalysis = (0, scheduler_1.onSchedule)({
+    schedule: "every day 08:00",
+    timeZone: "America/New_York",
+    secrets: [clarityApiToken, chatWebhookUrl],
+    region: "us-central1",
+}, async () => {
+    const token = clarityApiToken.value();
+    const webhook = chatWebhookUrl.value();
+    // Yesterday's data
+    const end = new Date();
+    end.setDate(end.getDate() - 1);
+    const start = new Date();
+    start.setDate(start.getDate() - 1);
+    const startDate = fmtDate(start);
+    const endDate = fmtDate(end);
+    const dateRange = startDate;
+    console.log(`Fetching Clarity data for ${dateRange}`);
+    const [urlData, deviceData] = await Promise.all([
+        fetchClarityData(token, "Url", startDate, endDate),
+        fetchClarityData(token, "Device", startDate, endDate),
+    ]);
+    if (!urlData) {
+        console.error("Failed to fetch Clarity URL data — skipping report.");
+        return;
     }
-);
+    const report = buildReport(urlData, deviceData ?? [], dateRange);
+    console.log("Report:\n", report);
+    await postToChat(webhook, report);
+    console.log("✅ Daily Clarity report posted to Google Chat.");
+});
+//# sourceMappingURL=dailyClarityAnalysis.js.map

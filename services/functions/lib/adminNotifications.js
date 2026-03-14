@@ -10,9 +10,9 @@
  *   firebase functions:secrets:set GOOGLE_CHAT_WEBHOOK_URL
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onNewUserSignup = void 0;
+exports.notifyNewCompany = void 0;
 exports.notifyAdminSubscription = notifyAdminSubscription;
-const identity_1 = require("firebase-functions/v2/identity");
+const firestore_1 = require("firebase-functions/v2/firestore");
 const params_1 = require("firebase-functions/params");
 const chatWebhookUrl = (0, params_1.defineSecret)("GOOGLE_CHAT_WEBHOOK_URL");
 /**
@@ -36,12 +36,22 @@ async function postToChat(webhookUrl, card, threadKey) {
     }
 }
 /**
- * Firebase Auth blocking trigger — fires before a new user is created.
+ * Firestore trigger — fires when a new company document is created.
+ * This happens right after a user signs up and the app creates their company doc.
  * Creates a NEW THREAD in Google Chat for this user.
  */
-exports.onNewUserSignup = (0, identity_1.beforeUserCreated)({ secrets: [chatWebhookUrl], region: "us-central1" }, async (event) => {
-    const { email, displayName, uid } = event.data;
-    const method = event.additionalUserInfo?.providerId === "google.com" ? "Google" : "Email";
+exports.notifyNewCompany = (0, firestore_1.onDocumentCreated)({
+    document: "companies/{companyId}",
+    secrets: [chatWebhookUrl],
+    region: "us-central1",
+}, async (event) => {
+    const snap = event.data;
+    if (!snap)
+        return;
+    const data = snap.data();
+    const email = data?.ownerEmail || data?.email || "Unknown";
+    const displayName = data?.ownerName || data?.name || "Not provided";
+    const uid = data?.ownerId || event.params.companyId;
     const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
     try {
         await postToChat(chatWebhookUrl.value(), {
@@ -50,13 +60,13 @@ exports.onNewUserSignup = (0, identity_1.beforeUserCreated)({ secrets: [chatWebh
                     card: {
                         header: {
                             title: "🎉  New User Signup!",
-                            subtitle: email || "Unknown",
+                            subtitle: email,
                         },
                         sections: [{
                                 widgets: [
-                                    { decoratedText: { topLabel: "Email", text: email || "N/A", startIcon: { knownIcon: "EMAIL" } } },
-                                    { decoratedText: { topLabel: "Name", text: displayName || "Not provided", startIcon: { knownIcon: "PERSON" } } },
-                                    { decoratedText: { topLabel: "Signup Method", text: method === "Google" ? "🔵  Google" : "📧  Email & Password" } },
+                                    { decoratedText: { topLabel: "Email", text: email, startIcon: { knownIcon: "EMAIL" } } },
+                                    { decoratedText: { topLabel: "Name", text: displayName, startIcon: { knownIcon: "PERSON" } } },
+                                    { decoratedText: { topLabel: "Company", text: data?.name || "Not set yet" } },
                                     { decoratedText: { topLabel: "Signed Up (ET)", text: `🕐  ${timestamp}` } },
                                 ],
                             }],
@@ -68,7 +78,6 @@ exports.onNewUserSignup = (0, identity_1.beforeUserCreated)({ secrets: [chatWebh
     catch (err) {
         console.error("Failed to send Google Chat signup notification:", err);
     }
-    return;
 });
 /**
  * Post a subscription notification as a REPLY to the user's signup thread.

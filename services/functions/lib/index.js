@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendProposal = exports.onNewUserSignup = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
+exports.sendProposal = exports.dailyClarityAnalysis = exports.resendWebhook = exports.notifyNewCompany = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
 // Stripe integration
 var stripe_1 = require("./stripe");
 Object.defineProperty(exports, "createCheckoutSession", { enumerable: true, get: function () { return stripe_1.createCheckoutSession; } });
@@ -54,7 +54,13 @@ Object.defineProperty(exports, "createBidWithLimit", { enumerable: true, get: fu
 Object.defineProperty(exports, "createContactWithLimit", { enumerable: true, get: function () { return limitEnforcement_1.createContactWithLimit; } });
 // Admin notifications (new signup + new subscription alerts)
 var adminNotifications_1 = require("./adminNotifications");
-Object.defineProperty(exports, "onNewUserSignup", { enumerable: true, get: function () { return adminNotifications_1.onNewUserSignup; } });
+Object.defineProperty(exports, "notifyNewCompany", { enumerable: true, get: function () { return adminNotifications_1.notifyNewCompany; } });
+// Resend email engagement webhooks (open/click tracking)
+var resendWebhook_1 = require("./resendWebhook");
+Object.defineProperty(exports, "resendWebhook", { enumerable: true, get: function () { return resendWebhook_1.resendWebhook; } });
+// Daily Clarity UX analysis (scheduled — 8 AM ET)
+var dailyClarityAnalysis_1 = require("./dailyClarityAnalysis");
+Object.defineProperty(exports, "dailyClarityAnalysis", { enumerable: true, get: function () { return dailyClarityAnalysis_1.dailyClarityAnalysis; } });
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.
@@ -126,6 +132,7 @@ exports.sendProposal = (0, https_1.onCall)({ secrets: [resendApiKey], region: "u
             status: "sent",
             sentAt: new Date().toISOString(),
             sentToEmail: data.toEmail,
+            emailId: emailResult?.data?.id || null,
             updatedAt: new Date().toISOString(),
         });
         return {
