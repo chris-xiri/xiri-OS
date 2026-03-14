@@ -423,3 +423,93 @@
     background: var(--bg-surface-hover);
     color: var(--text-primary);
 }
+
+/* ─── Mobile Responsive ─── */
+@media (max-width: 768px) {
+    .dash-welcome {
+        margin-bottom: 1.25rem;
+    }
+
+    .dash-welcome h1 {
+        font-size: 1.25rem;
+    }
+
+    .dash-subtitle {
+        font-size: 0.8125rem;
+    }
+
+    .dash-tier-badge {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.6875rem;
+    }
+
+    /* 2-column compact stats grid */
+    .dash-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.625rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .dash-card {
+        padding: 0.875rem;
+        border-radius: 10px;
+    }
+
+    .dash-card-value {
+        font-size: 1.375rem;
+    }
+
+    .dash-card-label {
+        font-size: 0.6875rem;
+    }
+
+    /* Stack quick actions, bigger touch targets */
+    .dash-actions {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .dash-action {
+        padding: 0.875rem;
+        border-radius: 10px;
+    }
+
+    /* Press-down feedback for touch */
+    .dash-card-link:active,
+    .dash-action:active {
+        transform: scale(0.97);
+        transition: transform 80ms ease;
+    }
+
+    /* Section headers */
+    .dash-section h2 {
+        font-size: 0.9375rem;
+        margin: 0 0 0.75rem;
+    }
+
+    /* Checklist — always show arrows (no hover on touch) */
+    .dash-checklist-arrow {
+        opacity: 0.5;
+    }
+
+    .dash-checklist-item {
+        padding: 0.75rem;
+    }
+
+    /* Draft bids — always show "Continue" (no hover on touch) */
+    .dash-draft-continue {
+        opacity: 1;
+    }
+
+    .dash-draft-row {
+        padding: 0.875rem 0.75rem;
+    }
+
+    .dash-draft-row:active {
+        background: var(--bg-surface-hover);
+    }
+
+    .dash-draft-name {
+        font-size: 0.875rem;
+    }
+}
