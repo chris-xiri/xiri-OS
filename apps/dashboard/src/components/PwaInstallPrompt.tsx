@@ -95,8 +95,8 @@ export default function PwaInstallPrompt() {
                     <strong>Install xiriOS</strong>
                     <span>
                         {showIosPrompt
-                            ? <>Tap <strong>Share</strong> then <strong>"Add to Home Screen"</strong></>
-                            : "Add to your home screen for the best experience"}
+                            ? <>Tap <strong>Share</strong> → <strong>"Add to Home Screen"</strong> for instant access</>
+                            : "Instant access to bids & proposals — no browser needed"}
                     </span>
                 </div>
             </div>
