@@ -5,7 +5,7 @@ import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { BUILDING_TYPES, CLEANING_TASKS, FREQUENCIES, ROOM_TYPES, TASK_FREQUENCY_OPTIONS, generateProposal } from "@xiri-facility-solutions/shared";
 import type { RoomScope, ProposalReference } from "@xiri-facility-solutions/shared";
-import { saveAs } from "file-saver";
+
 import type { Bid, ProposalTerms } from "./Bids";
 import type { Contact } from "./Contacts";
 import { hasFeature } from "../lib/rbac";
@@ -349,9 +349,30 @@ export default function BidDetail() {
         });
 
         trackProposalGenerated();
-        const pdfBlob = pdfDoc.output("blob");
+        const pdfBlob = new Blob([pdfDoc.output("arraybuffer")], { type: "application/pdf" });
 
-        // Try native Save As dialog first (guarantees correct filename)
+        // Stamp download timestamp
+        const stampDownload = () => {
+            if (companyId && bidId) {
+                updateDoc(doc(db, "companies", companyId, "bids", bidId), { proposalDownloadedAt: new Date().toISOString() }).catch(() => { });
+            }
+        };
+
+        // Detect mobile / PWA standalone
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+            (window.matchMedia?.("(display-mode: standalone)").matches);
+
+        if (isMobile) {
+            // Mobile: open PDF in new tab — triggers native PDF viewer / share sheet
+            const url = URL.createObjectURL(pdfBlob);
+            window.open(url, "_blank");
+            // Revoke after a delay to allow the viewer to load
+            setTimeout(() => URL.revokeObjectURL(url), 60_000);
+            stampDownload();
+            return;
+        }
+
+        // Desktop: try native Save As dialog first (Chrome/Edge)
         if ("showSaveFilePicker" in window) {
             try {
                 const handle = await (window as any).showSaveFilePicker({
@@ -364,10 +385,7 @@ export default function BidDetail() {
                 const writable = await handle.createWritable();
                 await writable.write(pdfBlob);
                 await writable.close();
-                // Stamp download timestamp
-                if (companyId && bidId) {
-                    updateDoc(doc(db, "companies", companyId, "bids", bidId), { proposalDownloadedAt: new Date().toISOString() }).catch(() => { });
-                }
+                stampDownload();
                 return;
             } catch (err: any) {
                 if (err.name === "AbortError") return; // User cancelled
@@ -375,12 +393,20 @@ export default function BidDetail() {
             }
         }
 
-        // Fallback: file-saver
-        saveAs(pdfBlob, filename);
-        // Stamp download timestamp
-        if (companyId && bidId) {
-            updateDoc(doc(db, "companies", companyId, "bids", bidId), { proposalDownloadedAt: new Date().toISOString() }).catch(() => { });
-        }
+        // Fallback: create a temporary <a> element with download attribute
+        const url = URL.createObjectURL(pdfBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        // Clean up
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 1000);
+        stampDownload();
     }, [bid, contact, companyData, localTerms, fetchCoiDataUrl]);
 
     const [emailSending, setEmailSending] = useState(false);
