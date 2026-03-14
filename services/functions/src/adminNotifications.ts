@@ -9,7 +9,7 @@
  *   firebase functions:secrets:set GOOGLE_CHAT_WEBHOOK_URL
  */
 
-import { beforeUserCreated } from "firebase-functions/v2/identity";
+import { onDocumentCreated } from "firebase-functions/v2/firestore";
 import { defineSecret } from "firebase-functions/params";
 
 const chatWebhookUrl = defineSecret("GOOGLE_CHAT_WEBHOOK_URL");
@@ -42,14 +42,24 @@ async function postToChat(
 }
 
 /**
- * Firebase Auth blocking trigger — fires before a new user is created.
+ * Firestore trigger — fires when a new company document is created.
+ * This happens right after a user signs up and the app creates their company doc.
  * Creates a NEW THREAD in Google Chat for this user.
  */
-export const onNewUserSignup = beforeUserCreated(
-    { secrets: [chatWebhookUrl], region: "us-central1" },
+export const onNewUserSignup = onDocumentCreated(
+    {
+        document: "companies/{companyId}",
+        secrets: [chatWebhookUrl],
+        region: "us-central1",
+    },
     async (event) => {
-        const { email, displayName, uid } = event.data;
-        const method = event.additionalUserInfo?.providerId === "google.com" ? "Google" : "Email";
+        const snap = event.data;
+        if (!snap) return;
+
+        const data = snap.data();
+        const email = data?.ownerEmail || data?.email || "Unknown";
+        const displayName = data?.ownerName || data?.name || "Not provided";
+        const uid = data?.ownerId || event.params.companyId;
         const timestamp = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
 
         try {
@@ -61,13 +71,13 @@ export const onNewUserSignup = beforeUserCreated(
                         card: {
                             header: {
                                 title: "🎉  New User Signup!",
-                                subtitle: email || "Unknown",
+                                subtitle: email,
                             },
                             sections: [{
                                 widgets: [
-                                    { decoratedText: { topLabel: "Email", text: email || "N/A", startIcon: { knownIcon: "EMAIL" } } },
-                                    { decoratedText: { topLabel: "Name", text: displayName || "Not provided", startIcon: { knownIcon: "PERSON" } } },
-                                    { decoratedText: { topLabel: "Signup Method", text: method === "Google" ? "🔵  Google" : "📧  Email & Password" } },
+                                    { decoratedText: { topLabel: "Email", text: email, startIcon: { knownIcon: "EMAIL" } } },
+                                    { decoratedText: { topLabel: "Name", text: displayName, startIcon: { knownIcon: "PERSON" } } },
+                                    { decoratedText: { topLabel: "Company", text: data?.name || "Not set yet" } },
                                     { decoratedText: { topLabel: "Signed Up (ET)", text: `🕐  ${timestamp}` } },
                                 ],
                             }],
@@ -80,8 +90,6 @@ export const onNewUserSignup = beforeUserCreated(
         } catch (err) {
             console.error("Failed to send Google Chat signup notification:", err);
         }
-
-        return;
     }
 );
 
