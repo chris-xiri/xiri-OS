@@ -81,3 +81,31 @@
 .trial-banner-over .trial-banner-btn:hover {
     background: linear-gradient(135deg, #d97706, #dc2626);
 }
+
+/* Mobile: stack banner content vertically */
+@media (max-width: 768px) {
+    .trial-banner {
+        flex-wrap: wrap;
+        padding: 8px 12px;
+        gap: 6px;
+        font-size: 12px;
+    }
+
+    .trial-banner-content {
+        flex: 1 1 100%;
+    }
+
+    .trial-banner-text {
+        font-size: 12px;
+    }
+
+    .trial-banner-usage {
+        font-size: 11px;
+    }
+
+    .trial-banner-btn {
+        width: 100%;
+        text-align: center;
+        padding: 6px 12px;
+    }
+}
