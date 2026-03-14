@@ -3,6 +3,7 @@ import { Toaster } from "react-hot-toast";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import Sidebar from "./components/Sidebar";
 import TrialBanner from "./components/TrialBanner";
+import PwaInstallPrompt from "./components/PwaInstallPrompt";
 import BottomNav from "./components/BottomNav";
 import FeatureGate from "./components/FeatureGate";
 import Login from "./pages/Login";
@@ -45,6 +46,7 @@ function ProtectedRoute() {
       <Sidebar />
       <div className="app-content-wrapper">
         <TrialBanner />
+        <PwaInstallPrompt />
         <main className="app-main">
           <Outlet />
         </main>
