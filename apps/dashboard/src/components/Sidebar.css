@@ -270,4 +270,43 @@
     .sidebar-logo {
         display: none;
     }
+
+    /* Always show text labels on mobile, even if collapsed on desktop */
+    .sidebar.collapsed .sidebar-text {
+        display: inline !important;
+    }
+
+    /* Show tier badge on mobile */
+    .sidebar.collapsed .sidebar-tier {
+        display: flex !important;
+    }
+}
+
+/* Hide text labels when collapsed on desktop */
+.sidebar.collapsed .sidebar-text {
+    display: none;
+}
+
+.sidebar.collapsed .sidebar-tier {
+    display: none;
+}
+
+/* User profile collapsed on desktop: just show avatar centered */
+.sidebar-user--collapsed {
+    justify-content: center;
+}
+
+.sidebar-user--collapsed .sidebar-user-info {
+    display: none;
+}
+
+/* But on mobile, always show full user info */
+@media (max-width: 768px) {
+    .sidebar-user--collapsed {
+        justify-content: flex-start;
+    }
+
+    .sidebar-user--collapsed .sidebar-user-info {
+        display: block !important;
+    }
 }

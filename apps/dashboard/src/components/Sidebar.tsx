@@ -154,7 +154,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
             {/* Logo + collapse toggle */}
             <div className="sidebar-logo">
                 <span className="sidebar-logo-dot" />
-                {!collapsed && <span>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>}
+                <span className="sidebar-text">xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
                 <button className="sidebar-collapse-btn" onClick={toggleCollapse} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} style={{ cursor: "pointer" }}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         {collapsed ? (
@@ -196,9 +196,9 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
                             title={collapsed ? item.label : undefined}
                         >
                             <SidebarIcon name={item.icon} />
-                            {!collapsed && <span>{item.label}</span>}
-                            {!collapsed && locked && (
-                                <svg className="lock-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <span className="sidebar-text">{item.label}</span>
+                            {locked && (
+                                <svg className="lock-icon sidebar-text" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
                                     <path d="M7 11V7a5 5 0 0 1 10 0v4" />
                                 </svg>
@@ -212,7 +212,7 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
             <div className="sidebar-bottom">
                 <NavLink to="/settings" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} title={collapsed ? "Settings" : undefined}>
                     <SidebarIcon name="settings" />
-                    {!collapsed && <span>Settings</span>}
+                    <span className="sidebar-text">Settings</span>
                 </NavLink>
 
                 <button className="sidebar-link" onClick={toggleTheme} title={collapsed ? (theme === "dark" ? "Light mode" : "Dark mode") : undefined}>
@@ -229,30 +229,22 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
                             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                         </svg>
                     )}
-                    {!collapsed && <span>{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>}
+                    <span className="sidebar-text">{theme === "dark" ? "Light Mode" : "Dark Mode"}</span>
                 </button>
 
                 <button className="sidebar-link sidebar-logout" onClick={handleLogout} title={collapsed ? "Sign Out" : undefined}>
                     <SidebarIcon name="log-out" />
-                    {!collapsed && <span>Sign Out</span>}
+                    <span className="sidebar-text">Sign Out</span>
                 </button>
 
-                {profile && !collapsed && (
-                    <div className="sidebar-user">
+                {profile && (
+                    <div className={`sidebar-user ${collapsed ? "sidebar-user--collapsed" : ""}`}>
                         <div className="sidebar-avatar">
                             {(profile.displayName || profile.email)[0]?.toUpperCase()}
                         </div>
-                        <div className="sidebar-user-info">
+                        <div className="sidebar-user-info sidebar-text">
                             <div className="sidebar-user-name">{profile.displayName || "User"}</div>
                             <div className="sidebar-user-email">{profile.email}</div>
-                        </div>
-                    </div>
-                )}
-
-                {profile && collapsed && (
-                    <div className="sidebar-user-collapsed" title={profile.displayName || profile.email}>
-                        <div className="sidebar-avatar">
-                            {(profile.displayName || profile.email)[0]?.toUpperCase()}
                         </div>
                     </div>
                 )}
