@@ -20,6 +20,9 @@ export { onNewUserSignup } from "./adminNotifications";
 // Resend email engagement webhooks (open/click tracking)
 export { resendWebhook } from "./resendWebhook";
 
+// Daily Clarity UX analysis (scheduled — 8 AM ET)
+export { dailyClarityAnalysis } from "./dailyClarityAnalysis";
+
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.
