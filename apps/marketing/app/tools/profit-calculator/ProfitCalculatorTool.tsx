@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Navbar from "../../components/Navbar";
+import StickyResultBanner from "../StickyResultBanner";
 import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 
 /* ── Embedded data (BLS tax + overhead rates) ── */
@@ -73,11 +74,20 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
 
     return (
         <>
+            <style>{`
+                @media (max-width: 768px) {
+                    .tool-hero-pc { min-height: auto !important; padding-top: 80px !important; padding-bottom: 1rem !important; }
+                    .tool-hero-pc h1 { font-size: 1.5rem !important; }
+                    .tool-hero-pc p { font-size: 0.9375rem !important; margin-top: 0.5rem !important; }
+                    .pc-grid { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
+                    .sticky-result-spacer-pc { height: 60px; }
+                }
+            `}</style>
             <Navbar />
 
             {/* Hero */}
             <section
-                className="section noise"
+                className="section noise tool-hero-pc"
                 style={{
                     minHeight: "40vh",
                     display: "flex",
@@ -103,7 +113,7 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
             {/* Calculator */}
             <section className="section" style={{ background: "#141829", paddingTop: "2rem" }}>
                 <div className="section-inner" style={{ maxWidth: "900px", margin: "0 auto" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                    <div className="pc-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                         {/* Inputs */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                             <h2 style={{ fontFamily: "var(--font-outfit)", fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>
@@ -248,6 +258,14 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
             <footer style={{ background: "#0c0f1a", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "2rem", textAlign: "center" }}>
                 <p style={{ color: "#555d7e", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} XIRI LLC · Free tool — no login required.</p>
             </footer>
+
+            <div className="sticky-result-spacer-pc" />
+            <StickyResultBanner
+                label="Monthly Profit"
+                value={calc.monthlyRevenue > 0 ? fmt(calc.profit) : null}
+                valueColor={calc.profit >= 0 ? "#00d4aa" : "#ef4444"}
+                sublabel={`${calc.margin.toFixed(1)}% margin`}
+            />
         </>
     );
 }

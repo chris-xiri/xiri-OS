@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 import Navbar from "../../components/Navbar";
+import StickyResultBanner from "../StickyResultBanner";
 
 /* ── BLS metro median janitor wages — sourced from OEWS May 2024 ── */
 const METROS: { id: string; name: string; wage: number; state: string }[] = [
@@ -90,10 +91,19 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
 
     return (
         <>
+            <style>{`
+                @media (max-width: 768px) {
+                    .tool-hero-pck { min-height: auto !important; padding-top: 80px !important; padding-bottom: 1rem !important; }
+                    .tool-hero-pck h1 { font-size: 1.5rem !important; }
+                    .tool-hero-pck p { font-size: 0.9375rem !important; margin-top: 0.5rem !important; }
+                    .pck-grid { grid-template-columns: 1fr !important; gap: 1.25rem !important; }
+                    .sticky-result-spacer-pck { height: 60px; }
+                }
+            `}</style>
             <Navbar />
 
             {/* Hero */}
-            <section className="section noise" style={{ minHeight: "40vh", display: "flex", alignItems: "center", paddingTop: "120px", paddingBottom: "2rem", background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,212,170,0.08) 0%, transparent 60%), #0c0f1a" }}>
+            <section className="section noise tool-hero-pck" style={{ minHeight: "40vh", display: "flex", alignItems: "center", paddingTop: "120px", paddingBottom: "2rem", background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,212,170,0.08) 0%, transparent 60%), #0c0f1a" }}>
                 <div className="section-inner" style={{ textAlign: "center", width: "100%" }}>
                     <span className="section-label">📍 Free Tool</span>
                     <h1>Cleaning <span style={{ color: "#00d4aa" }}>Price Checker</span></h1>
@@ -106,7 +116,7 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
             {/* Calculator */}
             <section className="section" style={{ background: "#141829", paddingTop: "2rem" }}>
                 <div className="section-inner" style={{ maxWidth: "900px", margin: "0 auto" }}>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
+                    <div className="pck-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2rem" }}>
                         {/* Inputs */}
                         <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                             <h2 style={{ fontFamily: "var(--font-outfit)", fontSize: "1.25rem", fontWeight: 700 }}>Your Market</h2>
@@ -227,6 +237,13 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
             <footer style={{ background: "#0c0f1a", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "2rem", textAlign: "center" }}>
                 <p style={{ color: "#555d7e", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} XIRI LLC · Free tool — no login required.</p>
             </footer>
+
+            <div className="sticky-result-spacer-pck" />
+            <StickyResultBanner
+                label="Standard Price"
+                value={calc.tiers[1] ? fmt(calc.tiers[1].monthly) + "/mo" : null}
+                sublabel={`${metroName}`}
+            />
         </>
     );
 }

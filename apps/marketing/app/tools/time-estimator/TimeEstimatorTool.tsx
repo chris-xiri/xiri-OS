@@ -3,6 +3,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { trackToolUsed, trackCtaClick } from "../../../lib/analytics";
 import Navbar from "../../components/Navbar";
+import StickyResultBanner from "../StickyResultBanner";
 
 /* ── ISSA 612 production rates by area type (sq ft per hour) ── */
 const AREA_TYPES = [
@@ -44,10 +45,18 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
 
     return (
         <>
+            <style>{`
+                @media (max-width: 768px) {
+                    .tool-hero-te { min-height: auto !important; padding-top: 80px !important; padding-bottom: 1rem !important; }
+                    .tool-hero-te h1 { font-size: 1.5rem !important; }
+                    .tool-hero-te p { font-size: 0.9375rem !important; margin-top: 0.5rem !important; }
+                    .sticky-result-spacer-te { height: 60px; }
+                }
+            `}</style>
             <Navbar />
 
             {/* Hero */}
-            <section className="section noise" style={{ minHeight: "40vh", display: "flex", alignItems: "center", paddingTop: "120px", paddingBottom: "2rem", background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,212,170,0.08) 0%, transparent 60%), #0c0f1a" }}>
+            <section className="section noise tool-hero-te" style={{ minHeight: "40vh", display: "flex", alignItems: "center", paddingTop: "120px", paddingBottom: "2rem", background: "radial-gradient(ellipse 80% 60% at 50% -10%, rgba(0,212,170,0.08) 0%, transparent 60%), #0c0f1a" }}>
                 <div className="section-inner" style={{ textAlign: "center", width: "100%" }}>
                     <span className="section-label">⏱️ Free Tool</span>
                     <h1>Cleaning Time <span style={{ color: "#00d4aa" }}>Estimator</span></h1>
@@ -185,6 +194,13 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
             <footer style={{ background: "#0c0f1a", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "2rem", textAlign: "center" }}>
                 <p style={{ color: "#555d7e", fontSize: "0.8125rem" }}>© {new Date().getFullYear()} XIRI LLC · Free tool — no login required.</p>
             </footer>
+
+            <div className="sticky-result-spacer-te" />
+            <StickyResultBanner
+                label="Per Cleaning"
+                value={fmtTime(calc.hoursPerCleaning)}
+                sublabel={crews > 1 ? `${fmtTime(calc.hoursPerCrewMember)} per crew member` : undefined}
+            />
         </>
     );
 }

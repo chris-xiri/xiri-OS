@@ -54,8 +54,16 @@ export default function ToolsPage() {
             <Navbar />
 
             {/* Hero */}
+            <style>{`
+                @media (max-width: 768px) {
+                    .tool-index-hero { min-height: auto !important; padding-top: 80px !important; padding-bottom: 1rem !important; }
+                    .tool-index-hero h1 { font-size: 1.5rem !important; }
+                    .tool-index-hero p { font-size: 0.9375rem !important; }
+                    .tool-index-grid { grid-template-columns: 1fr !important; }
+                }
+            `}</style>
             <section
-                className="section noise"
+                className="section noise tool-index-hero"
                 style={{
                     minHeight: "45vh",
                     display: "flex",
@@ -88,6 +96,7 @@ export default function ToolsPage() {
             <section className="section" style={{ background: "#141829" }}>
                 <div className="section-inner" style={{ maxWidth: "900px", margin: "0 auto" }}>
                     <div
+                        className="tool-index-grid"
                         style={{
                             display: "grid",
                             gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
