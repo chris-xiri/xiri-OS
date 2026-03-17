@@ -21,11 +21,7 @@ export default function Navbar() {
                 left: 0,
                 right: 0,
                 zIndex: 100,
-                padding: "0 2rem",
                 height: "72px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
                 background: scrolled ? "rgba(12, 15, 26, 0.85)" : "transparent",
                 backdropFilter: scrolled ? "blur(16px) saturate(180%)" : "none",
                 borderBottom: scrolled
@@ -34,6 +30,17 @@ export default function Navbar() {
                 transition: "all 300ms cubic-bezier(0.16, 1, 0.3, 1)",
             }}
         >
+          <div
+            style={{
+                maxWidth: "1200px",
+                margin: "0 auto",
+                padding: "0 2rem",
+                height: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+            }}
+          >
             {/* Logo */}
             <Link
                 href="/"
@@ -191,6 +198,7 @@ export default function Navbar() {
           }
         }
       `}</style>
+          </div>
         </nav>
     );
 }

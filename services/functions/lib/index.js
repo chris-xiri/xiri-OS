@@ -36,7 +36,7 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendProposal = exports.dailyClarityAnalysis = exports.resendWebhook = exports.notifyNewCompany = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
+exports.sendProposal = exports.dailyClarityAnalysis = exports.resendWebhook = exports.notifyNewCompany = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendOnboardingNudges = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
 // Stripe integration
 var stripe_1 = require("./stripe");
 Object.defineProperty(exports, "createCheckoutSession", { enumerable: true, get: function () { return stripe_1.createCheckoutSession; } });
@@ -48,6 +48,9 @@ Object.defineProperty(exports, "checkTrialExpiry", { enumerable: true, get: func
 // Trial reminder emails
 var trialReminders_1 = require("./trialReminders");
 Object.defineProperty(exports, "sendTrialReminders", { enumerable: true, get: function () { return trialReminders_1.sendTrialReminders; } });
+// Onboarding nudge emails (post-signup behavior triggers)
+var onboardingNudges_1 = require("./onboardingNudges");
+Object.defineProperty(exports, "sendOnboardingNudges", { enumerable: true, get: function () { return onboardingNudges_1.sendOnboardingNudges; } });
 // Server-side limit enforcement
 var limitEnforcement_1 = require("./limitEnforcement");
 Object.defineProperty(exports, "createBidWithLimit", { enumerable: true, get: function () { return limitEnforcement_1.createBidWithLimit; } });

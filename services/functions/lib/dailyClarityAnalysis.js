@@ -2,7 +2,7 @@
 /**
  * Daily Clarity UX Report — Scheduled Cloud Function
  *
- * Runs daily at 8 AM ET. Fetches raw Microsoft Clarity metrics
+ * Runs daily at 7:30 AM ET. Fetches raw Microsoft Clarity metrics
  * for the previous day and posts a formatted report to Google Chat.
  *
  * No AI analysis — just clean, actionable raw data with direct
@@ -150,7 +150,7 @@ async function postToChat(webhookUrl, text) {
 }
 /* ─── Scheduled function ──────────────── */
 exports.dailyClarityAnalysis = (0, scheduler_1.onSchedule)({
-    schedule: "every day 08:00",
+    schedule: "every day 07:30",
     timeZone: "America/New_York",
     secrets: [clarityApiToken, chatWebhookUrl],
     region: "us-central1",
