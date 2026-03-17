@@ -64,9 +64,9 @@ export function usePendingBid() {
             return;
         }
 
-        // Guard against stale pending bids (older than 1 hour)
+        // Guard against stale pending bids (older than 24 hours)
         const age = Date.now() - new Date(pending.savedAt).getTime();
-        if (age > 60 * 60 * 1000) {
+        if (age > 24 * 60 * 60 * 1000) {
             localStorage.removeItem(PENDING_BID_KEY);
             return;
         }
