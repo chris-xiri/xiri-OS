@@ -11,6 +11,16 @@ export default function Onboarding() {
     const [companyName, setCompanyName] = useState("");
     const [saving, setSaving] = useState(false);
 
+    // If there's a pending bid from the public calculator, go to dashboard
+    // so usePendingBid can fire and navigate to the bid; otherwise start
+    // the Company Setup Wizard.
+    const getPostOnboardingPath = () => {
+        try {
+            if (localStorage.getItem("xiri_pendingBid")) return "/";
+        } catch { /* localStorage unavailable */ }
+        return "/company";
+    };
+
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         if (!profile?.companyId || !companyName.trim()) return;
@@ -21,7 +31,7 @@ export default function Onboarding() {
                 name: companyName.trim(),
             });
             completeOnboarding();
-            navigate("/", { replace: true });
+            navigate(getPostOnboardingPath(), { replace: true });
         } catch (err) {
             console.error("Failed to update company name:", err);
         } finally {
@@ -31,7 +41,7 @@ export default function Onboarding() {
 
     const handleSkip = () => {
         completeOnboarding();
-        navigate("/", { replace: true });
+        navigate(getPostOnboardingPath(), { replace: true });
     };
 
     return (
