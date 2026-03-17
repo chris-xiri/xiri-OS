@@ -11,6 +11,9 @@ export { checkTrialExpiry } from "./checkTrialExpiry";
 // Trial reminder emails
 export { sendTrialReminders } from "./trialReminders";
 
+// Onboarding nudge emails (post-signup behavior triggers)
+export { sendOnboardingNudges } from "./onboardingNudges";
+
 // Server-side limit enforcement
 export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
 

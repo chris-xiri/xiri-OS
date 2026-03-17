@@ -15,6 +15,7 @@ import { doc, getDoc, onSnapshot, setDoc } from "firebase/firestore";
 import { auth, db } from "../lib/firebase";
 import { setUserId } from "../lib/analytics";
 import { getAcquisitionSource } from "../lib/acquisition";
+import Clarity from "@microsoft/clarity";
 import type { Tier } from "../lib/rbac";
 
 /* ─── Types ─── */
@@ -74,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             if (firebaseUser) {
                 setUser(firebaseUser);
                 setUserId(firebaseUser.uid);
+                Clarity.identify(firebaseUser.uid, undefined, undefined, firebaseUser.email || undefined);
 
                 try {
                     const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
