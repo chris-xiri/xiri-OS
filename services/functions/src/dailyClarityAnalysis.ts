@@ -16,7 +16,6 @@ import { onSchedule } from "firebase-functions/v2/scheduler";
 import { defineSecret } from "firebase-functions/params";
 
 const clarityApiToken = defineSecret("CLARITY_API_TOKEN");
-const chatWebhookUrl = defineSecret("GOOGLE_CHAT_WEBHOOK_URL");
 
 const CLARITY_PROJECT_ID = "vtptoqsjih";
 const CLARITY_DASHBOARD = `https://clarity.microsoft.com/projects/view/${CLARITY_PROJECT_ID}/dashboard`;
@@ -196,12 +195,12 @@ export const dailyClarityAnalysis = onSchedule(
     {
         schedule: "every day 07:30",
         timeZone: "America/New_York",
-        secrets: [clarityApiToken, chatWebhookUrl],
+        secrets: [clarityApiToken],
         region: "us-central1",
     },
     async () => {
         const token = clarityApiToken.value();
-        const webhook = chatWebhookUrl.value();
+        const webhook = "https://chat.googleapis.com/v1/spaces/AAQAovdl_QE/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=De8UCx-guZrJtM7wyOPyR-MulDljbYp12KpjqgsJFkU";
 
         // Yesterday's data
         const end = new Date();
