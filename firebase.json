@@ -2,6 +2,9 @@
     "firestore": {
         "rules": "firestore.rules"
     },
+    "storage": {
+        "rules": "storage.rules"
+    },
     "functions": {
         "source": "services/functions",
         "runtime": "nodejs20"

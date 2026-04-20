@@ -1,0 +1,44 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper: is the user authenticated?
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: does the user belong to this company?
+    function belongsToCompany(companyId) {
+      return isSignedIn() &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.companyId == companyId;
+    }
+
+    // Company assets (logos, insurance docs, etc.)
+    match /companies/{companyId}/{allPaths=**} {
+      allow read: if isSignedIn();
+      allow write: if belongsToCompany(companyId);
+    }
+
+    // Public/Shared assets
+    match /social-images/{imageId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    match /social-videos/{videoId} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Unauthenticated vendor onboarding uploads (e.g. ACORD 25)
+    match /acord25/{vendorId}/{fileName} {
+      allow read: if true; 
+      allow write: if true;
+    }
+
+    // Default catch-all for authenticated users
+    match /{allPaths=**} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

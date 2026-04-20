@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import type { Feature } from "../lib/rbac";
 import { FEATURE_META, requiredTier } from "../lib/rbac";
@@ -23,15 +25,14 @@ export default function UpgradePrompt({
     const [loading, setLoading] = useState(false);
 
     const handleUpgrade = async () => {
-        if (!profile?.companyId) return;
+        if (!profile?.companyId || loading) return;
 
         setLoading(true);
         try {
-            const { httpsCallable } = await import("firebase/functions");
-            const { functions } = await import("../lib/firebase");
             const createCheckoutSession = httpsCallable(functions, "createCheckoutSession");
 
             const needed = requiredTier(featureName);
+            trackSubscribeClicked(needed);
             const result = await createCheckoutSession({
                 companyId: profile.companyId,
                 tier: needed,
@@ -41,10 +42,8 @@ export default function UpgradePrompt({
             });
 
             const { sessionUrl } = result.data as { sessionUrl: string };
-            if (sessionUrl) {
-                trackSubscribeClicked(needed);
-                window.location.href = sessionUrl;
-            }
+            if (!sessionUrl) throw new Error("Missing checkout session URL");
+            window.location.href = sessionUrl;
         } catch (err) {
             console.error("Checkout error:", err);
             alert("Failed to start checkout. Please try again.");

@@ -3,13 +3,14 @@ import { trackSubscribeClicked, trackPurchaseCompleted } from "../lib/analytics"
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { TIER_INFO, getLimits, getTierFeatures, FEATURE_META, getUpgradeTier, type Tier, type Feature } from "../lib/rbac";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "../lib/firebase";
 import "./Settings.css";
 
 const TIER_ORDER: Tier[] = ["bid", "bid_plus", "grow", "pro", "business"];
 
 async function startCheckout(companyId: string, tier: string) {
-    const { httpsCallable } = await import("firebase/functions");
-    const { functions } = await import("../lib/firebase");
+    trackSubscribeClicked(tier);
     const createCheckout = httpsCallable(functions, "createCheckoutSession");
     const result = await createCheckout({
         companyId,
@@ -19,20 +20,19 @@ async function startCheckout(companyId: string, tier: string) {
         cancelUrl: window.location.href,
     });
     const { sessionUrl } = result.data as { sessionUrl: string };
-    trackSubscribeClicked(tier);
-    if (sessionUrl) (window.top || window).location.href = sessionUrl;
+    if (!sessionUrl) throw new Error("Missing checkout session URL");
+    (window.top || window).location.href = sessionUrl;
 }
 
 async function openPortal(companyId: string) {
-    const { httpsCallable } = await import("firebase/functions");
-    const { functions } = await import("../lib/firebase");
     const createPortal = httpsCallable(functions, "createPortalSession");
     const result = await createPortal({
         companyId,
         returnUrl: window.location.href,
     });
     const { portalUrl } = result.data as { portalUrl: string };
-    if (portalUrl) window.location.href = portalUrl;
+    if (!portalUrl) throw new Error("Missing portal URL");
+    window.location.href = portalUrl;
 }
 
 export default function Settings() {
@@ -50,6 +50,8 @@ export default function Settings() {
     const activeTab: Tab = VALID_TABS.includes(rawTab as Tab) ? (rawTab as Tab) : "account";
     const setActiveTab = (tab: Tab) => setSearchParams({ tab }, { replace: true });
     const [showPlans, setShowPlans] = useState(false);
+    const [loadingCheckoutTier, setLoadingCheckoutTier] = useState<Tier | null>(null);
+    const [portalLoading, setPortalLoading] = useState(false);
 
     // Track successful checkout return
     useEffect(() => {
@@ -207,9 +209,19 @@ export default function Settings() {
                                 <button
                                     className="settings-btn settings-btn-upgrade"
                                     style={{ cursor: "pointer" }}
-                                    onClick={() => profile?.companyId && startCheckout(profile.companyId, "bid_plus")}
+                                    disabled={loadingCheckoutTier !== null}
+                                    onClick={async () => {
+                                        if (!profile?.companyId || loadingCheckoutTier) return;
+                                        try {
+                                            setLoadingCheckoutTier("bid_plus");
+                                            await startCheckout(profile.companyId, "bid_plus");
+                                        } catch (err) {
+                                            console.error("Checkout failed:", err);
+                                            setLoadingCheckoutTier(null);
+                                        }
+                                    }}
                                 >
-                                    Subscribe
+                                    {loadingCheckoutTier === "bid_plus" ? "Redirecting to Stripe…" : "Subscribe"}
                                 </button>
                             )}
 
@@ -217,9 +229,19 @@ export default function Settings() {
                                 <button
                                     className="settings-btn settings-btn-outline"
                                     style={{ cursor: "pointer", marginTop: 8 }}
-                                    onClick={() => profile?.companyId && openPortal(profile.companyId)}
+                                    disabled={portalLoading}
+                                    onClick={async () => {
+                                        if (!profile?.companyId || portalLoading) return;
+                                        try {
+                                            setPortalLoading(true);
+                                            await openPortal(profile.companyId);
+                                        } catch (err) {
+                                            console.error("Portal open failed:", err);
+                                            setPortalLoading(false);
+                                        }
+                                    }}
                                 >
-                                    Manage Subscription
+                                    {portalLoading ? "Redirecting…" : "Manage Subscription"}
                                 </button>
                             )}
                         </section>
@@ -401,9 +423,19 @@ export default function Settings() {
                                                             cursor: "pointer",
                                                             ...(copy.popular ? { background: info.color, color: "#fff", borderColor: info.color } : {}),
                                                         }}
-                                                        onClick={() => profile?.companyId && startCheckout(profile.companyId, tier)}
+                                                        disabled={loadingCheckoutTier !== null}
+                                                        onClick={async () => {
+                                                            if (!profile?.companyId || loadingCheckoutTier) return;
+                                                            try {
+                                                                setLoadingCheckoutTier(tier);
+                                                                await startCheckout(profile.companyId, tier);
+                                                            } catch (err) {
+                                                                console.error("Checkout failed:", err);
+                                                                setLoadingCheckoutTier(null);
+                                                            }
+                                                        }}
                                                     >
-                                                        Upgrade to {info.name} →
+                                                        {loadingCheckoutTier === tier ? "Redirecting to Stripe…" : `Upgrade to ${info.name} →`}
                                                     </button>
                                                 ) : (
                                                     <span className="settings-plan-card-included">Included in your plan</span>

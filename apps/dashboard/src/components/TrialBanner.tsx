@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { db } from "../lib/firebase";
+import { httpsCallable } from "firebase/functions";
+import { db, functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { getLimits } from "../lib/rbac";
 import { trackTrialBannerShown, trackSubscribeClicked } from "../lib/analytics";
@@ -60,8 +61,6 @@ export default function TrialBanner() {
         const tier = subscription.tier === "bid" ? "bid_plus" : subscription.tier;
         trackSubscribeClicked(tier);
         try {
-            const { httpsCallable } = await import("firebase/functions");
-            const { functions } = await import("../lib/firebase");
             const createCheckout = httpsCallable(functions, "createCheckoutSession");
             const result = await createCheckout({
                 companyId: profile.companyId,
@@ -71,7 +70,8 @@ export default function TrialBanner() {
                 cancelUrl: window.location.href,
             });
             const { sessionUrl } = result.data as { sessionUrl: string };
-            if (sessionUrl) (window.top || window).location.href = sessionUrl;
+            if (!sessionUrl) throw new Error("Missing checkout session URL");
+            (window.top || window).location.href = sessionUrl;
         } catch (err) {
             console.error("Checkout error:", err);
         } finally {
@@ -104,10 +104,11 @@ export default function TrialBanner() {
                 </div>
             </div>
             <button className="trial-banner-btn" onClick={handleSubscribe} disabled={busy}>
-                {busy ? "Loading…" : "Subscribe Now"}
+                {busy ? "Redirecting to Stripe…" : "Subscribe Now"}
             </button>
             <button
                 className="trial-banner-dismiss"
+                disabled={busy}
                 onClick={() => { setDismissed(true); sessionStorage.setItem("trial-banner-dismissed", "1"); }}
                 aria-label="Dismiss trial banner"
             >
