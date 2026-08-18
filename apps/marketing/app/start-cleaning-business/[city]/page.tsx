@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "../../components/Navbar";
 import StartupPageTracker from "../../components/StartupPageTracker";
+import LaunchpadOptIn from "../../components/LaunchpadOptIn";
 import { UNIQUE_CITIES } from "../../../lib/cities";
 import { getCityMarketData, NATIONAL_MEDIAN_WAGE } from "../../../lib/market-data";
 import {
@@ -256,6 +257,13 @@ export default async function StartCleaningBusinessCityPage({
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* 7-Day Email Drip Course Opt-In */}
+            <section className="section" style={{ background: "#0c0f1a", padding: "1rem 1rem 3rem" }}>
+                <div className="section-inner" style={{ maxWidth: "800px", margin: "0 auto" }}>
+                    <LaunchpadOptIn cityName={`${city.name}, ${city.stateCode}`} />
                 </div>
             </section>
 

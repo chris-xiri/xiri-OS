@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Navbar from "../../components/Navbar";
 import BlogViewTracker from "../../components/BlogViewTracker";
+import LaunchpadOptIn from "../../components/LaunchpadOptIn";
 import { BLOG_POSTS, getPost } from "../../../lib/posts";
 
 export async function generateStaticParams() {
@@ -246,6 +247,13 @@ export default async function BlogPostPage({
                             )}
                         </div>
                     ))}
+                </div>
+            </section>
+
+            {/* 7-Day Email Drip Course Opt-In */}
+            <section className="section noise" style={{ background: "#0c0f1a", padding: "1rem 1rem 3rem" }}>
+                <div className="section-inner" style={{ maxWidth: "760px", margin: "0 auto" }}>
+                    <LaunchpadOptIn compact />
                 </div>
             </section>
 

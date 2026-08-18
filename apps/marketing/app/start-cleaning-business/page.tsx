@@ -3,6 +3,8 @@ import Navbar from "../components/Navbar";
 import { UNIQUE_CITIES, type City } from "../../lib/cities";
 import { STATE_DATA, NATIONAL_MEDIAN_WAGE, type StateMarketData } from "../../lib/market-data";
 
+import LaunchpadOptIn from "../components/LaunchpadOptIn";
+
 export const metadata: Metadata = {
     title: "How to Start a Cleaning Business (2026 Guide) | xiriOS",
     description:
@@ -156,6 +158,13 @@ export default function StartCleaningBusinessHub() {
                             </div>
                         ))}
                     </div>
+                </div>
+            </section>
+
+            {/* 7-Day Email Drip Course Opt-In */}
+            <section className="section" style={{ background: "#0c0f1a", padding: "1rem 1rem 3rem" }}>
+                <div className="section-inner" style={{ maxWidth: "800px", margin: "0 auto" }}>
+                    <LaunchpadOptIn />
                 </div>
             </section>
 
