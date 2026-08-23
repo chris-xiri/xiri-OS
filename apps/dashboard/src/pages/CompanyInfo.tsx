@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "../lib/firebase";
+import { httpsCallable } from "firebase/functions";
+import { db, storage, functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import AddressAutocomplete, { type StructuredAddress, EMPTY_ADDRESS } from "../components/AddressAutocomplete";
 import "./CompanyInfo.css";
@@ -231,21 +232,12 @@ const AI_PROMPTS: Record<string, { label: string; placeholder: string; recommend
 };
 
 async function generateWithAI(prompt: string): Promise<string> {
-    // Call Gemini Flash 2.0 via the Google AI API
-    const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-    if (!GEMINI_API_KEY) return "[Set VITE_GEMINI_API_KEY in .env to enable AI generation]";
     try {
-        const resp = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
-            {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-            }
-        );
-        const json = await resp.json();
-        return json?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-    } catch {
+        const generateFn = httpsCallable<{ prompt: string }, { text: string }>(functions, "generateWithAI");
+        const res = await generateFn({ prompt });
+        return res.data?.text || "";
+    } catch (err) {
+        console.error("AI generation failed:", err);
         return "[AI generation failed — enter text manually]";
     }
 }

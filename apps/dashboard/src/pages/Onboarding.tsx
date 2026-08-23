@@ -15,10 +15,7 @@ export default function Onboarding() {
     // so usePendingBid can fire and navigate to the bid; otherwise start
     // the Company Setup Wizard.
     const getPostOnboardingPath = () => {
-        try {
-            if (localStorage.getItem("xiri_pendingBid")) return "/";
-        } catch { /* localStorage unavailable */ }
-        return "/company";
+        return "/";
     };
 
     const handleSubmit = async (e: FormEvent) => {

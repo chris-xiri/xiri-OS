@@ -10,6 +10,7 @@ import type { Bid, ProposalTerms } from "./Bids";
 import type { Contact } from "./Contacts";
 import { hasFeature } from "../lib/rbac";
 import { trackProposalGenerated } from "../lib/analytics";
+import UpgradePrompt from "../components/UpgradePrompt";
 import "./BidDetail.css";
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -38,6 +39,7 @@ export default function BidDetail() {
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [references, setReferences] = useState<ProposalReference[]>([]);
     const [deleting, setDeleting] = useState(false);
+    const [showUpgrade, setShowUpgrade] = useState<"email_campaigns" | null>(null);
 
     const companyId = profile?.companyId;
 
@@ -413,7 +415,7 @@ export default function BidDetail() {
 
     const handleSendEmail = useCallback(async () => {
         if (!hasFeature(subscription.tier, "email_campaigns")) {
-            alert("Email sending is available on the Bid Plus plan and above. Upgrade to unlock!");
+            setShowUpgrade("email_campaigns");
             return;
         }
         if (!bid || !contact?.email) {
@@ -1071,6 +1073,14 @@ export default function BidDetail() {
                             </div>
                         </div>
                         <iframe src={previewUrl} className="bd-preview-iframe" title="Proposal Preview" />
+                    </div>
+                </div>
+            )}
+            {/* Upgrade Modal */}
+            {showUpgrade && (
+                <div className="modal-overlay" onClick={() => setShowUpgrade(null)}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: 400, padding: 0, background: 'transparent', border: 'none', boxShadow: 'none' }}>
+                        <UpgradePrompt feature={showUpgrade} />
                     </div>
                 </div>
             )}

@@ -26,6 +26,9 @@ export { resendWebhook } from "./resendWebhook";
 // Daily Clarity UX analysis (scheduled — 8 AM ET)
 export { dailyClarityAnalysis } from "./dailyClarityAnalysis";
 
+// AI Text Generation via Gemini API
+export { generateWithAI } from "./generateWithAI";
+
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.

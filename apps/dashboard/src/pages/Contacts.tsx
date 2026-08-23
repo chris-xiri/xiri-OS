@@ -1,6 +1,6 @@
 import { trackContactAdded } from "../lib/analytics";
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import { collection, addDoc, onSnapshot, query, orderBy, doc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
@@ -781,9 +781,9 @@ export default function Contacts() {
                     </svg>
                     <span>
                         You've reached the {limits.contacts}-contact limit on the {tierInfo.name} plan.{" "}
-                        <a href="https://os.xiri.ai/#pricing" target="_blank" rel="noopener noreferrer">
+                        <Link to="/settings?tab=subscription">
                             Upgrade to {TIER_INFO[upgradeTier].name} →
-                        </a>
+                        </Link>
                     </span>
                 </div>
             )}

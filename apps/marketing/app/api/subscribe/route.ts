@@ -19,7 +19,7 @@ export async function POST(request: Request) {
     }
 
     await resend.emails.send({
-      from: process.env.RESEND_FROM_EMAIL || 'Xiri Launchpad <launchpad@os.xiri.ai>',
+      from: process.env.RESEND_FROM_EMAIL || 'Xiri Launchpad <launchpad@xiri.ai>',
       to: [email],
       subject: 'Day 1: How to set up your Single-Member LLC legally',
       html: `

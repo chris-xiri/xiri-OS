@@ -41,13 +41,21 @@ export default function Calculator() {
     const [searchParams] = useSearchParams();
     const editBidId = searchParams.get("bid");
 
+    // Load draft if not editing
+    const draft = useMemo(() => {
+        if (editBidId) return null;
+        try {
+            return JSON.parse(localStorage.getItem("xiri_calculator_draft") || "null");
+        } catch { return null; }
+    }, [editBidId]);
+
     // Calculator state
-    const [inputs, setInputs] = useState<CalculatorInputs>({ ...DEFAULT_INPUTS });
-    const [selectedState, setSelectedState] = useState("");
-    const [selectedMetro, setSelectedMetro] = useState("");
-    const [zipCode, setZipCode] = useState("");
-    const [roomScopes, setRoomScopes] = useState<RoomScope[]>(() => getDefaultRooms("office", DEFAULT_INPUTS.sqft));
-    const [priceOverride, setPriceOverride] = useState<number | null>(null);
+    const [inputs, setInputs] = useState<CalculatorInputs>(draft?.inputs || { ...DEFAULT_INPUTS });
+    const [selectedState, setSelectedState] = useState(draft?.selectedState || "");
+    const [selectedMetro, setSelectedMetro] = useState(draft?.selectedMetro || "");
+    const [zipCode, setZipCode] = useState(draft?.zipCode || "");
+    const [roomScopes, setRoomScopes] = useState<RoomScope[]>(draft?.roomScopes || (() => getDefaultRooms("office", DEFAULT_INPUTS.sqft)));
+    const [priceOverride, setPriceOverride] = useState<number | null>(draft?.priceOverride ?? null);
     const [showAddRoom, setShowAddRoom] = useState(false);
     const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
     const [editingTask, setEditingTask] = useState<{ roomId: string; taskId: string } | null>(null);
@@ -80,6 +88,8 @@ export default function Calculator() {
     // Autofill state from company profile on mount (only for new bids)
     useEffect(() => {
         if (!companyId || editBidId) return;
+        // Skip autofill if there's a draft
+        if (localStorage.getItem("xiri_calculator_draft")) return;
         getDoc(doc(db, "companies", companyId)).then((snap) => {
             if (snap.exists()) {
                 const d = snap.data();
@@ -116,6 +126,17 @@ export default function Calculator() {
             }
         });
     }, [companyId, editBidId]);
+
+    // Auto-save draft to local storage
+    useEffect(() => {
+        if (editBidId) return;
+        const draftObj = { inputs, selectedState, selectedMetro, zipCode, roomScopes, priceOverride };
+        try {
+            localStorage.setItem("xiri_calculator_draft", JSON.stringify(draftObj));
+        } catch (e) {
+            // ignore
+        }
+    }, [inputs, selectedState, selectedMetro, zipCode, roomScopes, priceOverride, editBidId]);
 
     // Load existing bid for editing
     useEffect(() => {
@@ -407,10 +428,12 @@ export default function Calculator() {
                     versions: [],
                 });
                 trackFirstBidCreated();
+                localStorage.removeItem("xiri_calculator_draft");
                 navigate(`/bids/${newBidRef.id}`);
                 return;
             }
 
+            localStorage.removeItem("xiri_calculator_draft");
             navigate(`/bids/${editingBid.id}`);
         } catch (err) {
             console.error("Failed to save bid:", err);
