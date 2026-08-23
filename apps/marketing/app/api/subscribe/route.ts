@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const DEFAULT_AUDIENCE_ID = 'dd16c5f5-fd01-4be8-aa99-31ba66a5e37b';
 
 export async function POST(request: Request) {
   try {
@@ -11,11 +12,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Valid email is required' }, { status: 400 });
     }
 
-    if (process.env.RESEND_AUDIENCE_ID) {
+    const audienceId = process.env.RESEND_AUDIENCE_ID || DEFAULT_AUDIENCE_ID;
+    try {
       await resend.contacts.create({
         email,
-        audienceId: process.env.RESEND_AUDIENCE_ID,
+        audienceId,
+        unsubscribed: false,
       });
+    } catch (contactErr) {
+      console.warn('Failed to add contact to Resend Audience:', contactErr);
     }
 
     await resend.emails.send({
