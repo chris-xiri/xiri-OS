@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { collection, onSnapshot, doc as firestoreDoc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc as firestoreDoc, updateDoc, addDoc } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -47,7 +47,78 @@ export default function Dashboard() {
     const [contactNames, setContactNames] = useState<Record<string, string>>({});
     const [checklistDismissed, setChecklistDismissed] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [loadingSample, setLoadingSample] = useState(false);
     const prevAllDoneRef = useRef(false);
+
+    // 1-Click Sample Bid Creator for Instant Activation
+    const handleCreateSampleBid = async () => {
+        if (!companyId || loadingSample) return;
+        setLoadingSample(true);
+        try {
+            const contactRef = await addDoc(collection(db, "companies", companyId, "contacts"), {
+                name: "Sarah Jenkins",
+                company: "Summit Plaza Offices",
+                email: "sjenkins@summitplaza.com",
+                phone: "(555) 234-5678",
+                type: "prospect",
+                address: "450 Corporate Blvd, Suite 200",
+                notes: "Interested in 5x/week evening janitorial for 12,500 sqft facility.",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+            });
+
+            const sampleBidData = {
+                name: "Summit Plaza Offices — Night Janitorial",
+                contactId: contactRef.id,
+                status: "draft",
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
+                calculatorInputs: {
+                    buildingTypeId: "office",
+                    sqft: 12500,
+                    frequency: "5",
+                    wageRate: 18.00,
+                    payrollTaxPercent: 15,
+                    overheadPercent: 12,
+                    profitPercent: 20,
+                    supplyCostPerSqft: 0.0017,
+                    supplyPolicy: "contractor",
+                },
+                results: {
+                    totalPricePerMonth: 2185.00,
+                    pricePerVisit: 100.85,
+                    totalHoursPerMonth: 65.5,
+                    hoursPerVisit: 3.02,
+                    laborCostPerMonth: 1355.85,
+                    supplyCostPerMonth: 106.25,
+                    overheadAmount: 286.20,
+                    profitAmount: 437.00,
+                    marginPercent: 20,
+                    buildingType: {
+                        id: "office",
+                        name: "Office Building",
+                        icon: "🏢",
+                        productionRate: 4200,
+                        complexityMultiplier: 1,
+                    },
+                },
+                rooms: [
+                    { id: "room-1", roomTypeId: "lobby", sqft: 1500, tasks: ["trash", "dust", "mop", "glass-entry"] },
+                    { id: "room-2", roomTypeId: "restrooms", sqft: 1200, tasks: ["restroom-clean", "restroom-restock", "mop", "trash"] },
+                    { id: "room-3", roomTypeId: "hallways", sqft: 2800, tasks: ["vacuum", "mop", "trash"] },
+                    { id: "room-4", roomTypeId: "common", sqft: 7000, tasks: ["trash", "dust", "wipe", "vacuum"] },
+                ],
+                version: 1,
+            };
+
+            const bidDocRef = await addDoc(collection(db, "companies", companyId, "bids"), sampleBidData);
+            navigate(`/bids/${bidDocRef.id}`);
+        } catch (err) {
+            console.error("Failed to create sample bid:", err);
+        } finally {
+            setLoadingSample(false);
+        }
+    };
 
     // Real-time contact count
     useEffect(() => {
@@ -112,17 +183,17 @@ export default function Dashboard() {
     const wonBids = allBids.filter((b) => b.status === "won").length;
     const winRate = proposalCount > 0 ? Math.round((wonBids / proposalCount) * 100) : null;
 
-    // Getting Started checklist
+    // Getting Started checklist — prioritized for immediate activation & first bid
     const autoGenName = profile?.displayName ? `${profile.displayName}'s Company` : null;
     const hasCompanyInfo = !!companyName && companyName !== autoGenName;
     const isBidTier = subscription.tier === "bid";
     const checklist = [
         { label: "Create your account", done: true, path: "" },
-        { label: "Set up company info", done: hasCompanyInfo, path: "/company" },
-        { label: "Add your first contact", done: contactCount > 0, path: "/contacts?add=true" },
-        { label: "Add your first reference", done: referenceCount > 0, path: "/references" },
-        { label: "Create your first bid", done: bidCount > 0, path: "/bids/new" },
+        { label: "Create your first bid (2 mins)", done: bidCount > 0, path: "/bids/new" },
         { label: isBidTier ? "Download your first proposal" : "Send your first proposal", done: isBidTier ? downloadedCount > 0 : proposalCount > 0, path: "/bids" },
+        { label: "Set up company info & branding", done: hasCompanyInfo, path: "/company" },
+        { label: "Add client contacts", done: contactCount > 0, path: "/contacts?add=true" },
+        { label: "Add customer references", done: referenceCount > 0, path: "/references" },
     ];
     const checklistDone = checklist.filter((c) => c.done).length;
     const allChecklistDone = checklistDone === checklist.length;
@@ -184,6 +255,25 @@ export default function Dashboard() {
                 </div>
             </div>
 
+            {/* Zero-Bids Activation Hero */}
+            {bidCount === 0 && (
+                <div className="dash-activation-card">
+                    <div className="dash-activation-badge">⚡ READY IN 2 MINUTES</div>
+                    <h2>Win your next commercial cleaning contract</h2>
+                    <p>
+                        Calculate accurate labor hours, supply costs, and profit using standard ISSA 612 production rates—then generate a branded PDF proposal ready to send.
+                    </p>
+                    <div className="dash-activation-actions">
+                        <button className="dash-activation-btn-primary" onClick={() => navigate("/bids/new")}>
+                            <span>Create Your First Bid →</span>
+                        </button>
+                        <button className="dash-activation-btn-secondary" onClick={handleCreateSampleBid} disabled={loadingSample}>
+                            {loadingSample ? "Loading demo…" : "✨ Load Sample 12.5k sqft Bid"}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Stats */}
             <div className="dash-grid">
                 <div className="dash-card dash-card-link" onClick={() => navigate("/bids")}>
@@ -243,6 +333,26 @@ export default function Dashboard() {
                     <div className="dash-card-value">{winRate !== null ? `${winRate}%` : "—"}</div>
                     <div className="dash-card-sub">{winRate !== null ? "Based on sent bids" : "Start bidding to track"}</div>
                 </div>
+            </div>
+
+            {/* Founder Direct Text Concierge Card */}
+            <div className="dash-concierge-card">
+                <div className="dash-concierge-avatar">
+                    <span>💬</span>
+                </div>
+                <div className="dash-concierge-content">
+                    <div className="dash-concierge-tag">FOUNDER WALKTHROUGH CONCIERGE</div>
+                    <h3>Have a walkthrough or bid question? Text Chris directly</h3>
+                    <p>
+                        Bidding on an upcoming building or not sure what production rate to use? Text me directly at <a href="sms:+15163990350" className="dash-phone-link"><strong>(516) 399-0350</strong></a> with the square footage or notes and I will help you model your pricing.
+                    </p>
+                </div>
+                <a href="sms:+15163990350" className="dash-concierge-btn">
+                    <span>Text (516) 399-0350</span>
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                    </svg>
+                </a>
             </div>
 
             {/* Quick actions */}

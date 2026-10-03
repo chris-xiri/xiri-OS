@@ -244,7 +244,7 @@ export default function Onboarding() {
                         </p>
 
                         <button className="onboarding-skip earlybird-skip" onClick={handleSkipToTrial}>
-                            Or continue with 60-day (2 months) free trial →
+                            Or continue with 14-day free trial →
                         </button>
                     </>
                 )}

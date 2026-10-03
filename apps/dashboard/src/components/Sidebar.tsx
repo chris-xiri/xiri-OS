@@ -254,6 +254,23 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
                     <span className="sidebar-text">Sign Out</span>
                 </button>
 
+                {/* Founder Text Concierge */}
+                <a
+                    href="sms:+15163990350"
+                    className={`sidebar-concierge-pill ${collapsed ? "sidebar-concierge-pill--collapsed" : ""}`}
+                    title="Text Chris (Founder) at 516-399-0350 for estimating help"
+                >
+                    <span className="sidebar-concierge-dot" />
+                    {!collapsed ? (
+                        <div className="sidebar-concierge-info">
+                            <span className="sidebar-concierge-label">Founder Help (Text)</span>
+                            <span className="sidebar-concierge-num">516-399-0350</span>
+                        </div>
+                    ) : (
+                        <span style={{ fontSize: "14px", lineHeight: 1 }}>💬</span>
+                    )}
+                </a>
+
                 {profile && (
                     <div className={`sidebar-user ${collapsed ? "sidebar-user--collapsed" : ""}`}>
                         <div className="sidebar-avatar">
