@@ -47,7 +47,7 @@ export interface AdminAccountItem {
 }
 
 export const getAdminSubscriptions = onCall(
-    { region: "us-central1" },
+    { region: "us-central1", cors: true },
     async (request) => {
         verifyAdmin(request.auth);
 
@@ -167,7 +167,7 @@ export const getAdminSubscriptions = onCall(
 );
 
 export const adminUpdateSubscription = onCall(
-    { region: "us-central1" },
+    { region: "us-central1", cors: true },
     async (request) => {
         verifyAdmin(request.auth);
 

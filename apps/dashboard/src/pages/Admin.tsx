@@ -49,10 +49,12 @@ export default function Admin() {
     const [newTier, setNewTier] = useState<Tier>("bid_plus");
     const [newStatus, setNewStatus] = useState<string>("trialing");
     const [updating, setUpdating] = useState(false);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     const loadData = async (isRefresh = false) => {
         if (isRefresh) setRefreshing(true);
         else setLoading(true);
+        setLoadError(null);
 
         try {
             const getSubs = httpsCallable(functions, "getAdminSubscriptions");
@@ -62,7 +64,13 @@ export default function Admin() {
             setAccounts(data.accounts);
         } catch (err: any) {
             console.error("Failed to load admin subscriptions:", err);
-            toast.error(err?.message || "Failed to load subscriptions. Admin access required.");
+            const msg = err?.message || "";
+            if (msg.includes("internal") || msg.includes("CORS") || msg.includes("not-found") || err?.code === "functions/internal") {
+                setLoadError("The getAdminSubscriptions Cloud Function needs to be deployed to Firebase.");
+            } else {
+                setLoadError(msg || "Failed to load subscriptions.");
+            }
+            toast.error("Cloud Function not yet deployed or error connecting.");
         } finally {
             setLoading(false);
             setRefreshing(false);
@@ -285,6 +293,28 @@ export default function Admin() {
                     <div className="admin-loading">
                         <div className="app-loading-spinner" />
                         <p>Loading accounts and subscriptions…</p>
+                    </div>
+                ) : loadError ? (
+                    <div className="admin-empty" style={{ padding: "3rem 2rem", textAlign: "center" }}>
+                        <div style={{ width: "44px", height: "44px", borderRadius: "10px", background: "rgba(245, 158, 11, 0.12)", color: "#f59e0b", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem auto" }}>
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <h3 style={{ color: "var(--text-primary)", marginBottom: "0.5rem" }}>Cloud Function Deployment Needed</h3>
+                        <p style={{ color: "var(--text-muted)", maxWidth: "520px", margin: "0 auto 1.5rem auto", lineHeight: 1.5 }}>
+                            The backend function <code>getAdminSubscriptions</code> needs to be deployed to Firebase to fetch live account and Stripe records.
+                        </p>
+                        <div style={{ background: "var(--bg-elevated)", border: "1px solid var(--border-hover)", borderRadius: "8px", padding: "1rem", maxWidth: "520px", margin: "0 auto 1.5rem auto", textAlign: "left", fontFamily: "monospace", fontSize: "0.8125rem", color: "#34d399", overflowX: "auto" }}>
+                            <div style={{ color: "#94a3b8", marginBottom: "0.25rem" }}># In your terminal, run:</div>
+                            <div>firebase login --reauth</div>
+                            <div style={{ marginTop: "0.25rem" }}>firebase deploy --only functions:getAdminSubscriptions,functions:adminUpdateSubscription</div>
+                        </div>
+                        <button className="admin-btn admin-btn-primary" onClick={() => loadData(true)}>
+                            Retry Loading
+                        </button>
                     </div>
                 ) : filteredAccounts.length === 0 ? (
                     <div className="admin-empty">

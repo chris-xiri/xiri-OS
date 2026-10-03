@@ -57,7 +57,7 @@ function verifyAdmin(auth) {
         throw new https_1.HttpsError("permission-denied", "Admin access required.");
     }
 }
-exports.getAdminSubscriptions = (0, https_1.onCall)({ region: "us-central1" }, async (request) => {
+exports.getAdminSubscriptions = (0, https_1.onCall)({ region: "us-central1", cors: true }, async (request) => {
     verifyAdmin(request.auth);
     const db = admin.firestore();
     // 1. Fetch all companies and users
@@ -162,7 +162,7 @@ exports.getAdminSubscriptions = (0, https_1.onCall)({ region: "us-central1" }, a
         accounts,
     };
 });
-exports.adminUpdateSubscription = (0, https_1.onCall)({ region: "us-central1" }, async (request) => {
+exports.adminUpdateSubscription = (0, https_1.onCall)({ region: "us-central1", cors: true }, async (request) => {
     verifyAdmin(request.auth);
     const { companyId, tier, status, extendDays, trialEnd } = request.data;
     if (!companyId) {

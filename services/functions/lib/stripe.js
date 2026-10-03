@@ -163,11 +163,17 @@ exports.createPortalSession = (0, https_1.onCall)({ secrets: [stripeSecretKey], 
         throw new https_1.HttpsError("not-found", "No Stripe customer found. Subscribe first.");
     }
     const stripe = new stripe_1.default(stripeSecretKey.value(), { apiVersion: "2025-02-24.acacia" });
-    const session = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: returnUrl,
-    });
-    return { portalUrl: session.url };
+    try {
+        const session = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: returnUrl,
+        });
+        return { portalUrl: session.url };
+    }
+    catch (err) {
+        console.error("Stripe portal creation error:", err.message);
+        throw new https_1.HttpsError("failed-precondition", err.message || "Unable to open billing portal. Ensure the Customer Portal is activated in your Stripe Dashboard.");
+    }
 });
 // ─────────────────────────────────────────────────
 // STRIPE WEBHOOK HANDLER

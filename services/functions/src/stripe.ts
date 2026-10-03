@@ -160,12 +160,19 @@ export const createPortalSession = onCall(
         }
 
         const stripe = new Stripe(stripeSecretKey.value(), { apiVersion: "2025-02-24.acacia" as any });
-        const session = await stripe.billingPortal.sessions.create({
-            customer: customerId,
-            return_url: returnUrl,
-        });
-
-        return { portalUrl: session.url };
+        try {
+            const session = await stripe.billingPortal.sessions.create({
+                customer: customerId,
+                return_url: returnUrl,
+            });
+            return { portalUrl: session.url };
+        } catch (err: any) {
+            console.error("Stripe portal creation error:", err.message);
+            throw new HttpsError(
+                "failed-precondition",
+                err.message || "Unable to open billing portal. Ensure the Customer Portal is activated in your Stripe Dashboard."
+            );
+        }
     }
 );
 
