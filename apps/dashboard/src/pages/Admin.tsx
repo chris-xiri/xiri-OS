@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { Navigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
@@ -37,7 +36,7 @@ interface AdminSummary {
 }
 
 export default function Admin() {
-    const { profile } = useAuth();
+    const { profile, user, loading: authLoading } = useAuth();
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [summary, setSummary] = useState<AdminSummary | null>(null);
@@ -129,8 +128,40 @@ export default function Admin() {
         }
     };
 
-    if (profile?.email !== "chris@xiri.ai" && !profile?.email?.endsWith("@xiri.ai")) {
-        return <Navigate to="/" replace />;
+    const currentEmail = (profile?.email || user?.email || "").toLowerCase().trim();
+    const isAdmin = currentEmail === "chris@xiri.ai" || currentEmail.endsWith("@xiri.ai");
+
+    if (authLoading) {
+        return (
+            <div className="admin-page">
+                <div className="admin-loading" style={{ textAlign: "center", padding: "4rem 2rem" }}>
+                    <div className="app-loading-spinner" />
+                    <p style={{ color: "var(--text-muted)", marginTop: "1rem" }}>Verifying admin permissions…</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isAdmin) {
+        return (
+            <div className="admin-page">
+                <div className="admin-card admin-empty" style={{ padding: "3rem 2rem", textAlign: "center", background: "var(--bg-surface)", borderRadius: "12px", border: "1px solid var(--border-hover)", maxWidth: "540px", margin: "2rem auto" }}>
+                    <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(239, 68, 68, 0.12)", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 1rem auto" }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                        </svg>
+                    </div>
+                    <h2 style={{ color: "var(--text-primary)", fontSize: "1.25rem", marginBottom: "0.5rem" }}>Admin Access Required</h2>
+                    <p style={{ color: "var(--text-muted)", fontSize: "0.875rem", marginBottom: "1rem" }}>
+                        You are currently signed in as <strong>{currentEmail || "Unknown"}</strong>.
+                    </p>
+                    <p style={{ color: "#64748b", fontSize: "0.8125rem", lineHeight: 1.5 }}>
+                        This portal is restricted to administrators (<code>chris@xiri.ai</code>). If this is a secondary account, please sign out and sign in with your admin credentials.
+                    </p>
+                </div>
+            </div>
+        );
     }
 
     return (

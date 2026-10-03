@@ -116,7 +116,7 @@ function SidebarIcon({ name }: { name: string }) {
 }
 
 export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: boolean; onMobileClose?: () => void }) {
-    const { subscription, profile, logout } = useAuth();
+    const { subscription, profile, user, logout } = useAuth();
     const navigate = useNavigate();
     const tierInfo = TIER_INFO[subscription.tier];
 
@@ -215,12 +215,17 @@ export default function Sidebar({ mobileOpen, onMobileClose }: { mobileOpen?: bo
 
             {/* Bottom */}
             <div className="sidebar-bottom">
-                {(profile?.email === "chris@xiri.ai" || profile?.email?.endsWith("@xiri.ai")) && (
-                    <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} title={collapsed ? "Admin Subscriptions" : undefined}>
-                        <SidebarIcon name="shield" />
-                        <span className="sidebar-text">Admin</span>
-                    </NavLink>
-                )}
+                {(() => {
+                    const currentEmail = (profile?.email || user?.email || "").toLowerCase().trim();
+                    const isAdmin = currentEmail === "chris@xiri.ai" || currentEmail.endsWith("@xiri.ai");
+                    if (!isAdmin) return null;
+                    return (
+                        <NavLink to="/admin" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} title={collapsed ? "Admin Subscriptions" : undefined}>
+                            <SidebarIcon name="shield" />
+                            <span className="sidebar-text">Admin</span>
+                        </NavLink>
+                    );
+                })()}
 
                 <NavLink to="/settings" className={({ isActive }) => `sidebar-link ${isActive ? "active" : ""}`} title={collapsed ? "Settings" : undefined}>
                     <SidebarIcon name="settings" />
