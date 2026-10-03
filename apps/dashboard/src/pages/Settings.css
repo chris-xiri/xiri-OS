@@ -683,3 +683,205 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* Subscription Management Box & Cancel Actions */
+.settings-manage-box {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bg-surface-hover);
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.settings-manage-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.settings-manage-actions .settings-btn {
+    margin-top: 0;
+    flex: 1;
+    min-width: 140px;
+    padding: 0.625rem 1rem;
+}
+
+.settings-cancel-hint {
+    color: var(--text-muted);
+    font-size: 0.6875rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.settings-trial-notice {
+    margin-top: 0.875rem;
+    padding: 0.625rem 0.875rem;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 8px;
+    font-size: 0.75rem;
+    color: #34d399;
+    line-height: 1.4;
+}
+
+.settings-btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+}
+
+.settings-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #fff;
+}
+
+/* Cancel Subscription Modal */
+.settings-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(10, 14, 26, 0.8);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: settingsFadeIn 180ms ease;
+}
+
+@keyframes settingsFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.settings-cancel-modal {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hover);
+    border-radius: 14px;
+    max-width: 480px;
+    width: 100%;
+    padding: 1.75rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    animation: settingsScaleUp 200ms ease;
+}
+
+@keyframes settingsScaleUp {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.settings-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.settings-modal-warning-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(239, 68, 68, 0.12);
+    flex-shrink: 0;
+}
+
+.settings-modal-header h3 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.settings-modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.settings-modal-p {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    line-height: 1.5;
+    margin: 0 0 1rem 0;
+}
+
+.settings-modal-points {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.settings-modal-points li {
+    font-size: 0.8125rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+    padding-left: 1.25rem;
+    position: relative;
+}
+
+.settings-modal-points li::before {
+    content: "•";
+    position: absolute;
+    left: 0.25rem;
+    color: var(--text-secondary);
+}
+
+.settings-modal-points li strong {
+    color: var(--text-primary);
+}
+
+.settings-modal-error {
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    border-radius: 8px;
+    color: #fca5a5;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+}
+
+.settings-modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.settings-modal-actions .settings-btn {
+    margin-top: 0;
+    padding: 0.625rem 1.125rem;
+}
+
+.settings-modal-support-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin: 0;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--bg-surface-hover);
+}
+
+.settings-modal-support-note a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.settings-modal-support-note a:hover {
+    text-decoration: underline;
+}

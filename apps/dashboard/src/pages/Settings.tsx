@@ -52,6 +52,26 @@ export default function Settings() {
     const [showPlans, setShowPlans] = useState(false);
     const [loadingCheckoutTier, setLoadingCheckoutTier] = useState<Tier | null>(null);
     const [portalLoading, setPortalLoading] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
+    const [cancelError, setCancelError] = useState<string | null>(null);
+
+    const handleOpenBillingPortal = async () => {
+        if (!profile?.companyId || portalLoading) return;
+        try {
+            setPortalLoading(true);
+            setCancelError(null);
+            await openPortal(profile.companyId);
+        } catch (err: any) {
+            console.error("Portal open failed:", err);
+            setPortalLoading(false);
+            const errorMsg = err?.message || "";
+            if (errorMsg.includes("not-found") || errorMsg.includes("No Stripe customer")) {
+                setCancelError("No active billing profile was found. If you are on the free trial without a credit card, you will not be charged. If you need assistance, please email support@xiri.ai.");
+            } else {
+                setCancelError("Unable to open billing portal. Please email support@xiri.ai and our team will immediately cancel your subscription.");
+            }
+        }
+    };
 
     // Track successful checkout return
     useEffect(() => {
@@ -225,24 +245,44 @@ export default function Settings() {
                                 </button>
                             )}
 
-                            {subscription.stripeSubscriptionId && (
-                                <button
-                                    className="settings-btn settings-btn-outline"
-                                    style={{ cursor: "pointer", marginTop: 8 }}
-                                    disabled={portalLoading}
-                                    onClick={async () => {
-                                        if (!profile?.companyId || portalLoading) return;
-                                        try {
-                                            setPortalLoading(true);
-                                            await openPortal(profile.companyId);
-                                        } catch (err) {
-                                            console.error("Portal open failed:", err);
-                                            setPortalLoading(false);
-                                        }
-                                    }}
-                                >
-                                    {portalLoading ? "Redirecting…" : "Manage Subscription"}
-                                </button>
+                            {/* Subscription Management & Cancellation */}
+                            {(subscription.stripeCustomerId || subscription.stripeSubscriptionId || subscription.status === "active" || (subscription.status === "trialing" && currentTier !== "bid")) && (
+                                <div className="settings-manage-box">
+                                    <div className="settings-manage-actions">
+                                        <button
+                                            type="button"
+                                            className="settings-btn settings-btn-outline"
+                                            style={{ cursor: "pointer" }}
+                                            disabled={portalLoading}
+                                            onClick={handleOpenBillingPortal}
+                                        >
+                                            {portalLoading ? "Redirecting…" : "Manage Billing & Payment"}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className="settings-btn settings-btn-danger"
+                                            style={{ cursor: "pointer" }}
+                                            disabled={portalLoading}
+                                            onClick={() => {
+                                                setCancelError(null);
+                                                setShowCancelModal(true);
+                                            }}
+                                        >
+                                            Cancel Subscription
+                                        </button>
+                                    </div>
+                                    <p className="settings-cancel-hint">
+                                        You can cancel or modify your subscription anytime with 1 click. Access continues until the end of your billing cycle.
+                                    </p>
+                                </div>
+                            )}
+
+                            {subscription.status === "trialing" && !subscription.stripeCustomerId && !subscription.stripeSubscriptionId && currentTier === "bid" && (
+                                <div className="settings-trial-notice">
+                                    <p>
+                                        ✨ Free trial with no credit card required. Your account will automatically switch to the free Bid plan when trial ends—no cancellation needed.
+                                    </p>
+                                </div>
                             )}
                         </section>
 
@@ -447,6 +487,70 @@ export default function Settings() {
                             </div>
                         );
                     })()}
+                </div>
+            )}
+
+            {/* Cancel Subscription Modal */}
+            {showCancelModal && (
+                <div className="settings-modal-overlay" onClick={() => !portalLoading && setShowCancelModal(false)}>
+                    <div className="settings-cancel-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="settings-modal-header">
+                            <div className="settings-modal-warning-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="8" x2="12" y2="12" />
+                                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                                </svg>
+                            </div>
+                            <h3>Cancel Subscription</h3>
+                        </div>
+
+                        <div className="settings-modal-body">
+                            <p className="settings-modal-p">
+                                Are you sure you want to cancel your <strong>{tierInfo.name}</strong> subscription?
+                            </p>
+                            <ul className="settings-modal-points">
+                                <li>
+                                    <strong>Access remains active:</strong> You can keep using all {tierInfo.name} features until your current period ends.
+                                </li>
+                                <li>
+                                    <strong>No surprise fees:</strong> Your credit card will not be renewed or charged again.
+                                </li>
+                                <li>
+                                    <strong>Your estimates are safe:</strong> All your clients, active bids, and proposals are securely saved.
+                                </li>
+                            </ul>
+
+                            {cancelError && (
+                                <div className="settings-modal-error">
+                                    {cancelError}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="settings-modal-actions">
+                            <button
+                                type="button"
+                                className="settings-btn settings-btn-outline"
+                                disabled={portalLoading}
+                                onClick={() => setShowCancelModal(false)}
+                            >
+                                Keep My Subscription
+                            </button>
+                            <button
+                                type="button"
+                                className="settings-btn settings-btn-danger"
+                                disabled={portalLoading}
+                                onClick={handleOpenBillingPortal}
+                            >
+                                {portalLoading ? "Redirecting to Stripe…" : "Proceed to Cancel in Stripe Portal →"}
+                            </button>
+                        </div>
+
+                        <p className="settings-modal-support-note">
+                            Need help or want to speak with our team? Email us anytime at <a href="mailto:support@xiri.ai">support@xiri.ai</a>.
+                        </p>
+                    </div>
                 </div>
             )}
         </div>
