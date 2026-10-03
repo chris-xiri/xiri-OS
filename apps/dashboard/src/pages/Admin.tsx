@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { Navigate } from "react-router-dom";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
@@ -129,14 +130,7 @@ export default function Admin() {
     };
 
     if (profile?.email !== "chris@xiri.ai" && !profile?.email?.endsWith("@xiri.ai")) {
-        return (
-            <div className="admin-page">
-                <div className="admin-card admin-empty">
-                    <h2>Access Denied</h2>
-                    <p>This administrative portal is only accessible to xiriOS administrators.</p>
-                </div>
-            </div>
-        );
+        return <Navigate to="/" replace />;
     }
 
     return (
