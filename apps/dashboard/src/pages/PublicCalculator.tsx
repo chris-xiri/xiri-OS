@@ -1,10 +1,9 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback, type FormEvent } from "react";
 import {
     BUILDING_TYPES,
     FREQUENCIES,
     STATES,
     CLEANING_TASKS,
-    TASK_CATEGORIES,
     DEFAULT_INPUTS,
     calculate,
     getStateDefaults,
@@ -13,22 +12,27 @@ import {
     resolveZip,
     ROOM_TYPES,
     getDefaultRooms,
-    resolveTaskFrequency,
     getTaskFrequencyOptions,
     type CalculatorInputs,
     type Frequency,
     type RoomScope,
     type CustomTask,
-    type SupplyPolicy,
 } from "@xiri-facility-solutions/shared";
-import { trackCalculatorUsed, trackCtaClicked } from "../lib/analytics";
+import {
+    trackCalculatorUsed,
+    trackCtaClicked,
+    trackCalculatorAutoSaved,
+    trackCalculatorEmailCaptured,
+    trackCalculatorExitIntentShown,
+    trackCalculatorExitIntentAccepted,
+} from "../lib/analytics";
 import "./Calculator.css";
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
 /**
- * Public-facing calculator (no auth required).
- * Uses the exact same CSS class names as Calculator.tsx so styles apply identically.
+ * Public-facing calculator (no auth required) with real-time auto-saving,
+ * quick email lead capture, exit-intent modal, and sticky conversion bar.
  */
 export default function PublicCalculator() {
     const [inputs, setInputs] = useState<CalculatorInputs>({ ...DEFAULT_INPUTS });
@@ -47,8 +51,14 @@ export default function PublicCalculator() {
     const [clientEmail, setClientEmail] = useState("");
     const [clientPhone, setClientPhone] = useState("");
 
+    // Lead capture & exit intent
+    const [captureEmail, setCaptureEmail] = useState("");
+    const [autoSaved, setAutoSaved] = useState(false);
+    const [showExitModal, setShowExitModal] = useState(false);
+
     const results = useMemo(() => calculate(inputs, roomScopes), [inputs, roomScopes]);
     const isOneOff = inputs.frequency === "once";
+    const monthlyPrice = priceOverride !== null ? priceOverride : Math.round(results.totalPricePerMonth);
 
     const update = (patch: Partial<CalculatorInputs>) => {
         setInputs((prev) => ({ ...prev, ...patch }));
@@ -102,49 +112,18 @@ export default function PublicCalculator() {
         }
     };
 
-    // Metros filtered to selected state
     const availableMetros = selectedState ? getMetrosForState(selectedState) : [];
 
-    // Auto-select from URL params (e.g. ?state=TX&metro=19100 from pSEO pages)
-    useEffect(() => {
-        const params = new URLSearchParams(window.location.search);
-        const stateParam = params.get("state");
-        const metroParam = params.get("metro");
-        if (stateParam && STATES.some((s) => s.code === stateParam.toUpperCase())) {
-            handleStateChange(stateParam.toUpperCase());
-            if (metroParam) {
-                setTimeout(() => handleMetroChange(metroParam), 0);
-            }
-        }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const toggleRoomTask = (roomId: string, taskId: string) => {
-        setRoomScopes((prev) =>
-            prev.map((r) => {
-                if (r.id !== roomId) return r;
-                const has = r.tasks.includes(taskId);
-                return { ...r, tasks: has ? r.tasks.filter((t) => t !== taskId) : [...r.tasks, taskId] };
-            })
-        );
-    };
-
-    const setTaskFrequency = (roomId: string, taskId: string, freq: string) => {
-        setRoomScopes((prev) =>
-            prev.map((r) => {
-                if (r.id !== roomId) return r;
-                return { ...r, taskFrequencies: { ...(r.taskFrequencies || {}), [taskId]: freq } };
-            })
-        );
-    };
-
+    // Room scope helpers
     const addRoom = (roomTypeId: string) => {
-        const roomType = ROOM_TYPES.find((r) => r.id === roomTypeId);
-        if (!roomType) return;
+        const rt = ROOM_TYPES.find((r) => r.id === roomTypeId);
+        if (!rt) return;
         const newRoom: RoomScope = {
-            id: `room_${Date.now()}`,
+            id: `room_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
             roomTypeId,
-            tasks: [...roomType.defaultTasks],
+            customName: rt.name,
             sqft: Math.round(inputs.sqft * 0.1),
+            tasks: [...rt.defaultTasks],
         };
         setRoomScopes((prev) => [...prev, newRoom]);
         setShowAddRoom(false);
@@ -155,13 +134,39 @@ export default function PublicCalculator() {
         setRoomScopes((prev) => prev.filter((r) => r.id !== roomId));
     };
 
-    const updateRoomName = (roomId: string, name: string) => {
-        setRoomScopes((prev) => prev.map((r) => (r.id === roomId ? { ...r, customName: name } : r)));
+    const toggleRoomTask = (roomId: string, taskId: string) => {
+        setRoomScopes((prev) =>
+            prev.map((r) => {
+                if (r.id !== roomId) return r;
+                const tasks = r.tasks.includes(taskId)
+                    ? r.tasks.filter((t) => t !== taskId)
+                    : [...r.tasks, taskId];
+                return { ...r, tasks };
+            })
+        );
     };
 
-    const addCustomTask = (roomId: string, name: string) => {
-        if (!name.trim()) return;
-        const ct: CustomTask = { id: `custom_${Date.now()}`, name: name.trim() };
+    const setRoomTaskFrequency = (roomId: string, taskId: string, freq: string) => {
+        setRoomScopes((prev) =>
+            prev.map((r) => {
+                if (r.id !== roomId) return r;
+                const freqs = { ...(r.taskFrequencies || {}) };
+                if (freq === inputs.frequency) {
+                    delete freqs[taskId];
+                } else {
+                    freqs[taskId] = freq;
+                }
+                return { ...r, taskFrequencies: Object.keys(freqs).length ? freqs : undefined };
+            })
+        );
+    };
+
+    const addCustomTaskToRoom = (roomId: string) => {
+        if (!newCustomTask.trim()) return;
+        const ct: CustomTask = {
+            id: `ct_${Date.now()}`,
+            name: newCustomTask.trim(),
+        };
         setRoomScopes((prev) =>
             prev.map((r) => {
                 if (r.id !== roomId) return r;
@@ -171,37 +176,111 @@ export default function PublicCalculator() {
         setNewCustomTask("");
     };
 
-    const removeCustomTask = (roomId: string, taskId: string) => {
+    const removeCustomTaskFromRoom = (roomId: string, ctId: string) => {
         setRoomScopes((prev) =>
             prev.map((r) => {
                 if (r.id !== roomId) return r;
-                return { ...r, customTasks: (r.customTasks || []).filter((t) => t.id !== taskId) };
+                return { ...r, customTasks: (r.customTasks || []).filter((c) => c.id !== ctId) };
             })
         );
     };
 
-    // ─── RENDER ───
+    // Serialize & save pending bid payload
+    const savePendingBidToStorage = useCallback((targetEmail?: string) => {
+        const selectedTasks = new Set<string>();
+        roomScopes.forEach((r) => r.tasks.forEach((t) => selectedTasks.add(t)));
+        const pendingBid = {
+            inputs,
+            roomScopes,
+            priceOverride,
+            selectedState,
+            selectedTasks: Array.from(selectedTasks),
+            results,
+            savedAt: new Date().toISOString(),
+            contact: (clientName || clientCompany || clientEmail || clientPhone || targetEmail) ? {
+                name: clientName,
+                company: clientCompany,
+                email: targetEmail || clientEmail,
+                phone: clientPhone,
+            } : null,
+        };
+        try {
+            localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
+        } catch { /* storage full */ }
+        return pendingBid;
+    }, [inputs, roomScopes, priceOverride, selectedState, results, clientName, clientCompany, clientEmail, clientPhone]);
+
+    // ─── Real-Time Auto-Save ───
+    useEffect(() => {
+        if (inputs.sqft <= 0) return;
+        savePendingBidToStorage();
+        setAutoSaved(true);
+        trackCalculatorAutoSaved(inputs.sqft, monthlyPrice);
+        const timer = setTimeout(() => setAutoSaved(false), 2500);
+        return () => clearTimeout(timer);
+    }, [inputs, roomScopes, priceOverride, selectedState, clientName, clientCompany, clientEmail, clientPhone, monthlyPrice, savePendingBidToStorage]);
+
+    // ─── Exit-Intent Detector ───
+    useEffect(() => {
+        const handleMouseLeave = (e: MouseEvent) => {
+            if (e.clientY <= 15 && inputs.sqft > 0) {
+                const shown = sessionStorage.getItem("xiri_calc_exit_intent_shown");
+                if (shown !== "1") {
+                    sessionStorage.setItem("xiri_calc_exit_intent_shown", "1");
+                    setShowExitModal(true);
+                    trackCalculatorExitIntentShown(monthlyPrice);
+                }
+            }
+        };
+
+        document.addEventListener("mouseleave", handleMouseLeave);
+        return () => document.removeEventListener("mouseleave", handleMouseLeave);
+    }, [inputs.sqft, monthlyPrice]);
+
+    // Save & redirect to signup
+    const handleSaveAndSignup = (source = "public_calculator", emailParam?: string) => {
+        savePendingBidToStorage(emailParam);
+        trackCtaClicked("Save Bid — Start Free Trial", source);
+        const emailQuery = emailParam ? `&email=${encodeURIComponent(emailParam)}` : "";
+        (window.top || window).location.href = `/app/login?mode=signup${emailQuery}`;
+    };
+
+    // Quick email capture submit
+    const handleQuickEmailSubmit = (e: FormEvent) => {
+        e.preventDefault();
+        if (!captureEmail.trim()) return;
+        trackCalculatorEmailCaptured(captureEmail.split("@")[1] || "unknown", monthlyPrice);
+        handleSaveAndSignup("quick_email_capture", captureEmail.trim());
+    };
+
+    const buildingType = BUILDING_TYPES.find((b) => b.id === inputs.buildingTypeId);
+
     return (
-        <div className="calc-page" style={{ background: "#0c0f1a", minHeight: "100vh" }}>
-            {/* Header with branding + auth links */}
-            <div className="calc-header" style={{ padding: "2rem 2rem 0" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1200, margin: "0 auto" }}>
+        <div className="calc-page" style={{ minHeight: "100vh", background: "#0c0f1a", color: "#e8eaf0" }}>
+            {/* Header */}
+            <div className="calc-header" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "1.25rem 2rem" }}>
+                <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem" }}>
                     <div>
-                        <a href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
+                        <a href="/" style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
                             <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#00d4aa", display: "inline-block" }} />
                             <span style={{ fontWeight: 800, fontSize: "1.25rem", color: "white" }}>xiri<span style={{ color: "#00d4aa" }}>OS</span></span>
                         </a>
                         <h1>Janitorial Bid Calculator</h1>
-                        <p className="calc-subtitle">Professional cleaning estimates powered by ISSA 612 standards</p>
+                        <p className="calc-subtitle">Professional commercial cleaning estimates powered by ISSA 612 standards</p>
                     </div>
-                    <div style={{ display: "flex", gap: "0.75rem" }}>
+                    <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+                        {autoSaved && (
+                            <span className="calc-autosaved-pill">
+                                ✓ Draft Auto-Saved
+                            </span>
+                        )}
                         <button className="calc-btn calc-btn-secondary" style={{ fontSize: "0.875rem", cursor: "pointer" }} onClick={() => { (window.top || window).location.href = "/app/login"; }}>Sign In</button>
-                        <button className="calc-btn calc-btn-primary" style={{ fontSize: "0.875rem", cursor: "pointer" }} onClick={() => { (window.top || window).location.href = "/app/login?mode=signup"; }}>Start Free Trial</button>
+                        <button className="calc-btn calc-btn-primary" style={{ fontSize: "0.875rem", cursor: "pointer" }} onClick={() => handleSaveAndSignup("header_btn")}>Start 60-Day Trial</button>
                     </div>
                 </div>
             </div>
 
-            <div className="calc-layout" style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem" }}>
+            <div className="calc-layout" style={{ maxWidth: 1200, margin: "0 auto", padding: "2rem 1.5rem 6rem" }}>
                 {/* Left: Inputs */}
                 <div className="calc-inputs">
                     {/* Building Type */}
@@ -249,31 +328,44 @@ export default function PublicCalculator() {
                                 value={inputs.sqft === 0 ? "" : inputs.sqft.toLocaleString()}
                                 onChange={(e) => {
                                     const raw = e.target.value.replace(/[^0-9]/g, "");
-                                    const newSqft = raw === "" ? 0 : Number(raw);
-                                    update({ sqft: newSqft });
-                                    if (newSqft > 0) redistributeRoomSqft(newSqft);
+                                    const n = raw === "" ? 0 : Number(raw);
+                                    update({ sqft: n });
+                                    redistributeRoomSqft(n);
                                 }}
-                                onBlur={() => {
-                                    if (inputs.sqft < 100) {
-                                        update({ sqft: 100 });
-                                        redistributeRoomSqft(100);
-                                    }
-                                }}
+                                placeholder="10,000"
                             />
+                            <div className="calc-sqft-presets">
+                                {[2500, 5000, 10000, 20000, 50000].map((s) => (
+                                    <button
+                                        key={s}
+                                        className={`calc-preset-btn ${inputs.sqft === s ? "active" : ""}`}
+                                        onClick={() => {
+                                            update({ sqft: s });
+                                            redistributeRoomSqft(s);
+                                        }}
+                                        type="button"
+                                    >
+                                        {s.toLocaleString()}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <div className="form-group">
+
+                        <div className="form-group" style={{ marginTop: "1rem" }}>
                             <label>Cleaning Frequency</label>
                             <div className="calc-freq-strip">
                                 <button
+                                    type="button"
                                     className={`calc-freq-pill calc-freq-once ${inputs.frequency === "once" ? "active" : ""}`}
                                     onClick={() => update({ frequency: "once" as Frequency })}
                                 >
                                     One-Time
                                 </button>
                                 <div className="calc-freq-divider" />
-                                {FREQUENCIES.filter(f => f.group === "recurring").map((f) => (
+                                {FREQUENCIES.filter((f) => f.group === "recurring").map((f) => (
                                     <button
                                         key={f.value}
+                                        type="button"
                                         className={`calc-freq-pill ${inputs.frequency === f.value ? "active" : ""}`}
                                         onClick={() => update({ frequency: f.value })}
                                         title={f.label}
@@ -283,142 +375,169 @@ export default function PublicCalculator() {
                                 ))}
                             </div>
                             <span className="calc-freq-hint">
-                                {isOneOff ? "Single visit (deep clean, post-construction, etc.)" : `${FREQUENCIES.find(f => f.value === inputs.frequency)?.label || ""} — recurring`}
+                                {isOneOff ? "Single visit (deep clean, post-construction, etc.)" : `${FREQUENCIES.find((f) => f.value === inputs.frequency)?.label || ""} — recurring`}
                             </span>
                         </div>
                     </section>
 
-                    {/* Room-Based Cleaning Scope */}
+                    {/* Location */}
                     <section className="calc-section">
-                        <div className="calc-scope-header">
-                            <h3>Cleaning Scope</h3>
-                            <span className="calc-scope-badge">{roomScopes.length} room{roomScopes.length !== 1 ? "s" : ""}</span>
+                        <h3>Location & Labor Data</h3>
+                        <p className="calc-section-desc">Auto-sets wage rates using Bureau of Labor Statistics (BLS) data</p>
+                        <div className="calc-location-grid">
+                            <div className="form-group">
+                                <label>ZIP Code</label>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    placeholder="Enter ZIP..."
+                                    value={zipCode}
+                                    onChange={(e) => handleZipChange(e.target.value)}
+                                    maxLength={5}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label>State</label>
+                                <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
+                                    <option value="">Select state...</option>
+                                    {STATES.map((s) => (
+                                        <option key={s.code} value={s.code}>{s.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Metro Area</label>
+                                <select
+                                    value={selectedMetro}
+                                    onChange={(e) => handleMetroChange(e.target.value)}
+                                    disabled={!selectedState || availableMetros.length === 0}
+                                >
+                                    <option value="">{availableMetros.length === 0 ? "Select state first" : "Default (State Average)"}</option>
+                                    {availableMetros.map((m) => (
+                                        <option key={m.id} value={m.id}>{m.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* Room Scopes */}
+                    <section className="calc-section">
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.75rem" }}>
+                            <h3>Room Scopes & Tasks</h3>
+                            <button
+                                className="calc-btn calc-btn-secondary calc-btn-sm"
+                                onClick={() => setShowAddRoom(!showAddRoom)}
+                                type="button"
+                            >
+                                + Add Room
+                            </button>
                         </div>
 
-                        <div className="calc-room-list">
+                        {showAddRoom && (
+                            <div className="calc-add-room-popover">
+                                <p style={{ fontSize: "0.8125rem", color: "#8b92b3", margin: "0 0 0.5rem" }}>Select a room type to add:</p>
+                                <div className="calc-add-room-grid">
+                                    {ROOM_TYPES.map((rt) => (
+                                        <button
+                                            key={rt.id}
+                                            className="calc-add-room-btn"
+                                            onClick={() => addRoom(rt.id)}
+                                            type="button"
+                                        >
+                                            <span style={{ fontSize: "1.25rem" }}>{rt.icon}</span>
+                                            <span>{rt.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="calc-rooms-list">
                             {roomScopes.map((room) => {
-                                const rt = ROOM_TYPES.find((r) => r.id === room.roomTypeId);
                                 const isExpanded = expandedRoom === room.id;
-                                const roomName = room.customName || rt?.name || "Room";
-                                const roomIcon = rt?.icon || "📦";
+                                const rt = ROOM_TYPES.find((r) => r.id === room.roomTypeId);
                                 return (
-                                    <div key={room.id} className={`calc-room-card ${isExpanded ? "expanded" : ""}`}>
-                                        <div className="calc-room-header" onClick={() => setExpandedRoom(isExpanded ? null : room.id)} style={{ cursor: "pointer" }}>
-                                            <span className="calc-room-icon">{roomIcon}</span>
-                                            {room.roomTypeId === "custom" ? (
-                                                <input
-                                                    className="calc-room-name-input"
-                                                    value={room.customName || ""}
-                                                    onChange={(e) => updateRoomName(room.id, e.target.value)}
-                                                    placeholder="Room name…"
-                                                    onClick={(e) => e.stopPropagation()}
-                                                />
-                                            ) : (
-                                                <span className="calc-room-name">{roomName}</span>
-                                            )}
-                                            <input
-                                                className="calc-room-sqft-input"
-                                                type="text"
-                                                inputMode="numeric"
-                                                value={room.sqft ? room.sqft.toLocaleString() : ""}
-                                                onChange={(e) => {
-                                                    const raw = e.target.value.replace(/[^0-9]/g, "");
-                                                    const val = parseInt(raw) || 0;
-                                                    setRoomScopes((prev) =>
-                                                        prev.map((r) => r.id === room.id ? { ...r, sqft: val || undefined } : r)
-                                                    );
-                                                }}
-                                                placeholder="sqft"
-                                                onClick={(e) => e.stopPropagation()}
-                                                title="Square footage for this area"
-                                            />
-                                            <span className="calc-room-count">{room.tasks.length + (room.customTasks?.length || 0)} tasks</span>
-                                            <button
-                                                className="calc-room-remove"
-                                                onClick={(e) => { e.stopPropagation(); removeRoom(room.id); }}
-                                                title="Remove room"
-                                                style={{ cursor: "pointer" }}
-                                            >
-                                                ✕
-                                            </button>
-                                            <span className="calc-room-chevron">{isExpanded ? "▾" : "▸"}</span>
+                                    <div key={room.id} className={`calc-room-item ${isExpanded ? "expanded" : ""}`}>
+                                        <div className="calc-room-header" onClick={() => setExpandedRoom(isExpanded ? null : room.id)}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                                <span style={{ fontSize: "1.125rem" }}>{rt?.icon || "🚪"}</span>
+                                                <span className="calc-room-title">{room.customName || rt?.name}</span>
+                                                <span className="calc-room-sqft-badge">{room.sqft?.toLocaleString()} sqft</span>
+                                            </div>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                                                <span className="calc-room-task-count">{room.tasks.length} tasks</span>
+                                                <button
+                                                    className="calc-room-remove-btn"
+                                                    onClick={(e) => { e.stopPropagation(); removeRoom(room.id); }}
+                                                    title="Remove room"
+                                                    type="button"
+                                                >
+                                                    ✕
+                                                </button>
+                                            </div>
                                         </div>
+
                                         {isExpanded && (
-                                            <div className="calc-room-tasks">
-                                                {TASK_CATEGORIES.filter((cat) => rt?.relevantCategories?.includes(cat.id) ?? true).map((cat) => {
-                                                    const tasksInCat = CLEANING_TASKS.filter((t) => t.category === cat.id);
-                                                    if (tasksInCat.length === 0) return null;
-                                                    return (
-                                                        <div key={cat.id} className="calc-room-cat">
-                                                            <div className="calc-room-cat-label">{cat.icon} {cat.label}</div>
-                                                            {tasksInCat.map((task) => {
-                                                                const resolvedFreq = resolveTaskFrequency(task.recommendedFrequency, inputs.frequency);
-                                                                const opts = getTaskFrequencyOptions(inputs.frequency);
-                                                                return (
-                                                                    <div key={task.id} className="calc-room-task-item">
-                                                                        <input
-                                                                            type="checkbox"
-                                                                            checked={room.tasks.includes(task.id)}
-                                                                            onChange={() => toggleRoomTask(room.id, task.id)}
-                                                                            style={{ cursor: "pointer" }}
-                                                                        />
-                                                                        <span className="calc-task-label">{task.name}</span>
-                                                                        {room.tasks.includes(task.id) && (
-                                                                            <select
-                                                                                className="calc-task-freq"
-                                                                                value={room.taskFrequencies?.[task.id] || resolvedFreq}
-                                                                                onChange={(e) => setTaskFrequency(room.id, task.id, e.target.value)}
-                                                                                onClick={(e) => e.stopPropagation()}
-                                                                            >
-                                                                                {opts.map((opt) => (
-                                                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                                                ))}
-                                                                            </select>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    );
-                                                })}
-
-                                                {/* Custom tasks */}
-                                                {(room.customTasks?.length || 0) > 0 && (
-                                                    <div className="calc-room-cat">
-                                                        <div className="calc-room-cat-label">📝 Custom Tasks</div>
-                                                        {room.customTasks!.map((ct) => (
-                                                            <div key={ct.id} className="calc-room-task-item">
-                                                                <span className="calc-custom-dot">●</span>
-                                                                <span className="calc-task-label">{ct.name}</span>
+                                            <div className="calc-room-body">
+                                                <div className="calc-task-pills">
+                                                    {CLEANING_TASKS.map((task) => {
+                                                        const active = room.tasks.includes(task.id);
+                                                        const freqOverride = room.taskFrequencies?.[task.id];
+                                                        return (
+                                                            <div key={task.id} className="calc-task-pill-wrap">
                                                                 <button
-                                                                    className="calc-task-reset"
-                                                                    onClick={() => removeCustomTask(room.id, ct.id)}
-                                                                    title="Remove task"
-                                                                >✕</button>
+                                                                    type="button"
+                                                                    className={`calc-task-pill ${active ? "active" : ""}`}
+                                                                    onClick={() => toggleRoomTask(room.id, task.id)}
+                                                                >
+                                                                    {task.name}
+                                                                </button>
+                                                                {active && (
+                                                                    <select
+                                                                        className="calc-task-freq-select"
+                                                                        value={freqOverride || inputs.frequency}
+                                                                        onChange={(e) => setRoomTaskFrequency(room.id, task.id, e.target.value)}
+                                                                    >
+                                                                        {getTaskFrequencyOptions(inputs.frequency).map((opt) => (
+                                                                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                                                        ))}
+                                                                    </select>
+                                                                )}
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                )}
+                                                        );
+                                                    })}
+                                                </div>
 
-                                                {/* Add custom task input */}
-                                                <div className="calc-add-custom-task">
-                                                    <input
-                                                        className="calc-custom-task-input"
-                                                        value={newCustomTask}
-                                                        onChange={(e) => setNewCustomTask(e.target.value)}
-                                                        placeholder="＋ Add custom task…"
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === "Enter" && newCustomTask.trim()) {
-                                                                addCustomTask(room.id, newCustomTask);
-                                                            }
-                                                        }}
-                                                    />
-                                                    {newCustomTask.trim() && (
-                                                        <button
-                                                            className="calc-custom-task-add-btn"
-                                                            onClick={() => addCustomTask(room.id, newCustomTask)}
-                                                        >Add</button>
+                                                {/* Custom Tasks */}
+                                                <div style={{ marginTop: "1rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                                                    {room.customTasks && room.customTasks.length > 0 && (
+                                                        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "0.5rem" }}>
+                                                            {room.customTasks.map((ct) => (
+                                                                <div key={ct.id} style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", background: "rgba(0, 212, 170, 0.12)", border: "1px solid rgba(0, 212, 170, 0.25)", borderRadius: "6px", padding: "2px 8px", fontSize: "0.75rem", color: "#00d4aa" }}>
+                                                                    <span>{ct.name}</span>
+                                                                    <button type="button" onClick={() => removeCustomTaskFromRoom(room.id, ct.id)} style={{ background: "transparent", border: "none", color: "#9ca3af", cursor: "pointer", fontSize: "0.75rem", padding: 0 }}>✕</button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     )}
+                                                    <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="Add custom task..."
+                                                            value={newCustomTask}
+                                                            onChange={(e) => setNewCustomTask(e.target.value)}
+                                                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTaskToRoom(room.id); } }}
+                                                            style={{ flex: 1, padding: "0.4rem 0.6rem", background: "#121624", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, color: "white", fontSize: "0.8125rem" }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="calc-btn calc-btn-secondary calc-btn-sm"
+                                                            onClick={() => addCustomTaskToRoom(room.id)}
+                                                        >
+                                                            Add
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         )}
@@ -426,129 +545,18 @@ export default function PublicCalculator() {
                                 );
                             })}
                         </div>
-
-                        {/* Sqft total indicator */}
-                        {(() => {
-                            const roomSum = roomScopes.reduce((s, r) => s + (r.sqft || 0), 0);
-                            const diff = inputs.sqft - roomSum;
-                            const isMatch = Math.abs(diff) < 2;
-                            return (
-                                <div className="calc-sqft-total" style={{ color: isMatch ? "#6b7294" : diff > 0 ? "#f0ad4e" : "#e74c3c" }}>
-                                    <span>Room total: {roomSum.toLocaleString()} / {inputs.sqft.toLocaleString()} sqft</span>
-                                    {!isMatch && <span style={{ fontSize: "0.65rem", marginLeft: 4 }}>({diff > 0 ? `${diff.toLocaleString()} unallocated` : `${Math.abs(diff).toLocaleString()} over`})</span>}
-                                </div>
-                            );
-                        })()}
-
-                        {/* Add Room */}
-                        {showAddRoom ? (
-                            <div className="calc-add-room-picker">
-                                <div className="calc-add-room-grid">
-                                    {ROOM_TYPES.map((rt) => (
-                                        <button
-                                            key={rt.id}
-                                            className="calc-add-room-btn"
-                                            onClick={() => addRoom(rt.id)}
-                                            style={{ cursor: "pointer" }}
-                                        >
-                                            <span>{rt.icon}</span>
-                                            <span>{rt.name}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                                <button className="calc-add-room-cancel" onClick={() => setShowAddRoom(false)} style={{ cursor: "pointer" }}>Cancel</button>
-                            </div>
-                        ) : (
-                            <button className="calc-add-room-trigger" onClick={() => setShowAddRoom(true)} style={{ cursor: "pointer" }}>
-                                ＋ Add Room / Area
-                            </button>
-                        )}
-                    </section>
-
-                    {/* Location & Financials */}
-                    <section className="calc-section calc-section-details">
-                        <details className="calc-financials-collapsible">
-                            <summary className="calc-financials-summary">
-                                <h3>Location & Financials</h3>
-                                <span className="calc-financials-preview">
-                                    {selectedState ? `📍 ${STATES.find(s => s.code === selectedState)?.name || selectedState}` : "📍 No state selected"} · ${inputs.wageRate}/hr · {inputs.payrollTaxPercent}% payroll · {inputs.overheadPercent}% overhead · {inputs.profitPercent}% profit
-                                </span>
-                            </summary>
-                            <div className="calc-financials-body">
-                                <div className="form-group">
-                                    <label>ZIP Code (auto-fills local wage rates)</label>
-                                    <input
-                                        type="text"
-                                        value={zipCode}
-                                        onChange={(e) => handleZipChange(e.target.value)}
-                                        placeholder="e.g. 75001"
-                                        maxLength={5}
-                                        inputMode="numeric"
-                                    />
-                                </div>
-                                <div className="calc-financials-grid">
-                                    <div className="form-group">
-                                        <label>State</label>
-                                        <select value={selectedState} onChange={(e) => handleStateChange(e.target.value)}>
-                                            <option value="">— Select state —</option>
-                                            {STATES.map((s) => (
-                                                <option key={s.code} value={s.code}>{s.name}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    {availableMetros.length > 0 && (
-                                        <div className="form-group">
-                                            <label>Metro Area</label>
-                                            <select value={selectedMetro} onChange={(e) => handleMetroChange(e.target.value)}>
-                                                <option value="">— Select metro —</option>
-                                                {availableMetros.map((m) => (
-                                                    <option key={m.id} value={m.id}>{m.name} — ${m.medianWage.toFixed(2)}/hr</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="calc-financials-grid">
-                                    <div className="form-group">
-                                        <label>Hourly Wage ($)</label>
-                                        <input type="number" value={inputs.wageRate} onChange={(e) => update({ wageRate: Number(e.target.value) })} min={7} step={0.5} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Payroll Tax (%)</label>
-                                        <input type="number" value={inputs.payrollTaxPercent} onChange={(e) => update({ payrollTaxPercent: Number(e.target.value) })} min={0} max={30} step={0.5} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Overhead (%)</label>
-                                        <input type="number" value={inputs.overheadPercent} onChange={(e) => update({ overheadPercent: Number(e.target.value) })} min={0} max={50} step={1} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Profit Margin (%)</label>
-                                        <input type="number" value={inputs.profitPercent} onChange={(e) => update({ profitPercent: Number(e.target.value) })} min={0} max={60} step={1} />
-                                    </div>
-                                </div>
-                                <div className="calc-financials-grid" style={{ marginTop: "0.75rem" }}>
-                                    <div className="form-group">
-                                        <label>Supply Cost / sqft</label>
-                                        <input type="number" step="0.0001" value={inputs.supplyCostPerSqft} onChange={(e) => update({ supplyCostPerSqft: Number(e.target.value) })} />
-                                    </div>
-                                    <div className="form-group">
-                                        <label>Supplies Provided By</label>
-                                        <select value={inputs.supplyPolicy || "company"} onChange={(e) => update({ supplyPolicy: e.target.value as SupplyPolicy })}>
-                                            <option value="company">Cleaning Company</option>
-                                            <option value="client">Client Provides</option>
-                                            <option value="shared">Shared (50/50)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </details>
                     </section>
                 </div>
 
-                {/* Right: Results — identical to dashboard */}
-                <div className="calc-results-sticky">
+                {/* Right: Results Card */}
+                <div className="calc-sidebar">
                     <div className="calc-results-card">
-                        <h3>Bid Summary</h3>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
+                            <h3 style={{ margin: 0 }}>Bid Summary</h3>
+                            {autoSaved && (
+                                <span className="calc-autosaved-badge">✓ Auto-Saved</span>
+                            )}
+                        </div>
 
                         <div className="calc-price-hero">
                             {(() => {
@@ -572,7 +580,7 @@ export default function PublicCalculator() {
                         </div>
 
                         <div className="calc-final-price-row">
-                            <label>Final Price</label>
+                            <label>Adjust Final Price</label>
                             <div className="calc-final-price-input-wrap">
                                 <span>$</span>
                                 <input
@@ -641,9 +649,33 @@ export default function PublicCalculator() {
                             </div>
                         </div>
 
-                        {/* Client / Contact Info */}
-                        <div className="calc-section" style={{ marginTop: "1.25rem" }}>
-                            <h3 style={{ fontSize: "0.8125rem", color: "#a1a7c4", marginBottom: "0.75rem", fontWeight: 600 }}>
+                        {/* Quick Email Lead Capture */}
+                        <div className="calc-quick-capture-card">
+                            <div className="quick-capture-header">
+                                <span className="quick-capture-icon">📩</span>
+                                <div>
+                                    <div className="quick-capture-title">Email Me This Estimate</div>
+                                    <div className="quick-capture-desc">Get the breakdown & export a branded PDF</div>
+                                </div>
+                            </div>
+                            <form onSubmit={handleQuickEmailSubmit} className="quick-capture-form">
+                                <input
+                                    type="email"
+                                    placeholder="you@company.com"
+                                    value={captureEmail}
+                                    onChange={(e) => setCaptureEmail(e.target.value)}
+                                    required
+                                    className="quick-capture-input"
+                                />
+                                <button type="submit" className="quick-capture-submit">
+                                    Send PDF →
+                                </button>
+                            </form>
+                        </div>
+
+                        {/* Client / Contact Info (Optional) */}
+                        <div className="calc-section" style={{ marginTop: "1rem" }}>
+                            <h3 style={{ fontSize: "0.8125rem", color: "#a1a7c4", marginBottom: "0.5rem", fontWeight: 600 }}>
                                 Client Information <span style={{ fontWeight: 400, fontSize: "0.6875rem" }}>(optional)</span>
                             </h3>
                             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
@@ -676,45 +708,82 @@ export default function PublicCalculator() {
                             </div>
                         </div>
 
-                        {/* CTA */}
+                        {/* Primary Save CTA */}
                         <button
                             className="calc-btn calc-btn-primary calc-save-btn"
-                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.75rem 1.25rem", cursor: "pointer", marginTop: "1rem" }}
-                            onClick={() => {
-                                // Save full calculator state so it can be auto-created after signup
-                                const selectedTasks = new Set<string>();
-                                roomScopes.forEach((r) => r.tasks.forEach((t) => selectedTasks.add(t)));
-                                const pendingBid = {
-                                    inputs,
-                                    roomScopes,
-                                    priceOverride,
-                                    selectedState,
-                                    selectedTasks: Array.from(selectedTasks),
-                                    results,
-                                    savedAt: new Date().toISOString(),
-                                    // Contact info — usePendingBid will auto-create the contact
-                                    contact: (clientName || clientCompany || clientEmail || clientPhone) ? {
-                                        name: clientName,
-                                        company: clientCompany,
-                                        email: clientEmail,
-                                        phone: clientPhone,
-                                    } : null,
-                                };
-                                try {
-                                    localStorage.setItem("xiri_pendingBid", JSON.stringify(pendingBid));
-                                } catch { /* localStorage full or unavailable — proceed anyway */ }
-                                trackCtaClicked("Save Bid — Start Free Trial", "public_calculator");
-                                (window.top || window).location.href = "/app/login?mode=signup";
-                            }}
+                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.875rem 1.25rem", cursor: "pointer", marginTop: "1rem" }}
+                            onClick={() => handleSaveAndSignup("main_save_btn")}
                         >
-                            Save Bid — Start 14-Day Free Trial
+                            Save Bid — Start 60-Day Free Trial →
                         </button>
                         <p style={{ color: "#8b92b3", fontSize: "0.75rem", textAlign: "center", marginTop: "0.5rem" }}>
-                            No credit card required · Full Bid Plus features
+                            No credit card required · Free 60-day Bid Plus access
                         </p>
                     </div>
                 </div>
             </div>
+
+            {/* ─── Sticky Floating Bottom Bar ─── */}
+            <div className="calc-sticky-bottom-bar">
+                <div className="calc-sticky-inner">
+                    <div className="calc-sticky-left">
+                        <span className="calc-sticky-sqft">{inputs.sqft.toLocaleString()} sqft {buildingType?.name || "Building"}</span>
+                        <span className="calc-sticky-price">{fmt(monthlyPrice)}{isOneOff ? " total" : "/mo"}</span>
+                    </div>
+                    <button
+                        className="calc-sticky-cta"
+                        onClick={() => handleSaveAndSignup("sticky_bottom_bar")}
+                    >
+                        Save Bid & Download Proposal →
+                    </button>
+                </div>
+            </div>
+
+            {/* ─── Exit-Intent Recovery Modal ─── */}
+            {showExitModal && (
+                <div className="calc-exit-overlay" onClick={() => setShowExitModal(false)}>
+                    <div className="calc-exit-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="calc-exit-close" onClick={() => setShowExitModal(false)} aria-label="Close">
+                            ✕
+                        </button>
+
+                        <div className="calc-exit-badge">⚡ DON'T LOSE YOUR ESTIMATE</div>
+                        <h2>Save your {fmt(monthlyPrice)} cleaning proposal?</h2>
+                        <p className="calc-exit-desc">
+                            You've configured a {inputs.sqft.toLocaleString()} sqft {buildingType?.name || "facility"} estimate. Save it to your free workspace and export a branded client proposal in 60 seconds.
+                        </p>
+
+                        <div className="calc-exit-highlight">
+                            <div className="calc-exit-stat">
+                                <span>Monthly Quote</span>
+                                <strong>{fmt(monthlyPrice)}</strong>
+                            </div>
+                            <div className="calc-exit-stat">
+                                <span>Price Per Visit</span>
+                                <strong>{fmt(results.pricePerVisit)}</strong>
+                            </div>
+                            <div className="calc-exit-stat">
+                                <span>Estimated Labor</span>
+                                <strong>{results.hoursPerVisit} hrs/visit</strong>
+                            </div>
+                        </div>
+
+                        <button
+                            className="calc-exit-primary-btn"
+                            onClick={() => {
+                                trackCalculatorExitIntentAccepted(monthlyPrice);
+                                handleSaveAndSignup("exit_intent_modal");
+                            }}
+                        >
+                            Save My Bid & Continue Free (60 Days) →
+                        </button>
+
+                        <button className="calc-exit-dismiss-btn" onClick={() => setShowExitModal(false)}>
+                            Keep editing calculation
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

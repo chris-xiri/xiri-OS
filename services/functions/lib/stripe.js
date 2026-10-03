@@ -53,6 +53,9 @@ const stripeWebhookSecret = (0, params_1.defineSecret)("STRIPE_WEBHOOK_SECRET");
 const chatWebhookUrl = (0, params_1.defineSecret)("GOOGLE_CHAT_WEBHOOK_URL");
 /* ─── Price ID → Tier mapping ─── */
 const PRICE_TO_TIER = {
+    // Early Bird
+    "price_1U9YRH4v1edT1WZ7nziBUcKy": "bid_plus", // Early Bird $5/mo
+    "price_1U9YRI4v1edT1WZ7P4eqtqaa": "bid_plus", // Early Bird $49/yr
     // Monthly
     "price_1T8n8V9ir0rgwcfcZbrHM86c": "bid_plus", // $9/mo
     "price_1T8n8o9ir0rgwcfcWmCYT7nW": "grow", // $39/mo
@@ -66,7 +69,12 @@ const PRICE_TO_TIER = {
 };
 /* ─── Tier → Price ID mapping (for checkout) ─── */
 const TIER_PRICES = {
-    bid_plus: { monthly: "price_1T8n8V9ir0rgwcfcZbrHM86c", annual: "price_1T8nBW9ir0rgwcfcwE3zvl1n" },
+    bid_plus: {
+        monthly: "price_1T8n8V9ir0rgwcfcZbrHM86c",
+        annual: "price_1T8nBW9ir0rgwcfcwE3zvl1n",
+        earlyBirdMonthly: "price_1U9YRH4v1edT1WZ7nziBUcKy",
+        earlyBirdAnnual: "price_1U9YRI4v1edT1WZ7P4eqtqaa",
+    },
     grow: { monthly: "price_1T8n8o9ir0rgwcfcWmCYT7nW", annual: "price_1T8nBX9ir0rgwcfcCxTFEp2t" },
     pro: { monthly: "price_1T8n999ir0rgwcfcgRui9mM9", annual: "price_1T8nBX9ir0rgwcfcw2tGjBhv" },
     business: { monthly: "price_1T8n9Q9ir0rgwcfcrxw0PfML", annual: "price_1T8nBY9ir0rgwcfcRNvoInEG" },
@@ -78,7 +86,7 @@ exports.createCheckoutSession = (0, https_1.onCall)({ secrets: [stripeSecretKey]
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "Must be signed in.");
     }
-    const { companyId, tier, interval, successUrl, cancelUrl } = request.data;
+    const { companyId, tier, interval, isEarlyBird, successUrl, cancelUrl } = request.data;
     if (!companyId || !tier || !successUrl || !cancelUrl) {
         throw new https_1.HttpsError("invalid-argument", "Missing required fields.");
     }
@@ -93,9 +101,17 @@ exports.createCheckoutSession = (0, https_1.onCall)({ secrets: [stripeSecretKey]
     if (!priceConfig) {
         throw new https_1.HttpsError("invalid-argument", `Unknown tier: ${tier}`);
     }
-    const priceId = interval === "annual" && priceConfig.annual
+    let priceId = interval === "annual" && priceConfig.annual
         ? priceConfig.annual
         : priceConfig.monthly;
+    if (isEarlyBird && tier === "bid_plus") {
+        if (interval === "annual" && priceConfig.earlyBirdAnnual) {
+            priceId = priceConfig.earlyBirdAnnual;
+        }
+        else if (priceConfig.earlyBirdMonthly) {
+            priceId = priceConfig.earlyBirdMonthly;
+        }
+    }
     const stripe = new stripe_1.default(stripeSecretKey.value(), { apiVersion: "2025-02-24.acacia" });
     // Get or create Stripe customer
     const companySnap = await admin.firestore().doc(`companies/${companyId}`).get();

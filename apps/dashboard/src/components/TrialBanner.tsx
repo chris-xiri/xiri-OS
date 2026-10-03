@@ -8,14 +8,13 @@ import { trackTrialBannerShown, trackSubscribeClicked } from "../lib/analytics";
 import "./TrialBanner.css";
 
 /**
- * Dismissible banner shown during the Bid Plus trial period.
- * Shows days remaining, usage vs free-tier limits, and a subscribe CTA
+ * High-converting Trial Banner shown during the Bid Plus trial period.
+ * Shows days remaining, usage vs free-tier limits, and the Early-Bird $5/mo offer
  * that goes directly to Stripe checkout.
  */
 export default function TrialBanner() {
     const { subscription, profile } = useAuth();
     const [busy, setBusy] = useState(false);
-    const [dismissed, setDismissed] = useState(() => sessionStorage.getItem("trial-banner-dismissed") === "1");
     const [bidCount, setBidCount] = useState(0);
     const [contactCount, setContactCount] = useState(0);
 
@@ -35,7 +34,7 @@ export default function TrialBanner() {
         return () => { unsubBids(); unsubContacts(); };
     }, [companyId]);
 
-    if (subscription.status !== "trialing" || !subscription.trialEnd || dismissed) {
+    if (subscription.status !== "trialing" || !subscription.trialEnd) {
         return null;
     }
 
@@ -57,7 +56,6 @@ export default function TrialBanner() {
     const handleSubscribe = async () => {
         if (!profile?.companyId || busy) return;
         setBusy(true);
-        // During trial, subscribe to the CURRENT trial tier (e.g. bid_plus), not the next one up
         const tier = subscription.tier === "bid" ? "bid_plus" : subscription.tier;
         trackSubscribeClicked(tier);
         try {
@@ -66,6 +64,7 @@ export default function TrialBanner() {
                 companyId: profile.companyId,
                 tier,
                 interval: "monthly",
+                isEarlyBird: true,
                 successUrl: window.location.origin + "/app/settings?tab=subscription&upgraded=true",
                 cancelUrl: window.location.href,
             });
@@ -82,37 +81,26 @@ export default function TrialBanner() {
     return (
         <div className={`trial-banner ${anyOverLimit ? "trial-banner-over" : ""}`}>
             <div className="trial-banner-content">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                </svg>
+                <span className="trial-banner-badge">⚡ EARLY-BIRD DEAL</span>
                 <div className="trial-banner-text">
                     <span>
-                        <strong>Bid Plus trial</strong> — {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining.
+                        <strong>Bid Plus Trial:</strong> {daysLeft} day{daysLeft !== 1 ? "s" : ""} remaining.
                     </span>
                     <span className="trial-banner-usage">
                         {anyOverLimit ? (
                             <>
-                                You're past the free plan: <strong>{bidCount}/{freeLimits.bids} bids</strong> and <strong>{contactCount}/{freeLimits.contacts} contacts</strong>. Subscribe to keep everything.
+                                You're over free limits (<strong>{bidCount}/{freeLimits.bids} bids</strong>, <strong>{contactCount}/{freeLimits.contacts} contacts</strong>). Lock in <strong>$5/mo</strong> (45% off) to keep unlimited.
                             </>
                         ) : (
                             <>
-                                Using <strong>{bidCount}/{freeLimits.bids} bids</strong> and <strong>{contactCount}/{freeLimits.contacts} contacts</strong> on the free plan. Subscribe for unlimited.
+                                Lock in the founder rate for just <strong>$5/mo</strong> (regularly $9/mo) for unlimited bids and PDF proposals.
                             </>
                         )}
                     </span>
                 </div>
             </div>
             <button className="trial-banner-btn" onClick={handleSubscribe} disabled={busy}>
-                {busy ? "Redirecting to Stripe…" : "Subscribe Now"}
-            </button>
-            <button
-                className="trial-banner-dismiss"
-                disabled={busy}
-                onClick={() => { setDismissed(true); sessionStorage.setItem("trial-banner-dismissed", "1"); }}
-                aria-label="Dismiss trial banner"
-            >
-                ✕
+                {busy ? "Redirecting…" : "Claim $5/mo Deal →"}
             </button>
         </div>
     );

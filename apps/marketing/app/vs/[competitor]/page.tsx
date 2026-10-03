@@ -397,7 +397,7 @@ export default async function CompetitorPage({
                             color: "#c4c9e0",
                         }}
                     >
-                        Try xiriOS free for 14 days. No credit card required. Import your
+                        Try xiriOS free for 60 days (2 months). No credit card required. Import your
                         data and see the difference.
                     </p>
                     <div

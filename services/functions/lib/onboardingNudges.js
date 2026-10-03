@@ -62,23 +62,26 @@ const NUDGES = [
         minHoursAfterSignup: 1,
         requiresNoBids: true,
         requiresBidsNoProposal: false,
-        subject: "Your account is ready — create your first bid",
+        subject: "Let's price a 10,000 sq ft office in 2 minutes",
         bodyHtml: (name) => `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Chris here — I saw you signed up for xiriOS. Welcome!
+                    Chris here. I saw you signed up for xiriOS but haven't run your first calculation yet!
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    The fastest way to see the value is to <strong>create your first bid</strong>. It takes about 2 minutes — just pick a building type, enter the square footage, and the calculator does the rest using ISSA cleaning standards.
+                    I know learning new software is a chore, so let's make it easy: log in right now and try pricing out a 10,000 sq ft office.
+                </p>
+                <p style="color: #374151; font-size: 15px; line-height: 1.6;">
+                    The calculator will automatically pull your local BLS wage data and apply ISSA 612 production rates to tell you exactly how many hours it will take and what to charge.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://os.xiri.ai/app/calculator" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        Create Your First Bid →
+                    <a href="https://os.xiri.ai/app/bids/new" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
+                        Build Your First Bid →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Hit reply if you have any questions — I read every email.
+                    Reply to this email if you get stuck — I read every response.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
                     — Chris
@@ -91,22 +94,25 @@ const NUDGES = [
         minHoursAfterSignup: 24,
         requiresNoBids: true,
         requiresBidsNoProposal: false,
-        subject: "Most cleaners land their first bid within 48 hours",
+        subject: "Are you guessing on your cleaning bids?",
         bodyHtml: (name) => `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Quick follow-up — I noticed you haven't created a bid yet. Totally get it, you're busy running a cleaning business.
+                    When I talk to commercial cleaners, their biggest fear is usually under-bidding and losing money on labor, or over-bidding and losing the contract.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Here's why it's worth 2 minutes: our calculator uses <strong>BLS wage data</strong> and <strong>ISSA 612 production rates</strong> — the same standards the big commercial cleaners use. You'll know exactly what to charge, broken down by labor, supplies, taxes, and profit.
+                    If you're still using spreadsheets or guessing on your bids, you are leaving money on the table.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Think of it as having a pricing analyst on your team.
+                    xiriOS takes the guesswork out. It calculates your exact labor costs, supplies, taxes, and profit margins.
+                </p>
+                <p style="color: #374151; font-size: 15px; line-height: 1.6;">
+                    <strong>Tell you what:</strong> If you have a specific building you're trying to quote right now, reply to this email with the square footage and building type. I will personally build the bid for you and send you the PDF so you can see how it works.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://os.xiri.ai/app/calculator" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        Try the Calculator →
+                    <a href="https://os.xiri.ai/app/bids/new" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
+                        Try the Calculator Yourself →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
@@ -120,53 +126,58 @@ const NUDGES = [
         minHoursAfterSignup: 48,
         requiresNoBids: false,
         requiresBidsNoProposal: true,
-        subject: "Your bid is ready — send it to your prospect",
-        bodyHtml: (name, extra) => `
+        subject: "Your bid is ready. Now let's win the contract.",
+        bodyHtml: (name, extra) => {
+            const bidLabel = extra?.firstBidName ? `your draft bid for <strong>${extra.firstBidName}</strong>${extra?.firstBidPrice ? ` ($${extra.firstBidPrice.toLocaleString()}/mo)` : ""}` : "your bid";
+            return `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Nice — you've created ${extra?.bidCount === 1 ? "a bid" : `${extra?.bidCount} bids`}! The next step is sending it as a professional PDF proposal.
+                    I see ${bidLabel} is saved and ready in your xiriOS workspace!
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Just open your bid, click <strong>"Send Proposal"</strong>, and xiriOS will generate a clean PDF and email it directly to your prospect. Your company name, scope, and pricing — all formatted and ready to go.
+                    The next step is presenting that price to your prospect. Did you know xiriOS automatically turns your calculation into a branded, professional PDF proposal?
+                </p>
+                <p style="color: #374151; font-size: 15px; line-height: 1.6;">
+                    Customers judge your cleaning quality by your presentation. A clean, breakdown-oriented proposal builds trust instantly.
+                </p>
+                <p style="color: #374151; font-size: 15px; line-height: 1.6;">
+                    Log in, open your saved bid, and hit "Send Email" or "Download PDF" to export your client-ready proposal.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
                     <a href="https://os.xiri.ai/app/bids" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        View Your Bids →
+                        Download Your Proposal PDF →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
                     — Chris
                 </p>
             </div>
-        `,
+        `;
+        },
     },
     {
         key: "nudge5dInactiveSent",
         minHoursAfterSignup: 120, // 5 days
         requiresNoBids: false,
         requiresBidsNoProposal: false,
-        subject: "Need help getting started?",
+        subject: "Is xiriOS missing something?",
         bodyHtml: (name) => `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    It's been a few days since you signed up — just wanted to check in. Running a cleaning business is hectic, I know.
+                    It's been a few days since you logged in. Usually, when someone signs up and doesn't come back, it's for one of two reasons:
                 </p>
+                <ol style="color: #374151; font-size: 15px; line-height: 1.8; padding-left: 20px;">
+                    <li>You got too busy running your business (totally understandable).</li>
+                    <li>The software didn't do what you hoped it would do.</li>
+                </ol>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Here's what other cleaners use xiriOS for:
-                </p>
-                <ul style="color: #374151; font-size: 15px; line-height: 1.8; padding-left: 20px;">
-                    <li><strong>Pricing new contracts</strong> — calculator auto-pulls BLS wages for your area</li>
-                    <li><strong>Sending proposals</strong> — professional PDFs with your logo, scope, and pricing</li>
-                    <li><strong>Tracking bids</strong> — see all your opportunities in one pipeline</li>
-                </ul>
-                <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    If something's confusing or not working right, hit reply and tell me. I personally respond to every email.
+                    If it's the second reason, I want to know. Reply and tell me what feature you're missing or what was too confusing. We are constantly building what our users ask for.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://os.xiri.ai/app/calculator" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        Jump Back In →
+                    <a href="https://os.xiri.ai/app/bids/new" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
+                        Log back into xiriOS →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
@@ -216,13 +227,16 @@ exports.sendOnboardingNudges = (0, scheduler_1.onSchedule)({
         const displayName = user.displayName?.split(" ")[0] || company.name || "there";
         const createdAt = new Date(company.createdAt);
         const hoursSinceSignup = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
-        // Count bids
+        // Count bids and get sample bid data
         const bidsSnap = await db
             .collection(`companies/${companyDoc.id}/bids`)
             .limit(10)
             .get();
         const bidCount = bidsSnap.size;
         const hasBids = bidCount > 0;
+        const firstBid = hasBids ? bidsSnap.docs[0].data() : null;
+        const firstBidName = firstBid?.name || "";
+        const firstBidPrice = Math.round(firstBid?.results?.totalPricePerMonth || firstBid?.priceOverride || 0);
         // Check if any bid has been sent as a proposal
         const hasSentProposal = bidsSnap.docs.some((b) => b.data().sentAt || b.data().status === "sent");
         // Evaluate each nudge
@@ -247,7 +261,7 @@ exports.sendOnboardingNudges = (0, scheduler_1.onSchedule)({
                     replyTo: REPLY_TO,
                     to: user.email,
                     subject: nudge.subject,
-                    html: nudge.bodyHtml(displayName, { bidCount }),
+                    html: nudge.bodyHtml(displayName, { bidCount, firstBidName, firstBidPrice }),
                 });
                 // Mark as sent
                 await companyDoc.ref.update({ [nudge.key]: true });

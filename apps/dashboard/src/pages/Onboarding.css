@@ -3,27 +3,64 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0, 212, 170, 0.06) 0%, transparent 60%),
+    background: radial-gradient(ellipse 80% 60% at 50% 20%, rgba(0, 212, 170, 0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 50% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 60%),
         var(--bg-base);
-    padding: 1rem;
+    padding: 1.5rem 1rem;
 }
 
 .onboarding-card {
     width: 100%;
-    max-width: 440px;
+    max-width: 460px;
     background: var(--bg-surface-hover);
     border: 1px solid var(--bg-elevated);
-    border-radius: 16px;
-    padding: 2.5rem;
-    backdrop-filter: blur(12px);
-    animation: fadeInUp 0.4s ease-out;
+    border-radius: 20px;
+    padding: 2.25rem 2rem;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+    animation: fadeInUp 0.35s ease-out;
     text-align: center;
+    transition: max-width 0.3s ease;
+}
+
+.onboarding-card-wide {
+    max-width: 540px;
+    padding: 2rem 2.25rem;
+}
+
+/* Step indicator */
+.onboarding-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.onboarding-step-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    transition: background 0.3s, transform 0.3s;
+}
+
+.onboarding-step-dot.active {
+    background: var(--accent);
+    transform: scale(1.2);
+    box-shadow: 0 0 10px rgba(0, 212, 170, 0.4);
+}
+
+.onboarding-step-line {
+    width: 32px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .onboarding-icon {
     display: flex;
     justify-content: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .onboarding-card h1 {
@@ -38,14 +75,14 @@
 .onboarding-subtitle {
     color: var(--text-muted);
     font-size: 0.9375rem;
-    margin: 0 0 2rem;
+    margin: 0 0 1.5rem;
     line-height: 1.5;
 }
 
 .onboarding-form {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1.125rem;
     text-align: left;
 }
 
@@ -61,36 +98,43 @@
     color: var(--text-secondary);
 }
 
-.onboarding-form .form-group input {
+.onboarding-form .form-group input,
+.onboarding-select {
     padding: 0.875rem 1rem;
-    background: var(--bg-surface-hover);
+    background: rgba(18, 22, 34, 0.8);
     border: 1px solid var(--border-hover);
-    border-radius: 8px;
+    border-radius: 10px;
     color: var(--text-primary);
-    font-size: 1rem;
+    font-size: 0.9375rem;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.onboarding-select {
+    cursor: pointer;
 }
 
 .onboarding-form .form-group input::placeholder {
     color: var(--text-dim);
 }
 
-.onboarding-form .form-group input:focus {
+.onboarding-form .form-group input:focus,
+.onboarding-select:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+    box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.12);
 }
 
 .onboarding-submit {
+    margin-top: 0.5rem;
     padding: 0.875rem;
     background: var(--accent);
-    color: var(--bg-base);
+    color: #0c0f1a;
     font-size: 1rem;
     font-weight: 600;
     border: none;
-    border-radius: 8px;
+    border-radius: 10px;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -100,10 +144,7 @@
 .onboarding-submit:hover:not(:disabled) {
     background: #00e4b8;
     transform: translateY(-1px);
-}
-
-.onboarding-submit:active:not(:disabled) {
-    transform: translateY(0);
+    box-shadow: 0 6px 16px rgba(0, 212, 170, 0.25);
 }
 
 .onboarding-submit:disabled {
@@ -111,9 +152,168 @@
     cursor: not-allowed;
 }
 
+/* ─── Early Bird Step 2 Styles ─── */
+.earlybird-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15));
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #fbbf24;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.875rem;
+}
+
+.earlybird-sparkle {
+    font-size: 0.875rem;
+}
+
+.earlybird-title {
+    font-size: 1.625rem;
+    margin-bottom: 0.375rem;
+}
+
+.earlybird-highlight {
+    background: linear-gradient(135deg, #00d4aa, #3b82f6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.earlybird-interval-switcher {
+    display: flex;
+    background: rgba(18, 22, 34, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 3px;
+    margin-bottom: 1.25rem;
+}
+
+.interval-btn {
+    flex: 1;
+    padding: 8px 12px;
+    background: transparent;
+    border: none;
+    border-radius: 7px;
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.interval-btn.active {
+    background: var(--bg-surface-hover);
+    color: var(--text-primary);
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.save-tag {
+    font-size: 0.6875rem;
+    padding: 2px 6px;
+    background: rgba(0, 212, 170, 0.15);
+    color: #00d4aa;
+    border-radius: 4px;
+    font-weight: 700;
+}
+
+.earlybird-features {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: left;
+    background: rgba(18, 22, 34, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 1rem 1.125rem;
+    margin-bottom: 1.25rem;
+}
+
+.earlybird-feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.feature-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(0, 212, 170, 0.15);
+    color: #00d4aa;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.earlybird-feature-item strong {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    display: block;
+    line-height: 1.3;
+}
+
+.earlybird-feature-item p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 2px 0 0;
+    line-height: 1.35;
+}
+
+.earlybird-cta-btn {
+    width: 100%;
+    padding: 0.9375rem;
+    background: linear-gradient(135deg, #00d4aa 0%, #059669 100%);
+    color: #042f24;
+    font-size: 1rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, filter 0.2s;
+    box-shadow: 0 4px 18px rgba(0, 212, 170, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+}
+
+.earlybird-cta-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 212, 170, 0.45);
+    filter: brightness(1.06);
+}
+
+.earlybird-cta-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.earlybird-cta-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.earlybird-guarantee {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    margin: 0.75rem 0 0;
+}
+
 .onboarding-skip {
     display: inline-block;
-    margin-top: 1.25rem;
+    margin-top: 1rem;
     padding: 0;
     background: none;
     border: none;
@@ -123,16 +323,27 @@
     transition: color 0.2s;
 }
 
+.earlybird-skip {
+    color: var(--text-muted);
+    font-size: 0.8125rem;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.earlybird-skip:hover {
+    color: var(--text-primary);
+}
+
 .onboarding-skip:hover {
     color: var(--text-secondary);
     text-decoration: underline;
 }
 
 .onboarding-spinner {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border: 2px solid rgba(12, 15, 26, 0.3);
-    border-top-color: var(--bg-base);
+    border-top-color: #0c0f1a;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
 }
@@ -140,7 +351,7 @@
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(12px);
+        transform: translateY(14px);
     }
     to {
         opacity: 1;

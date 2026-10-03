@@ -396,7 +396,7 @@ export const FEATURES: Feature[] = [
         ],
         metaTitle: "Unlimited Cleaning Bids & CRM Contacts — $9/mo | xiriOS Bid Plus",
         metaDescription:
-            "Unlimited bids, contacts, and PDF proposals for just $9/month. 60% cheaper than Swept, CleanGuru, and Jobber. BLS wage data. 14-day free trial.",
+            "Unlimited bids, contacts, and PDF proposals for just $9/month. 60% cheaper than Swept, CleanGuru, and Jobber. BLS wage data. 60-day (2 months) free trial.",
         keywords: [
             "unlimited cleaning bids",
             "cheap janitorial software",

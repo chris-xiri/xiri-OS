@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 const FAQ = [
     {
         q: "Is there a free plan?",
-        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 5 CRM contacts. No credit card required. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts, custom tasks, and full CRM. 14-day free trial included.",
+        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 5 CRM contacts. No credit card required. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts, custom tasks, and full CRM. 60-day (2 months) free trial included.",
     },
     {
         q: "Can I switch plans anytime?",

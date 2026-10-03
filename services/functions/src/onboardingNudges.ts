@@ -106,31 +106,34 @@ const NUDGES: NudgeConfig[] = [
         requiresNoBids: false,
         requiresBidsNoProposal: true,
         subject: "Your bid is ready. Now let's win the contract.",
-        bodyHtml: (name, extra) => `
+        bodyHtml: (name, extra) => {
+            const bidLabel = extra?.firstBidName ? `your draft bid for <strong>${extra.firstBidName}</strong>${extra?.firstBidPrice ? ` ($${extra.firstBidPrice.toLocaleString()}/mo)` : ""}` : "your bid";
+            return `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    I see you've successfully created ${extra?.bidCount === 1 ? "a bid" : `${extra?.bidCount} bids`} in xiriOS! Nice work.
+                    I see ${bidLabel} is saved and ready in your xiriOS workspace!
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    The next step is presenting that price to your prospect. Did you know xiriOS automatically generates a branded, professional PDF proposal based on your calculator inputs?
+                    The next step is presenting that price to your prospect. Did you know xiriOS automatically turns your calculation into a branded, professional PDF proposal?
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
                     Customers judge your cleaning quality by your presentation. A clean, breakdown-oriented proposal builds trust instantly.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Log in, open your saved bid, and hit "Send Email" or "Download PDF" to see what your client will see.
+                    Log in, open your saved bid, and hit "Send Email" or "Download PDF" to export your client-ready proposal.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
                     <a href="https://os.xiri.ai/app/bids" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        View Your Proposals →
+                        Download Your Proposal PDF →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
                     — Chris
                 </p>
             </div>
-        `,
+        `;
+        },
     },
     {
         key: "nudge5dInactiveSent",
@@ -214,13 +217,16 @@ export const sendOnboardingNudges = onSchedule(
             const createdAt = new Date(company.createdAt);
             const hoursSinceSignup = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
 
-            // Count bids
+            // Count bids and get sample bid data
             const bidsSnap = await db
                 .collection(`companies/${companyDoc.id}/bids`)
                 .limit(10)
                 .get();
             const bidCount = bidsSnap.size;
             const hasBids = bidCount > 0;
+            const firstBid = hasBids ? bidsSnap.docs[0].data() : null;
+            const firstBidName = firstBid?.name || "";
+            const firstBidPrice = Math.round(firstBid?.results?.totalPricePerMonth || firstBid?.priceOverride || 0);
 
             // Check if any bid has been sent as a proposal
             const hasSentProposal = bidsSnap.docs.some(
@@ -248,7 +254,7 @@ export const sendOnboardingNudges = onSchedule(
                         replyTo: REPLY_TO,
                         to: user.email,
                         subject: nudge.subject,
-                        html: nudge.bodyHtml(displayName, { bidCount }),
+                        html: nudge.bodyHtml(displayName, { bidCount, firstBidName, firstBidPrice }),
                     });
 
                     // Mark as sent

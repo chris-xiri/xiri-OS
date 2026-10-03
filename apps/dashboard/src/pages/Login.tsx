@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useMemo, type FormEvent } from "react";
 import { createUserWithEmailAndPassword, updateProfile, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,14 +10,30 @@ export default function Login() {
     const { login } = useAuth();
     const [searchParams] = useSearchParams();
     const isSignupMode = searchParams.get("mode") === "signup";
+    const emailParam = searchParams.get("email") || "";
 
     const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
+    const [email, setEmail] = useState(emailParam);
     const [password, setPassword] = useState("");
-    const [isSignup, setIsSignup] = useState(isSignupMode);
+    const [isSignup, setIsSignup] = useState(isSignupMode || !!emailParam);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [googleLoading, setGoogleLoading] = useState(false);
+
+    // Check if user came with a pending draft calculation
+    const pendingBidSummary = useMemo(() => {
+        try {
+            const raw = localStorage.getItem("xiri_pendingBid");
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            const sqft = parsed?.inputs?.sqft || 0;
+            const price = Math.round(parsed?.results?.totalPricePerMonth || parsed?.priceOverride || 0);
+            if (sqft > 0 && price > 0) {
+                return { sqft, price };
+            }
+        } catch { /* ignore */ }
+        return null;
+    }, []);
 
     const handleGoogleSignIn = async () => {
         setError("");
@@ -92,9 +108,28 @@ export default function Login() {
                 <h1>{isSignup ? "Start your free trial" : "Welcome back"}</h1>
                 <p className="login-subtitle">
                     {isSignup
-                        ? "14-day Bid Plus trial — no credit card required"
+                        ? "60-day (2 months) Bid Plus trial — no credit card required"
                         : "Sign in to your account to continue"}
                 </p>
+
+                {pendingBidSummary && isSignup && (
+                    <div style={{
+                        background: "rgba(0, 212, 170, 0.08)",
+                        border: "1px solid rgba(0, 212, 170, 0.3)",
+                        borderRadius: "10px",
+                        padding: "0.75rem 1rem",
+                        marginBottom: "1.25rem",
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        textAlign: "left",
+                    }}>
+                        <span style={{ fontSize: "1.25rem" }}>📝</span>
+                        <div style={{ fontSize: "0.8125rem", color: "#e2e8f0" }}>
+                            <strong style={{ color: "#00d4aa" }}>${pendingBidSummary.price.toLocaleString()}/mo Draft Saved:</strong> Complete signup to export your branded proposal PDF.
+                        </div>
+                    </div>
+                )}
 
                 {error && (
                     <div className="login-error">

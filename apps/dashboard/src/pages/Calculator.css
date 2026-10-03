@@ -1524,3 +1524,298 @@
     font-size: 0.5rem;
     font-weight: 700;
 }
+
+/* ─── Conversion & Auto-Save Features ─── */
+
+.calc-autosaved-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #00d4aa;
+    background: rgba(0, 212, 170, 0.12);
+    border: 1px solid rgba(0, 212, 170, 0.3);
+    padding: 3px 10px;
+    border-radius: 9999px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.calc-autosaved-badge {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #00d4aa;
+    background: rgba(0, 212, 170, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 212, 170, 0.2);
+}
+
+/* Quick Email Capture Card */
+.calc-quick-capture-card {
+    background: rgba(18, 22, 34, 0.9);
+    border: 1px solid rgba(0, 212, 170, 0.25);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-top: 1rem;
+    text-align: left;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.quick-capture-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 0.75rem;
+}
+
+.quick-capture-icon {
+    font-size: 1.25rem;
+}
+
+.quick-capture-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #f3f4f6;
+}
+
+.quick-capture-desc {
+    font-size: 0.6875rem;
+    color: var(--text-muted);
+}
+
+.quick-capture-form {
+    display: flex;
+    gap: 6px;
+}
+
+.quick-capture-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    background: #0c0f1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 0.8125rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.quick-capture-input:focus {
+    border-color: var(--accent);
+}
+
+.quick-capture-submit {
+    padding: 0.5rem 0.875rem;
+    background: var(--accent);
+    color: #0c0f1a;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter 0.2s;
+}
+
+.quick-capture-submit:hover {
+    filter: brightness(1.1);
+}
+
+/* ─── Sticky Floating Bottom Bar ─── */
+.calc-sticky-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(12, 15, 26, 0.94);
+    border-top: 1px solid rgba(0, 212, 170, 0.25);
+    backdrop-filter: blur(12px);
+    padding: 0.875rem 1.5rem;
+    z-index: 100;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+.calc-sticky-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.calc-sticky-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.calc-sticky-sqft {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.calc-sticky-price {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--accent);
+}
+
+.calc-sticky-cta {
+    padding: 0.625rem 1.5rem;
+    background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+    color: #042f24;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s;
+    box-shadow: 0 2px 10px rgba(0, 212, 170, 0.3);
+}
+
+.calc-sticky-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 212, 170, 0.45);
+}
+
+/* ─── Exit-Intent Recovery Modal ─── */
+.calc-exit-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 10, 18, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.calc-exit-modal {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    background: #141824;
+    border: 1px solid rgba(0, 212, 170, 0.35);
+    border-radius: 18px;
+    padding: 2.25rem 2rem;
+    text-align: center;
+    box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 212, 170, 0.15);
+    animation: scaleIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.calc-exit-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 0.8125rem;
+}
+
+.calc-exit-close:hover {
+    color: white;
+}
+
+.calc-exit-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #fbbf24;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.75rem;
+}
+
+.calc-exit-modal h2 {
+    font-size: 1.375rem;
+    font-weight: 800;
+    color: #f3f4f6;
+    margin: 0 0 0.5rem;
+}
+
+.calc-exit-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.45;
+    margin: 0 0 1.25rem;
+}
+
+.calc-exit-highlight {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    background: rgba(18, 22, 34, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 1.25rem;
+    text-align: center;
+}
+
+.calc-exit-stat span {
+    font-size: 0.6875rem;
+    color: var(--text-dim);
+    display: block;
+}
+
+.calc-exit-stat strong {
+    font-size: 0.875rem;
+    color: var(--accent);
+}
+
+.calc-exit-primary-btn {
+    width: 100%;
+    padding: 0.875rem;
+    background: linear-gradient(135deg, var(--accent) 0%, #10b981 100%);
+    color: #042f24;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 212, 170, 0.35);
+    transition: transform 0.15s, filter 0.15s;
+}
+
+.calc-exit-primary-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+}
+
+.calc-exit-dismiss-btn {
+    margin-top: 0.625rem;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 0.8125rem;
+    cursor: pointer;
+}
+
+.calc-exit-dismiss-btn:hover {
+    color: var(--text-muted);
+    text-decoration: underline;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: scale(1); }
+}

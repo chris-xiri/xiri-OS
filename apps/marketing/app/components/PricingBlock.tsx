@@ -31,7 +31,7 @@ function PlanCard({ plan }: { plan: Plan }) {
                 <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
                     {isFree
                         ? "forever free"
-                        : `14-day free trial · ${formatPrice(plan, "annual")} billed annually`}
+                        : `60-day (2 months) free trial · ${formatPrice(plan, "annual")} billed annually`}
                 </div>
             </div>
 

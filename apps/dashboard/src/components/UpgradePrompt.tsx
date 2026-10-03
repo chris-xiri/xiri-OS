@@ -3,26 +3,34 @@ import { httpsCallable } from "firebase/functions";
 import { functions } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
 import type { Feature } from "../lib/rbac";
-import { FEATURE_META, requiredTier } from "../lib/rbac";
+import { FEATURE_META, requiredTier, TIER_INFO } from "../lib/rbac";
 import { trackSubscribeClicked } from "../lib/analytics";
 import "./UpgradePrompt.css";
 
 interface UpgradePromptProps {
-    featureName: Feature;
-    requiredTierName: string;
-    requiredTierPrice: string;
-    requiredTierColor: string;
+    feature?: Feature;
+    featureName?: Feature;
+    requiredTierName?: string;
+    requiredTierPrice?: string;
+    requiredTierColor?: string;
 }
 
 export default function UpgradePrompt({
+    feature,
     featureName,
     requiredTierName,
     requiredTierPrice,
     requiredTierColor,
 }: UpgradePromptProps) {
-    const meta = FEATURE_META[featureName];
+    const targetFeature = (feature || featureName || "crm") as Feature;
+    const meta = FEATURE_META[targetFeature] || { label: "Feature", description: "Upgrade to unlock this feature.", icon: "⭐" };
     const { profile } = useAuth();
     const [loading, setLoading] = useState(false);
+
+    const needed = requiredTier(targetFeature);
+    const tierName = requiredTierName || TIER_INFO[needed]?.name || "Pro";
+    const tierPrice = requiredTierPrice || TIER_INFO[needed]?.price || "$9/mo";
+    const tierColor = requiredTierColor || TIER_INFO[needed]?.color || "#3b82f6";
 
     const handleUpgrade = async () => {
         if (!profile?.companyId || loading) return;
@@ -31,13 +39,12 @@ export default function UpgradePrompt({
         try {
             const createCheckoutSession = httpsCallable(functions, "createCheckoutSession");
 
-            const needed = requiredTier(featureName);
             trackSubscribeClicked(needed);
             const result = await createCheckoutSession({
                 companyId: profile.companyId,
                 tier: needed,
                 interval: "monthly",
-                successUrl: window.location.origin + "/settings?tab=subscription&upgraded=true",
+                successUrl: window.location.origin + "/app/settings?tab=subscription&upgraded=true",
                 cancelUrl: window.location.href,
             });
 
@@ -59,12 +66,12 @@ export default function UpgradePrompt({
                     <rect width="48" height="48" rx="12" fill="rgba(255,255,255,0.04)" />
                     <path
                         d="M24 14v12M18 20l6-6 6 6"
-                        stroke={requiredTierColor}
+                        stroke={tierColor}
                         strokeWidth="2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                     />
-                    <rect x="16" y="30" width="16" height="4" rx="2" fill={requiredTierColor} fillOpacity="0.2" />
+                    <rect x="16" y="30" width="16" height="4" rx="2" fill={tierColor} fillOpacity="0.2" />
                 </svg>
             </div>
 
@@ -73,20 +80,19 @@ export default function UpgradePrompt({
             </h3>
             <p className="upgrade-desc">{meta.description}</p>
 
-            <div className="upgrade-badge" style={{ borderColor: requiredTierColor + "40" }}>
-                <span className="upgrade-badge-dot" style={{ background: requiredTierColor }} />
-                Requires <strong>{requiredTierName}</strong> plan ({requiredTierPrice})
+            <div className="upgrade-badge" style={{ borderColor: tierColor + "40" }}>
+                <span className="upgrade-badge-dot" style={{ background: tierColor }} />
+                Requires <strong>{tierName}</strong> plan ({tierPrice})
             </div>
 
             <button
                 className="upgrade-btn"
-                style={{ background: requiredTierColor }}
+                style={{ background: tierColor }}
                 onClick={handleUpgrade}
                 disabled={loading}
             >
-                {loading ? "Starting checkout…" : `Upgrade to ${requiredTierName} →`}
+                {loading ? "Starting checkout…" : `Upgrade to ${tierName} →`}
             </button>
         </div>
     );
 }
-

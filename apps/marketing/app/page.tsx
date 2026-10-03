@@ -121,7 +121,7 @@ export default function Home() {
             >
               {[
                 { value: "60%", label: "Less than competitors" },
-                { value: "14 days", label: "Free trial" },
+                { value: "60 days", label: "Free trial (2 mo)" },
                 { value: "10 min", label: "Setup time" },
               ].map((stat) => (
                 <div key={stat.label} style={{ textAlign: "center" }}>

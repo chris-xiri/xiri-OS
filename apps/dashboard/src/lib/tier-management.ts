@@ -56,6 +56,9 @@ export async function getCompanySubscription(
  * These must match the price IDs from your Stripe dashboard.
  */
 const STRIPE_PRICE_TO_TIER: Record<string, Tier> = {
+    // Early Bird
+    "price_1U9YRH4v1edT1WZ7nziBUcKy": "bid_plus",    // Early Bird $5/mo
+    "price_1U9YRI4v1edT1WZ7P4eqtqaa": "bid_plus",    // Early Bird $49/yr
     // Monthly
     "price_1T8n8V9ir0rgwcfcZbrHM86c": "bid_plus",    // $9/mo
     "price_1T8n8o9ir0rgwcfcWmCYT7nW": "grow",        // $39/mo

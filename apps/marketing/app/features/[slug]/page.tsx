@@ -476,7 +476,7 @@ export default async function FeaturePage({
                     >
                         {feat.plan === "bid"
                             ? "Start free — no credit card, no time limits. Create bids and proposals today."
-                            : "Try Bid Plus free for 14 days. Just $9/month after that. Cancel anytime."}
+                            : "Try Bid Plus free for 60 days (2 months). Just $9/month after that. Cancel anytime."}
                     </p>
                     <div
                         style={{

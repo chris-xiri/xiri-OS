@@ -102,7 +102,54 @@ export function trackPurchaseCompleted(plan: string, value: number) {
     });
 }
 
-// ─── Feature usage ─────────────────────────────────────────
+// ─── Early Bird & Aha-Moment conversion funnel ────────────
+
+/** Early Bird offer viewed during onboarding */
+export function trackEarlyBirdOfferViewed(interval: string) {
+    track("earlybird_offer_viewed", { interval });
+}
+
+/** Early Bird offer accepted (clicked Claim Deal) */
+export function trackEarlyBirdOfferAccepted(interval: string) {
+    track("earlybird_offer_accepted", { interval });
+}
+
+/** Early Bird offer skipped (chose standard 14-day trial) */
+export function trackEarlyBirdOfferSkipped() {
+    track("earlybird_offer_skipped");
+}
+
+/** Proposal Aha-Moment modal shown */
+export function trackProposalAhaModalShown(bidAmount?: number) {
+    track("proposal_aha_modal_shown", { ...(bidAmount ? { bid_amount: bidAmount } : {}) });
+}
+
+/** Proposal Aha-Moment modal upgrade button clicked */
+export function trackProposalAhaModalClicked() {
+    track("proposal_aha_modal_clicked");
+}
+
+// ─── Calculator Conversion Funnel ──────────────────────────
+
+/** Calculator calculation auto-saved to localStorage */
+export function trackCalculatorAutoSaved(sqft: number, monthlyPrice: number) {
+    track("calc_autosaved", { sqft, monthly_price: monthlyPrice });
+}
+
+/** Calculator email quick capture submitted */
+export function trackCalculatorEmailCaptured(emailDomain: string, monthlyPrice: number) {
+    track("calc_email_captured", { email_domain: emailDomain, monthly_price: monthlyPrice });
+}
+
+/** Calculator exit-intent modal shown */
+export function trackCalculatorExitIntentShown(monthlyPrice: number) {
+    track("calc_exit_intent_shown", { monthly_price: monthlyPrice });
+}
+
+/** Calculator exit-intent modal accepted */
+export function trackCalculatorExitIntentAccepted(monthlyPrice: number) {
+    track("calc_exit_intent_accepted", { monthly_price: monthlyPrice });
+}
 
 /** Generic feature usage tracking */
 export function trackFeatureUsed(featureName: string) {

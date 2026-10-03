@@ -104,9 +104,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             );
                         }
                     } else {
-                        // New user — auto-create profile + company with Bid Plus trial
+                        // New user — auto-create profile + company with 60-day Bid Plus trial
                         const companyId = `company_${firebaseUser.uid}`;
-                        const trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+                        const trialEnd = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
                         const newProfile: UserProfile = {
                             uid: firebaseUser.uid,
                             email: firebaseUser.email || "",

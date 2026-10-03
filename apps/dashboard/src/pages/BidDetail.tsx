@@ -11,6 +11,7 @@ import type { Contact } from "./Contacts";
 import { hasFeature } from "../lib/rbac";
 import { trackProposalGenerated } from "../lib/analytics";
 import UpgradePrompt from "../components/UpgradePrompt";
+import ProposalCelebrationModal from "../components/ProposalCelebrationModal";
 import "./BidDetail.css";
 
 const fmt = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
@@ -40,6 +41,7 @@ export default function BidDetail() {
     const [references, setReferences] = useState<ProposalReference[]>([]);
     const [deleting, setDeleting] = useState(false);
     const [showUpgrade, setShowUpgrade] = useState<"email_campaigns" | null>(null);
+    const [showCelebration, setShowCelebration] = useState(false);
 
     const companyId = profile?.companyId;
 
@@ -358,6 +360,7 @@ export default function BidDetail() {
             if (companyId && bidId) {
                 updateDoc(doc(db, "companies", companyId, "bids", bidId), { proposalDownloadedAt: new Date().toISOString() }).catch(() => { });
             }
+            setTimeout(() => setShowCelebration(true), 600);
         };
 
         // Detect mobile / PWA standalone
@@ -496,6 +499,7 @@ export default function BidDetail() {
             });
 
             alert(`✅ Proposal sent to ${contact.email}!\nA copy was CC'd to ${companyData.email}.`);
+            setTimeout(() => setShowCelebration(true), 300);
         } catch (err: any) {
             console.error("Failed to send proposal email:", err);
             alert(`Failed to send email: ${err.message || "Unknown error"}. Please try again.`);
@@ -1084,6 +1088,14 @@ export default function BidDetail() {
                     </div>
                 </div>
             )}
+
+            {/* Proposal Celebration / Aha Modal */}
+            <ProposalCelebrationModal
+                isOpen={showCelebration}
+                onClose={() => setShowCelebration(false)}
+                bidName={bid?.name}
+                monthlyValue={bid?.results?.totalPricePerMonth}
+            />
         </div>
     );
 }

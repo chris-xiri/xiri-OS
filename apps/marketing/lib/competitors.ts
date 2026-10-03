@@ -183,7 +183,7 @@ export const COMPETITORS: CompetitorData[] = [
             { name: "Work Orders", xiriOS: "Business plan", competitor: true },
             { name: "Mobile App", xiriOS: true, competitor: true },
             { name: "Free Calculator (No Signup)", xiriOS: true, competitor: false },
-            { name: "Free Trial", xiriOS: "14 days", competitor: false },
+            { name: "Free Trial", xiriOS: "60 days (2 mo)", competitor: false },
             { name: "Starting Price", xiriOS: "Free", competitor: "$300+/mo" },
         ],
     },
