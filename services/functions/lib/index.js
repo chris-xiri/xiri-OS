@@ -36,12 +36,16 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendProposal = exports.dailyClarityAnalysis = exports.resendWebhook = exports.notifyNewCompany = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendOnboardingNudges = exports.sendTrialReminders = exports.checkTrialExpiry = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
+exports.sendProposal = exports.generateWithAI = exports.dailyClarityAnalysis = exports.resendWebhook = exports.notifyNewCompany = exports.createContactWithLimit = exports.createBidWithLimit = exports.sendReactivationCampaign = exports.sendOnboardingNudges = exports.sendTrialReminders = exports.checkTrialExpiry = exports.adminUpdateSubscription = exports.getAdminSubscriptions = exports.handleStripeWebhook = exports.createPortalSession = exports.createCheckoutSession = void 0;
 // Stripe integration
 var stripe_1 = require("./stripe");
 Object.defineProperty(exports, "createCheckoutSession", { enumerable: true, get: function () { return stripe_1.createCheckoutSession; } });
 Object.defineProperty(exports, "createPortalSession", { enumerable: true, get: function () { return stripe_1.createPortalSession; } });
 Object.defineProperty(exports, "handleStripeWebhook", { enumerable: true, get: function () { return stripe_1.handleStripeWebhook; } });
+// Admin Subscriptions & User Management
+var adminSubscriptions_1 = require("./adminSubscriptions");
+Object.defineProperty(exports, "getAdminSubscriptions", { enumerable: true, get: function () { return adminSubscriptions_1.getAdminSubscriptions; } });
+Object.defineProperty(exports, "adminUpdateSubscription", { enumerable: true, get: function () { return adminSubscriptions_1.adminUpdateSubscription; } });
 // Trial expiry checker
 var checkTrialExpiry_1 = require("./checkTrialExpiry");
 Object.defineProperty(exports, "checkTrialExpiry", { enumerable: true, get: function () { return checkTrialExpiry_1.checkTrialExpiry; } });
@@ -51,6 +55,9 @@ Object.defineProperty(exports, "sendTrialReminders", { enumerable: true, get: fu
 // Onboarding nudge emails (post-signup behavior triggers)
 var onboardingNudges_1 = require("./onboardingNudges");
 Object.defineProperty(exports, "sendOnboardingNudges", { enumerable: true, get: function () { return onboardingNudges_1.sendOnboardingNudges; } });
+// Automated Reactivation Campaign for dormant accounts (daily 10 AM ET)
+var reactivationCampaign_1 = require("./reactivationCampaign");
+Object.defineProperty(exports, "sendReactivationCampaign", { enumerable: true, get: function () { return reactivationCampaign_1.sendReactivationCampaign; } });
 // Server-side limit enforcement
 var limitEnforcement_1 = require("./limitEnforcement");
 Object.defineProperty(exports, "createBidWithLimit", { enumerable: true, get: function () { return limitEnforcement_1.createBidWithLimit; } });
@@ -64,6 +71,9 @@ Object.defineProperty(exports, "resendWebhook", { enumerable: true, get: functio
 // Daily Clarity UX analysis (scheduled — 8 AM ET)
 var dailyClarityAnalysis_1 = require("./dailyClarityAnalysis");
 Object.defineProperty(exports, "dailyClarityAnalysis", { enumerable: true, get: function () { return dailyClarityAnalysis_1.dailyClarityAnalysis; } });
+// AI Text Generation via Gemini API
+var generateWithAI_1 = require("./generateWithAI");
+Object.defineProperty(exports, "generateWithAI", { enumerable: true, get: function () { return generateWithAI_1.generateWithAI; } });
 /**
  * sendProposal — Sends a cleaning proposal PDF via Resend email.
  * Called from the dashboard via httpsCallable.

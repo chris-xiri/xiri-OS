@@ -17,6 +17,7 @@ import PublicCalculator from "./pages/PublicCalculator";
 import References from "./pages/References";
 import CompanyInfo from "./pages/CompanyInfo";
 import Settings from "./pages/Settings";
+import Admin from "./pages/Admin";
 import "./index.css";
 
 /* ─── Auth Guard ─── */
@@ -108,6 +109,7 @@ export default function App() {
             <Route path="references" element={<References />} />
             <Route path="company" element={<CompanyInfo />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="admin" element={<Admin />} />
 
             {/* Gated routes — show UpgradePrompt if tier is too low */}
             <Route path="invoicing" element={<GatedPage feature="invoicing"><PlaceholderPage title="Invoicing" /></GatedPage>} />

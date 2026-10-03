@@ -5,6 +5,9 @@
 // Stripe integration
 export { createCheckoutSession, createPortalSession, handleStripeWebhook } from "./stripe";
 
+// Admin Subscriptions & User Management
+export { getAdminSubscriptions, adminUpdateSubscription } from "./adminSubscriptions";
+
 // Trial expiry checker
 export { checkTrialExpiry } from "./checkTrialExpiry";
 
@@ -13,6 +16,9 @@ export { sendTrialReminders } from "./trialReminders";
 
 // Onboarding nudge emails (post-signup behavior triggers)
 export { sendOnboardingNudges } from "./onboardingNudges";
+
+// Automated Reactivation Campaign for dormant accounts (daily 10 AM ET)
+export { sendReactivationCampaign } from "./reactivationCampaign";
 
 // Server-side limit enforcement
 export { createBidWithLimit, createContactWithLimit } from "./limitEnforcement";
