@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { TIER_INFO, getLimits } from "../lib/rbac";
 import { usePendingBid } from "../hooks/usePendingBid";
+import { calculate, type CalculatorInputs, type RoomScope } from "@xiri-facility-solutions/shared";
 import type { Bid } from "./Bids";
 import "./Dashboard.css";
 
@@ -67,47 +68,40 @@ export default function Dashboard() {
                 updatedAt: new Date().toISOString(),
             });
 
+            const sampleInputs: CalculatorInputs = {
+                buildingTypeId: "office",
+                sqft: 12500,
+                frequency: "5",
+                wageRate: 18.00,
+                payrollTaxPercent: 15,
+                overheadPercent: 12,
+                profitPercent: 20,
+                supplyCostPerSqft: 0.0017,
+                supplyPolicy: "company",
+            };
+
+            const sampleRoomScopes: RoomScope[] = [
+                { id: "room-1", roomTypeId: "lobby", sqft: 1500, tasks: ["trash", "dust", "mop", "glass-entry"] },
+                { id: "room-2", roomTypeId: "restrooms", sqft: 1200, tasks: ["restroom-clean", "restroom-restock", "mop", "trash"] },
+                { id: "room-3", roomTypeId: "hallways", sqft: 2800, tasks: ["vacuum", "mop", "dust"] },
+                { id: "room-4", roomTypeId: "offices", sqft: 7000, tasks: ["trash", "dust", "wipe", "vacuum"] },
+            ];
+
+            const sampleSelectedTasks = Array.from(
+                new Set(sampleRoomScopes.flatMap((r) => r.tasks))
+            );
+
             const sampleBidData = {
                 name: "Summit Plaza Offices — Night Janitorial",
                 contactId: contactRef.id,
                 status: "draft",
+                state: "NY",
                 createdAt: new Date().toISOString(),
                 updatedAt: new Date().toISOString(),
-                calculatorInputs: {
-                    buildingTypeId: "office",
-                    sqft: 12500,
-                    frequency: "5",
-                    wageRate: 18.00,
-                    payrollTaxPercent: 15,
-                    overheadPercent: 12,
-                    profitPercent: 20,
-                    supplyCostPerSqft: 0.0017,
-                    supplyPolicy: "contractor",
-                },
-                results: {
-                    totalPricePerMonth: 2185.00,
-                    pricePerVisit: 100.85,
-                    totalHoursPerMonth: 65.5,
-                    hoursPerVisit: 3.02,
-                    laborCostPerMonth: 1355.85,
-                    supplyCostPerMonth: 106.25,
-                    overheadAmount: 286.20,
-                    profitAmount: 437.00,
-                    marginPercent: 20,
-                    buildingType: {
-                        id: "office",
-                        name: "Office Building",
-                        icon: "🏢",
-                        productionRate: 4200,
-                        complexityMultiplier: 1,
-                    },
-                },
-                rooms: [
-                    { id: "room-1", roomTypeId: "lobby", sqft: 1500, tasks: ["trash", "dust", "mop", "glass-entry"] },
-                    { id: "room-2", roomTypeId: "restrooms", sqft: 1200, tasks: ["restroom-clean", "restroom-restock", "mop", "trash"] },
-                    { id: "room-3", roomTypeId: "hallways", sqft: 2800, tasks: ["vacuum", "mop", "trash"] },
-                    { id: "room-4", roomTypeId: "common", sqft: 7000, tasks: ["trash", "dust", "wipe", "vacuum"] },
-                ],
+                calculatorInputs: sampleInputs,
+                results: calculate(sampleInputs, sampleRoomScopes),
+                roomScopes: sampleRoomScopes,
+                selectedTasks: sampleSelectedTasks,
                 version: 1,
             };
 

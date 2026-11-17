@@ -120,6 +120,20 @@ export default function Calculator() {
                 if (sp === "customer_provides") patchInputs.supplyPolicy = "client";
                 else if (sp === "both") patchInputs.supplyPolicy = "shared";
                 else if (sp === "we_provide") patchInputs.supplyPolicy = "company";
+
+                // Map company primaryService from Onboarding → default buildingTypeId
+                const serviceMap: Record<string, string> = {
+                    commercial: "office",
+                    specialized: "medical",
+                    medical: "medical",
+                    residential: "residential",
+                };
+                const mappedBuildingType = serviceMap[d.primaryService || ""];
+                if (mappedBuildingType && mappedBuildingType !== "office") {
+                    patchInputs.buildingTypeId = mappedBuildingType;
+                    setRoomScopes(getDefaultRooms(mappedBuildingType, DEFAULT_INPUTS.sqft));
+                }
+
                 if (Object.keys(patchInputs).length > 0) {
                     setInputs((p) => ({ ...p, ...patchInputs }));
                 }
@@ -152,6 +166,8 @@ export default function Calculator() {
                 }
                 if (data.roomScopes) {
                     setRoomScopes(data.roomScopes);
+                } else if (data.rooms) {
+                    setRoomScopes(data.rooms);
                 } else if (data.selectedTasks) {
                     // Backward compat: convert flat tasks to a single "all areas" room
                     setRoomScopes([{

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { doc, onSnapshot, updateDoc, deleteDoc, getDoc, collection, getDocs } from "firebase/firestore";
 import { db } from "../lib/firebase";
 import { useAuth } from "../contexts/AuthContext";
@@ -28,10 +28,12 @@ const STATUS_OPTIONS: Bid["status"][] = ["draft", "sent", "won", "lost"];
 export default function BidDetail() {
     const { bidId } = useParams<{ bidId: string }>();
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const { profile, subscription } = useAuth();
     const [bid, setBid] = useState<Bid | null>(null);
     const [contact, setContact] = useState<Contact | null>(null);
     const [companyData, setCompanyData] = useState<{ name?: string; phone?: string; email?: string; address?: any; logoUrl?: string; legalName?: string;[k: string]: any }>({});
+    const [companyLoaded, setCompanyLoaded] = useState(false);
     const [loading, setLoading] = useState(true);
     const [viewingVersion, setViewingVersion] = useState<number | null>(null);
     const [termsOpen, setTermsOpen] = useState(false);
@@ -42,11 +44,89 @@ export default function BidDetail() {
     const [deleting, setDeleting] = useState(false);
     const [showUpgrade, setShowUpgrade] = useState<"email_campaigns" | null>(null);
     const [showCelebration, setShowCelebration] = useState(false);
+    const autoPreviewTriggered = useRef(false);
 
     const companyId = profile?.companyId;
 
-    // Company info completeness check — gate proposal actions
-    const companyProfileComplete = !!(companyData.name && companyData.name !== (profile?.displayName + "'s Company") && companyData.address);
+    const rawCompanyName = companyData.name || "";
+    const isDefaultPlaceholderName =
+        rawCompanyName === `${profile?.displayName}'s Company` ||
+        rawCompanyName === `${profile?.email}'s Company` ||
+        (rawCompanyName.includes("@") && rawCompanyName.endsWith("'s Company"));
+    const resolvedCompanyName = (!rawCompanyName || isDefaultPlaceholderName)
+        ? (profile?.displayName && !profile.displayName.includes("@") ? `${profile.displayName}'s Cleaning` : "Our Cleaning Company")
+        : rawCompanyName;
+    const resolvedCompanyEmail = companyData.email || profile?.email || undefined;
+
+    // Company info completeness check — used for optional customization banner
+    const hasAddress = !!(
+        companyData.address &&
+        (typeof companyData.address === "string"
+            ? companyData.address.trim()
+            : companyData.address.address || companyData.address.city || companyData.address.state)
+    );
+    const companyProfileComplete = !!(rawCompanyName && !isDefaultPlaceholderName && hasAddress);
+
+    const normalizeBidFields = useCallback((b: Bid, overrideData?: any) => {
+        const rawRes = overrideData?.results || b.results || ({} as any);
+        const inp = overrideData?.calculatorInputs || b.calculatorInputs || ({} as any);
+        const scopes: RoomScope[] | undefined =
+            overrideData?.roomScopes || (b as any).roomScopes || (b as any).rooms;
+        const rawTasks: string[] | undefined = overrideData?.selectedTasks || b.selectedTasks;
+        const derivedTasks: string[] =
+            rawTasks && rawTasks.length > 0
+                ? rawTasks
+                : scopes
+                    ? Array.from(new Set(scopes.flatMap((r: RoomScope) => r.tasks || [])))
+                    : [];
+
+        const freqNum = inp?.frequency === "once" ? 1 : parseFloat(inp?.frequency || "5") || 5;
+        const visitsPerMonth =
+            rawRes.visitsPerMonth ?? (inp?.frequency === "once" ? 1 : Math.round(freqNum * 4.33));
+        const totalPricePerMonth = rawRes.totalPricePerMonth ?? 0;
+        const pricePerVisit =
+            rawRes.pricePerVisit ??
+            (visitsPerMonth > 0 ? Math.round((totalPricePerMonth / visitsPerMonth) * 100) / 100 : totalPricePerMonth);
+        const laborCostPerMonth = rawRes.laborCostPerMonth ?? 0;
+        const payrollTaxCost =
+            rawRes.payrollTaxCost ??
+            Math.round(laborCostPerMonth * ((inp?.payrollTaxPercent ?? 15) / 100) * 100) / 100;
+        const supplyCostPerMonth = rawRes.supplyCostPerMonth ?? 0;
+        const overheadCost = rawRes.overheadCost ?? rawRes.overheadAmount ?? 0;
+        const totalCostPerMonth =
+            rawRes.totalCostPerMonth ??
+            Math.round((laborCostPerMonth + payrollTaxCost + supplyCostPerMonth + overheadCost) * 100) / 100;
+        const profitAmount = rawRes.profitAmount ?? Math.round((totalPricePerMonth - totalCostPerMonth) * 100) / 100;
+        const pricePerSqft =
+            rawRes.pricePerSqft ?? (inp?.sqft ? Math.round((totalPricePerMonth / inp.sqft) * 1000) / 1000 : 0);
+        const hoursPerVisit = rawRes.hoursPerVisit ?? 0;
+        const totalHoursPerMonth = rawRes.totalHoursPerMonth ?? 0;
+        const effectiveHourlyRate =
+            rawRes.effectiveHourlyRate ??
+            (totalHoursPerMonth > 0 ? Math.round((totalPricePerMonth / totalHoursPerMonth) * 100) / 100 : 0);
+
+        return {
+            inputs: inp,
+            roomScopes: scopes,
+            tasks: derivedTasks,
+            results: {
+                ...rawRes,
+                visitsPerMonth,
+                totalPricePerMonth,
+                pricePerVisit,
+                laborCostPerMonth,
+                payrollTaxCost,
+                supplyCostPerMonth,
+                overheadCost,
+                totalCostPerMonth,
+                profitAmount,
+                pricePerSqft,
+                hoursPerVisit,
+                totalHoursPerMonth,
+                effectiveHourlyRate,
+            },
+        };
+    }, []);
 
     // Delete bid with confirmation
     const handleDeleteBid = async () => {
@@ -88,12 +168,16 @@ export default function BidDetail() {
     // Load company data (all fields for proposal terms)
     useEffect(() => {
         if (!companyId) return;
-        getDoc(doc(db, "companies", companyId)).then((snap) => {
-            if (snap.exists()) {
-                const d = snap.data();
-                setCompanyData(d);
-            }
-        });
+        getDoc(doc(db, "companies", companyId))
+            .then((snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    setCompanyData(d);
+                }
+            })
+            .finally(() => {
+                setCompanyLoaded(true);
+            });
     }, [companyId]);
 
     // Fetch references from collection
@@ -141,7 +225,7 @@ export default function BidDetail() {
 
     // Initialize proposal terms: use bid-saved terms or fall back to company defaults
     useEffect(() => {
-        if (!bid || !companyData.legalName) return;
+        if (!bid) return;
         if (bid.proposalTerms) {
             setLocalTerms(bid.proposalTerms);
         } else {
@@ -149,7 +233,7 @@ export default function BidDetail() {
             const bidSupplyPolicy = bid.calculatorInputs?.supplyPolicy || "";
             // Build defaults from company data
             setLocalTerms({
-                legalName: companyData.legalName || companyData.name || "",
+                legalName: companyData.legalName || resolvedCompanyName || "",
                 employeeStatus: companyData.employeeStatus || "",
                 supervisionApproach: companyData.supervisionApproach || "",
                 companyPhilosophy: companyData.companyPhilosophy || "",
@@ -168,7 +252,7 @@ export default function BidDetail() {
                 uniformedPersonnel: companyData.uniformedPersonnel || false,
             });
         }
-    }, [bid?.id, companyData, buildEquipmentText]);
+    }, [bid?.id, companyData, resolvedCompanyName, buildEquipmentText]);
 
     // Shared: fetch COI and convert to image data URL (handles both PDF and image files)
     const fetchCoiDataUrl = useCallback(async (): Promise<string | undefined> => {
@@ -210,12 +294,6 @@ export default function BidDetail() {
 
     const handlePreview = useCallback(async () => {
         if (!bid) return;
-        if (!companyProfileComplete) {
-            if (window.confirm("Complete your company profile first — your company name and address appear on every proposal.\n\nGo to Company Info now?")) {
-                navigate("/company");
-            }
-            return;
-        }
         const fmtAddr = (addr: any): string | undefined => {
             if (!addr) return undefined;
             if (typeof addr === "string") return addr;
@@ -224,28 +302,29 @@ export default function BidDetail() {
             return parts.length ? parts.join(", ") : undefined;
         };
 
+        const normalized = normalizeBidFields(bid);
         const coiImageDataUrl = await fetchCoiDataUrl();
 
         const { doc: pdfDoc } = await generateProposal({
             bidName: bid.name,
-            companyName: companyData.name || "Our Company",
+            companyName: resolvedCompanyName,
             contactName: contact?.name || "Client",
             contactCompany: contact?.company || "",
             contactEmail: contact?.email,
             contactPhone: contact?.phone,
             contactAddress: contact?.address,
             state: bid.state || "",
-            inputs: bid.calculatorInputs,
-            results: bid.results,
-            selectedTasks: bid.selectedTasks,
+            inputs: normalized.inputs,
+            results: normalized.results,
+            selectedTasks: normalized.tasks,
             version: (bid as any).version || 1,
             createdAt: bid.createdAt,
             companyPhone: companyData.phone,
-            companyEmail: companyData.email,
+            companyEmail: resolvedCompanyEmail,
             companyAddress: fmtAddr(companyData.address),
             companyLogoUrl: companyData.logoUrl,
             proposalTerms: localTerms || undefined,
-            roomScopes: (bid as any).roomScopes,
+            roomScopes: normalized.roomScopes,
             priceOverride: (bid as any).priceOverride ?? null,
             references,
             coiImageDataUrl,
@@ -256,7 +335,23 @@ export default function BidDetail() {
         const blob = pdfDoc.output("blob");
         const url = URL.createObjectURL(blob);
         setPreviewUrl(url);
-    }, [bid, companyData, contact, localTerms, fetchCoiDataUrl]);
+    }, [bid, companyData, resolvedCompanyName, resolvedCompanyEmail, contact, localTerms, references, fetchCoiDataUrl, normalizeBidFields]);
+
+    // Auto-open Proposal Preview when arriving with ?preview=true (e.g. from PublicCalculator signup)
+    useEffect(() => {
+        if (
+            searchParams.get("preview") === "true" &&
+            bid &&
+            companyLoaded &&
+            !autoPreviewTriggered.current
+        ) {
+            autoPreviewTriggered.current = true;
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.delete("preview");
+            setSearchParams(nextParams, { replace: true });
+            handlePreview();
+        }
+    }, [searchParams, setSearchParams, bid, companyLoaded, handlePreview]);
 
     const saveTerms = useCallback(async (terms: ProposalTerms) => {
         if (!companyId || !bidId) return;
@@ -269,7 +364,7 @@ export default function BidDetail() {
     const resetTermsToDefaults = useCallback(() => {
         const bidSupplyPolicy = bid?.calculatorInputs?.supplyPolicy || "";
         const defaults: ProposalTerms = {
-            legalName: companyData.legalName || companyData.name || "",
+            legalName: companyData.legalName || resolvedCompanyName || "",
             employeeStatus: companyData.employeeStatus || "",
             supervisionApproach: companyData.supervisionApproach || "",
             companyPhilosophy: companyData.companyPhilosophy || "",
@@ -289,7 +384,7 @@ export default function BidDetail() {
         };
         setLocalTerms(defaults);
         saveTerms(defaults);
-    }, [companyData, saveTerms, bid, buildEquipmentText]);
+    }, [companyData, resolvedCompanyName, saveTerms, bid, buildEquipmentText]);
 
     const handleStatusChange = useCallback(async (status: Bid["status"]) => {
         if (!companyId || !bidId) return;
@@ -309,12 +404,6 @@ export default function BidDetail() {
 
     const handleDownloadPdf = useCallback(async () => {
         if (!bid) return;
-        if (!companyProfileComplete) {
-            if (window.confirm("Complete your company profile first — your company name and address appear on every proposal.\n\nGo to Company Info now?")) {
-                navigate("/company");
-            }
-            return;
-        }
 
         // Format structured address to a single string
         const fmtAddr = (addr: any): string | undefined => {
@@ -325,28 +414,29 @@ export default function BidDetail() {
             return parts.length ? parts.join(", ") : undefined;
         };
 
+        const normalized = normalizeBidFields(bid);
         const coiImageDataUrl = await fetchCoiDataUrl();
 
         const { doc: pdfDoc, filename } = await generateProposal({
             bidName: bid.name,
-            companyName: companyData.name || "Our Company",
+            companyName: resolvedCompanyName,
             contactName: contact?.name || "Client",
             contactCompany: contact?.company || "",
             contactEmail: contact?.email,
             contactPhone: contact?.phone,
             contactAddress: contact?.address,
             state: bid.state || "",
-            inputs: bid.calculatorInputs,
-            results: bid.results,
-            selectedTasks: bid.selectedTasks,
+            inputs: normalized.inputs,
+            results: normalized.results,
+            selectedTasks: normalized.tasks,
             version: (bid as any).version || 1,
             createdAt: bid.createdAt,
             companyPhone: companyData.phone,
-            companyEmail: companyData.email,
+            companyEmail: resolvedCompanyEmail,
             companyAddress: fmtAddr(companyData.address),
             companyLogoUrl: companyData.logoUrl,
             proposalTerms: localTerms || undefined,
-            roomScopes: (bid as any).roomScopes,
+            roomScopes: normalized.roomScopes,
             priceOverride: (bid as any).priceOverride ?? null,
             coiImageDataUrl,
             references,
@@ -412,7 +502,7 @@ export default function BidDetail() {
             URL.revokeObjectURL(url);
         }, 1000);
         stampDownload();
-    }, [bid, contact, companyData, localTerms, fetchCoiDataUrl]);
+    }, [bid, contact, companyData, resolvedCompanyName, resolvedCompanyEmail, localTerms, references, companyId, bidId, fetchCoiDataUrl, normalizeBidFields]);
 
     const [emailSending, setEmailSending] = useState(false);
 
@@ -424,16 +514,18 @@ export default function BidDetail() {
         if (!bid || !contact?.email) {
             if (contact?.id && window.confirm("This contact doesn't have an email address. Would you like to add one now?")) {
                 navigate(`/contacts?edit=${contact.id}`);
+            } else if (!contact?.id) {
+                alert("Please link a client contact with an email address to this bid first (click Edit Bid).");
             }
             return;
         }
-        if (!companyData.email) {
+        if (!resolvedCompanyEmail) {
             alert("Please add your company email in Company settings first. This is used as the reply-to address.");
             return;
         }
 
         const confirmSend = confirm(
-            `Send proposal to ${contact.name} (${contact.email})?\n\nThe email will be CC'd to ${companyData.email} and replies will go to your company email.`
+            `Send proposal to ${contact.name} (${contact.email})?\n\nThe email will be CC'd to ${resolvedCompanyEmail} and replies will go to your email.`
         );
         if (!confirmSend) return;
 
@@ -448,28 +540,29 @@ export default function BidDetail() {
                 return parts.length ? parts.join(", ") : undefined;
             };
 
+            const normalized = normalizeBidFields(bid);
             const coiImageDataUrl = await fetchCoiDataUrl();
 
             const { doc: pdfDoc, filename } = await generateProposal({
                 bidName: bid.name,
-                companyName: companyData.name || "Our Company",
+                companyName: resolvedCompanyName,
                 contactName: contact.name || "Client",
                 contactCompany: contact.company || "",
                 contactEmail: contact.email,
                 contactPhone: contact.phone,
                 contactAddress: contact.address,
                 state: bid.state || "",
-                inputs: bid.calculatorInputs,
-                results: bid.results,
-                selectedTasks: bid.selectedTasks,
+                inputs: normalized.inputs,
+                results: normalized.results,
+                selectedTasks: normalized.tasks,
                 version: (bid as any).version || 1,
                 createdAt: bid.createdAt,
                 companyPhone: companyData.phone,
-                companyEmail: companyData.email,
+                companyEmail: resolvedCompanyEmail,
                 companyAddress: fmtAddr(companyData.address),
                 companyLogoUrl: companyData.logoUrl,
                 proposalTerms: localTerms || undefined,
-                roomScopes: (bid as any).roomScopes,
+                roomScopes: normalized.roomScopes,
                 priceOverride: (bid as any).priceOverride ?? null,
                 coiImageDataUrl,
                 references,
@@ -492,13 +585,13 @@ export default function BidDetail() {
                 filename,
                 toEmail: contact.email,
                 toName: contact.name || "",
-                ccEmail: companyData.email,
-                replyToEmail: companyData.email,
-                companyName: companyData.name || "Our Company",
+                ccEmail: resolvedCompanyEmail,
+                replyToEmail: resolvedCompanyEmail,
+                companyName: resolvedCompanyName,
                 bidName: bid.name,
             });
 
-            alert(`✅ Proposal sent to ${contact.email}!\nA copy was CC'd to ${companyData.email}.`);
+            alert(`✅ Proposal sent to ${contact.email}!\nA copy was CC'd to ${resolvedCompanyEmail}.`);
             setTimeout(() => setShowCelebration(true), 300);
         } catch (err: any) {
             console.error("Failed to send proposal email:", err);
@@ -506,7 +599,7 @@ export default function BidDetail() {
         } finally {
             setEmailSending(false);
         }
-    }, [bid, contact, companyData, companyId, bidId, subscription.tier, localTerms, fetchCoiDataUrl, references]);
+    }, [bid, contact, companyData, resolvedCompanyName, resolvedCompanyEmail, companyId, bidId, subscription.tier, localTerms, fetchCoiDataUrl, normalizeBidFields, references, navigate]);
 
     if (loading) {
         return (
@@ -539,10 +632,11 @@ export default function BidDetail() {
         ? versions.find((v: any) => v.version === viewingVersion)
         : null;
 
-    const results = displayData?.results || bid.results;
-    const inputs = displayData?.calculatorInputs || bid.calculatorInputs;
-    const tasks = displayData?.selectedTasks || bid.selectedTasks;
-    const roomScopes: RoomScope[] | undefined = displayData?.roomScopes || (bid as any).roomScopes;
+    const normalizedDisplay = normalizeBidFields(bid, displayData);
+    const results = normalizedDisplay.results;
+    const inputs = normalizedDisplay.inputs;
+    const tasks = normalizedDisplay.tasks;
+    const roomScopes: RoomScope[] | undefined = normalizedDisplay.roomScopes;
     const priceOverride: number | null = displayData?.priceOverride ?? (bid as any).priceOverride ?? null;
     const buildingType = BUILDING_TYPES.find((b) => b.id === inputs?.buildingTypeId);
     const frequency = FREQUENCIES.find((f) => f.value === inputs?.frequency);
@@ -643,8 +737,8 @@ export default function BidDetail() {
                         <line x1="12" y1="8" x2="12" y2="12" />
                         <line x1="12" y1="16" x2="12.01" y2="16" />
                     </svg>
-                    <span>Complete your <strong>company profile</strong> to generate professional proposals.</span>
-                    <button onClick={() => navigate("/company")}>Set Up Company Info</button>
+                    <span>Want your logo, address, and COI on proposals? Customize your <strong>company profile</strong> anytime.</span>
+                    <button onClick={() => navigate("/company")}>Customize Branding</button>
                 </div>
             )}
             {viewingVersion !== null && (
