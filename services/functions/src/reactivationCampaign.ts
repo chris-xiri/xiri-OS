@@ -23,7 +23,7 @@ interface ReactivationStage {
     key: "reactivation14dSent" | "reactivation30dSent" | "reactivation60dSent";
     minDaysInactive: number;
     subject: string;
-    bodyHtml: (name: string, companyName: string, recentBidName?: string) => string;
+    bodyHtml: (name: string, companyName: string, recentBidName?: string, recentBidId?: string) => string;
 }
 
 const REACTIVATION_STAGES: ReactivationStage[] = [
@@ -31,7 +31,7 @@ const REACTIVATION_STAGES: ReactivationStage[] = [
         key: "reactivation14dSent",
         minDaysInactive: 14,
         subject: "We extended your xiriOS trial to 60 days + new ISSA 612 bidding engine",
-        bodyHtml: (name, companyName, recentBidName) => `
+        bodyHtml: (name, companyName, recentBidName, recentBidId) => `
             <div style="font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; max-width: 580px; margin: 0 auto; padding: 32px 24px; color: #1e293b; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
                 <div style="margin-bottom: 24px;">
                     <span style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">xiri<span style="color: #00d4aa;">OS</span></span>
@@ -62,8 +62,8 @@ const REACTIVATION_STAGES: ReactivationStage[] = [
                 ` : ""}
 
                 <div style="text-align: center; margin: 32px 0;">
-                    <a href="https://os.xiri.ai/app/bids/new" style="display: inline-block; padding: 14px 32px; background: #00d4aa; color: #042f24; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0, 212, 170, 0.25);">
-                        Log In & Price a Cleaning Job →
+                    <a href="${recentBidId ? `https://os.xiri.ai/app/bids/${recentBidId}?preview=true` : "https://os.xiri.ai/app/bids/new"}" style="display: inline-block; padding: 14px 32px; background: #00d4aa; color: #042f24; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 12px rgba(0, 212, 170, 0.25);">
+                        ${recentBidId ? "Open Saved Estimate & Export PDF →" : "Log In & Price a Cleaning Job →"}
                     </a>
                 </div>
 
@@ -206,7 +206,11 @@ export const sendReactivationCampaign = onSchedule(
 
             // Skip active paying subscribers
             const subStatus = company.subscription?.status;
-            if (subStatus === "active" || subStatus === "past_due") continue;
+            const subTier = company.subscription?.tier;
+            const isPayingSubscriber =
+                Boolean(company.subscription?.stripeSubscriptionId) ||
+                ((subStatus === "active" || subStatus === "past_due") && subTier && subTier !== "bid");
+            if (isPayingSubscriber) continue;
 
             const ownerId = company.ownerId;
             if (!ownerId) continue;
@@ -226,10 +230,13 @@ export const sendReactivationCampaign = onSchedule(
             // Fetch bids
             const bidsSnap = await db.collection(`companies/${companyDoc.id}/bids`).orderBy("createdAt", "desc").limit(1).get();
             let recentBidName: string | undefined;
+            let recentBidId: string | undefined;
 
             if (!bidsSnap.empty) {
-                const latestBid = bidsSnap.docs[0].data();
+                const latestBidDoc = bidsSnap.docs[0];
+                const latestBid = latestBidDoc.data();
                 recentBidName = latestBid.name;
+                recentBidId = latestBidDoc.id;
                 const lastBidTime = new Date(latestBid.updatedAt || latestBid.createdAt || company.createdAt);
                 const daysSinceLastBid = (now.getTime() - lastBidTime.getTime()) / (1000 * 60 * 60 * 24);
 
@@ -249,15 +256,19 @@ export const sendReactivationCampaign = onSchedule(
                         replyTo: REPLY_TO,
                         to: user.email,
                         subject: stage.subject,
-                        html: stage.bodyHtml(displayName, companyName, recentBidName),
+                        html: stage.bodyHtml(displayName, companyName, recentBidName, recentBidId),
                     });
 
                     // Mark stage as sent and extend trial end on company doc
+                    const newTrialEnd = new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString();
                     await companyDoc.ref.update({
                         [stage.key]: true,
                         lastReactivationSentAt: now.toISOString(),
                         // Auto-reset trial to 60 days from now
-                        trialEnd: new Date(now.getTime() + 60 * 24 * 60 * 60 * 1000).toISOString(),
+                        "subscription.tier": "bid_plus",
+                        "subscription.status": "trialing",
+                        "subscription.trialEnd": newTrialEnd,
+                        trialEnd: newTrialEnd,
                     });
 
                     sentCount++;

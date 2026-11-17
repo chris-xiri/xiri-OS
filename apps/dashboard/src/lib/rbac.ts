@@ -57,7 +57,7 @@ const TIER_LIMITS: Record<Tier, TierLimits> = {
 /* ─── Tier Display Info ─── */
 export const TIER_INFO: Record<Tier, { name: string; price: string; color: string }> = {
     bid: { name: "Bid", price: "Free", color: "#8b92b3" },
-    bid_plus: { name: "Bid Plus", price: "$9/mo", color: "#3b82f6" },
+    bid_plus: { name: "Bid Plus", price: "$5/mo", color: "#3b82f6" },
     grow: { name: "Grow", price: "$39/mo", color: "#00d4aa" },
     pro: { name: "Pro", price: "$79/mo", color: "#6366f1" },
     business: { name: "Business", price: "$119/mo", color: "#f59e0b" },

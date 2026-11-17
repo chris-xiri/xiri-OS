@@ -35,10 +35,10 @@ const REMINDERS: ReminderConfig[] = [
                     Your <strong>Bid Plus</strong> trial ends in <strong>3 days</strong>. After that, your account will switch to the free Bid plan with a 3-bid and 5-contact limit.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    To keep unlimited bids, proposals, and all your data — subscribe for just <strong>$9/month</strong>.
+                    To keep unlimited bids, proposals, and all your data — subscribe for just <strong>$5/month</strong> (Early-Bird rate).
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://app.xiri.ai/settings" style="display: inline-block; padding: 12px 28px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                    <a href="https://os.xiri.ai/app/settings?tab=subscription" style="display: inline-block; padding: 12px 28px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
                         Subscribe Now →
                     </a>
                 </div>
@@ -60,10 +60,10 @@ const REMINDERS: ReminderConfig[] = [
                     <strong>Tomorrow your trial ends.</strong> After that, you'll lose access to unlimited bids, custom tasks, and frequency overrides.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Lock in <strong>Bid Plus for $9/month</strong> — that's less than the cost of one cleaning supply run.
+                    Lock in <strong>Bid Plus for $5/month</strong> — that's less than the cost of one cleaning supply run.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://app.xiri.ai/settings" style="display: inline-block; padding: 12px 28px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
+                    <a href="https://os.xiri.ai/app/settings?tab=subscription" style="display: inline-block; padding: 12px 28px; background: #f59e0b; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
                         Subscribe — Keep Your Data →
                     </a>
                 </div>
@@ -94,8 +94,8 @@ const REMINDERS: ReminderConfig[] = [
                     Your existing data is safe — upgrade anytime to unlock everything again.
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://app.xiri.ai/settings" style="display: inline-block; padding: 12px 28px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
-                        Upgrade to Bid Plus — $9/mo →
+                    <a href="https://os.xiri.ai/app/settings?tab=subscription" style="display: inline-block; padding: 12px 28px; background: #3b82f6; color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 15px;">
+                        Upgrade to Bid Plus — $5/mo →
                     </a>
                 </div>
                 <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 24px 0;" />

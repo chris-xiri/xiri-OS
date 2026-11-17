@@ -29,7 +29,7 @@ export default function UpgradePrompt({
 
     const needed = requiredTier(targetFeature);
     const tierName = requiredTierName || TIER_INFO[needed]?.name || "Pro";
-    const tierPrice = requiredTierPrice || TIER_INFO[needed]?.price || "$9/mo";
+    const tierPrice = requiredTierPrice || TIER_INFO[needed]?.price || "$5/mo";
     const tierColor = requiredTierColor || TIER_INFO[needed]?.color || "#3b82f6";
 
     const handleUpgrade = async () => {
@@ -44,6 +44,7 @@ export default function UpgradePrompt({
                 companyId: profile.companyId,
                 tier: needed,
                 interval: "monthly",
+                isEarlyBird: needed === "bid_plus",
                 successUrl: window.location.origin + "/app/settings?tab=subscription&upgraded=true",
                 cancelUrl: window.location.href,
             });

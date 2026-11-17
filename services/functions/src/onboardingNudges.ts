@@ -108,6 +108,9 @@ const NUDGES: NudgeConfig[] = [
         subject: "Your bid is ready. Now let's win the contract.",
         bodyHtml: (name, extra) => {
             const bidLabel = extra?.firstBidName ? `your draft bid for <strong>${extra.firstBidName}</strong>${extra?.firstBidPrice ? ` ($${extra.firstBidPrice.toLocaleString()}/mo)` : ""}` : "your bid";
+            const targetUrl = extra?.firstBidId
+                ? `https://os.xiri.ai/app/bids/${extra.firstBidId}?preview=true`
+                : "https://os.xiri.ai/app/bids";
             return `
             <div style="font-family: 'Segoe UI', system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 32px;">
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">Hey ${name},</p>
@@ -121,11 +124,11 @@ const NUDGES: NudgeConfig[] = [
                     Customers judge your cleaning quality by your presentation. A clean, breakdown-oriented proposal builds trust instantly.
                 </p>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
-                    Log in, open your saved bid, and hit "Send Email" or "Download PDF" to export your client-ready proposal.
+                    Click below to open your saved bid with the proposal preview ready to download or email:
                 </p>
                 <div style="text-align: center; margin: 28px 0;">
-                    <a href="https://os.xiri.ai/app/bids" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
-                        Download Your Proposal PDF →
+                    <a href="${targetUrl}" style="display: inline-block; padding: 12px 28px; background: #00d4aa; color: #0a0e1a; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px;">
+                        Preview & Download Your Proposal PDF →
                     </a>
                 </div>
                 <p style="color: #374151; font-size: 15px; line-height: 1.6;">
@@ -200,9 +203,13 @@ export const sendOnboardingNudges = onSchedule(
         for (const companyDoc of companiesSnap.docs) {
             const company = companyDoc.data();
 
-            // Skip subscribers — they don't need nudges
+            // Skip paying subscribers — they don't need nudges
             const subStatus = company.subscription?.status;
-            if (subStatus === "active" || subStatus === "past_due") continue;
+            const subTier = company.subscription?.tier;
+            const isPayingSubscriber =
+                Boolean(company.subscription?.stripeSubscriptionId) ||
+                ((subStatus === "active" || subStatus === "past_due") && subTier && subTier !== "bid");
+            if (isPayingSubscriber) continue;
 
             // Skip if no owner
             const ownerId = company.ownerId;
@@ -224,13 +231,15 @@ export const sendOnboardingNudges = onSchedule(
                 .get();
             const bidCount = bidsSnap.size;
             const hasBids = bidCount > 0;
-            const firstBid = hasBids ? bidsSnap.docs[0].data() : null;
+            const firstBidDoc = hasBids ? bidsSnap.docs[0] : null;
+            const firstBid = firstBidDoc ? firstBidDoc.data() : null;
+            const firstBidId = firstBidDoc ? firstBidDoc.id : "";
             const firstBidName = firstBid?.name || "";
             const firstBidPrice = Math.round(firstBid?.results?.totalPricePerMonth || firstBid?.priceOverride || 0);
 
-            // Check if any bid has been sent as a proposal
+            // Check if any bid has been exported or sent as a proposal
             const hasSentProposal = bidsSnap.docs.some(
-                (b) => b.data().sentAt || b.data().status === "sent"
+                (b) => b.data().sentAt || b.data().proposalDownloadedAt || b.data().status === "sent"
             );
 
             // Evaluate each nudge
@@ -254,7 +263,7 @@ export const sendOnboardingNudges = onSchedule(
                         replyTo: REPLY_TO,
                         to: user.email,
                         subject: nudge.subject,
-                        html: nudge.bodyHtml(displayName, { bidCount, firstBidName, firstBidPrice }),
+                        html: nudge.bodyHtml(displayName, { bidCount, firstBidId, firstBidName, firstBidPrice }),
                     });
 
                     // Mark as sent

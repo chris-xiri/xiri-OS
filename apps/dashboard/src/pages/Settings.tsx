@@ -16,7 +16,8 @@ async function startCheckout(companyId: string, tier: string) {
         companyId,
         tier,
         interval: "monthly",
-        successUrl: window.location.origin + "/settings?tab=subscription&upgraded=true",
+        isEarlyBird: tier === "bid_plus",
+        successUrl: window.location.origin + "/app/settings?tab=subscription&upgraded=true",
         cancelUrl: window.location.href,
     });
     const { sessionUrl } = result.data as { sessionUrl: string };
@@ -225,7 +226,7 @@ export default function Settings() {
                                 </span>
                             </div>
 
-                            {currentTier === "bid" && (
+                            {(currentTier === "bid" || (subscription.status === "trialing" && !subscription.stripeCustomerId && !subscription.stripeSubscriptionId)) && (
                                 <button
                                     className="settings-btn settings-btn-upgrade"
                                     style={{ cursor: "pointer" }}
@@ -241,12 +242,16 @@ export default function Settings() {
                                         }
                                     }}
                                 >
-                                    {loadingCheckoutTier === "bid_plus" ? "Redirecting to Stripe…" : "Subscribe"}
+                                    {loadingCheckoutTier === "bid_plus"
+                                        ? "Redirecting to Stripe…"
+                                        : subscription.status === "trialing"
+                                            ? "Lock in Bid Plus ($5/mo Early-Bird) →"
+                                            : "Upgrade to Bid Plus ($5/mo) →"}
                                 </button>
                             )}
 
-                            {/* Subscription Management & Cancellation */}
-                            {(subscription.stripeCustomerId || subscription.stripeSubscriptionId || subscription.status === "active" || (subscription.status === "trialing" && currentTier !== "bid")) && (
+                            {/* Subscription Management & Cancellation (only when a Stripe billing profile exists) */}
+                            {(subscription.stripeCustomerId || subscription.stripeSubscriptionId) && (
                                 <div className="settings-manage-box">
                                     <div className="settings-manage-actions">
                                         <button
@@ -277,7 +282,7 @@ export default function Settings() {
                                 </div>
                             )}
 
-                            {subscription.status === "trialing" && !subscription.stripeCustomerId && !subscription.stripeSubscriptionId && currentTier === "bid" && (
+                            {subscription.status === "trialing" && !subscription.stripeCustomerId && !subscription.stripeSubscriptionId && (
                                 <div className="settings-trial-notice">
                                     <p>
                                         ✨ Free trial with no credit card required. Your account will automatically switch to the free Bid plan when trial ends—no cancellation needed.
