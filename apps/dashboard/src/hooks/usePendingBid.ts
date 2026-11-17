@@ -120,8 +120,8 @@ export function usePendingBid() {
                     }
                 );
 
-                // Navigate to the newly created bid
-                navigate(`/bids/${bidRef.id}`);
+                // Navigate to the newly created bid and auto-open the proposal preview
+                navigate(`/bids/${bidRef.id}?preview=true`);
             } catch (err) {
                 console.error("Failed to create pending bid:", err);
                 // Put it back so user can retry on next load

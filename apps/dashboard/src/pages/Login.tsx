@@ -65,6 +65,11 @@ export default function Login() {
         try {
             if (isSignup) {
                 trackSignupStarted("email");
+                if (fullName.trim()) {
+                    try {
+                        sessionStorage.setItem("xiri_signup_name", fullName.trim());
+                    } catch { /* ignore */ }
+                }
                 const cred = await createUserWithEmailAndPassword(auth, email, password);
                 // Set displayName so AuthContext uses it instead of email
                 if (fullName.trim()) {

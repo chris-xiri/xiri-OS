@@ -104,13 +104,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                             );
                         }
                     } else {
-                        // New user — auto-create profile + company with 14-day Bid Plus trial
+                        // New user — auto-create profile + company with 60-day Bid Plus trial
                         const companyId = `company_${firebaseUser.uid}`;
-                        const trialEnd = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString();
+                        const trialEnd = new Date(Date.now() + 60 * 24 * 60 * 60 * 1000).toISOString();
+                        let signupName = "";
+                        try {
+                            signupName = sessionStorage.getItem("xiri_signup_name")?.trim() || "";
+                            if (signupName) sessionStorage.removeItem("xiri_signup_name");
+                        } catch { /* ignore */ }
+                        const emailPrefix = firebaseUser.email ? firebaseUser.email.split("@")[0] : "Owner";
+                        const resolvedDisplayName = firebaseUser.displayName || signupName || emailPrefix;
                         const newProfile: UserProfile = {
                             uid: firebaseUser.uid,
                             email: firebaseUser.email || "",
-                            displayName: firebaseUser.displayName || firebaseUser.email || "",
+                            displayName: resolvedDisplayName,
                             companyId,
                             role: "owner",
                         };

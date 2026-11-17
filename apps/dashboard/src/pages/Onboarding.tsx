@@ -21,6 +21,7 @@ export default function Onboarding() {
     const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
     const [saving, setSaving] = useState(false);
     const [checkoutBusy, setCheckoutBusy] = useState(false);
+    const hasPendingBid = Boolean(localStorage.getItem("xiri_pendingBid"));
 
     useEffect(() => {
         if (step === 2) {
@@ -36,12 +37,23 @@ export default function Onboarding() {
         try {
             await updateDoc(doc(db, "companies", profile.companyId), {
                 name: companyName.trim(),
+                legalName: companyName.trim(),
                 primaryService: serviceType,
             });
+            if (hasPendingBid) {
+                completeOnboarding();
+                navigate("/", { replace: true });
+                return;
+            }
             // Advance to Step 2: Early Bird Offer
             setStep(2);
         } catch (err) {
             console.error("Failed to update company name:", err);
+            if (hasPendingBid) {
+                completeOnboarding();
+                navigate("/", { replace: true });
+                return;
+            }
             // Fallback: advance anyway if company update fails
             setStep(2);
         } finally {
@@ -109,7 +121,9 @@ export default function Onboarding() {
 
                         <h1>Welcome to xiri<span style={{ color: "#00d4aa" }}>OS</span>!</h1>
                         <p className="onboarding-subtitle">
-                            Let's configure your estimating workspace. What is your cleaning company name?
+                            {hasPendingBid
+                                ? "Your estimate is saved! Enter your company name so we can put it on your proposal PDF."
+                                : "Let's configure your estimating workspace. What is your cleaning company name?"}
                         </p>
 
                         <form onSubmit={handleStep1Submit} className="onboarding-form">
@@ -149,14 +163,26 @@ export default function Onboarding() {
                             >
                                 {saving ? (
                                     <span className="onboarding-spinner" />
+                                ) : hasPendingBid ? (
+                                    "Generate My Proposal PDF →"
                                 ) : (
                                     "Continue →"
                                 )}
                             </button>
                         </form>
 
-                        <button className="onboarding-skip" onClick={() => setStep(2)}>
-                            Skip to next step
+                        <button
+                            className="onboarding-skip"
+                            onClick={() => {
+                                if (hasPendingBid) {
+                                    completeOnboarding();
+                                    navigate("/", { replace: true });
+                                } else {
+                                    setStep(2);
+                                }
+                            }}
+                        >
+                            {hasPendingBid ? "Skip & view my proposal →" : "Skip to next step"}
                         </button>
                     </>
                 ) : (
@@ -244,7 +270,7 @@ export default function Onboarding() {
                         </p>
 
                         <button className="onboarding-skip earlybird-skip" onClick={handleSkipToTrial}>
-                            Or continue with 14-day free trial →
+                            Or continue with 60-day free trial →
                         </button>
                     </>
                 )}
