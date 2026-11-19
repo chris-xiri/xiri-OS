@@ -11,7 +11,6 @@ const FUTA_RATE = 0.006;             // Federal unemployment
 const SUTA_AVG = 0.027;              // State unemployment (national avg)
 const WORKERS_COMP_RATE = 0.037;     // Workers comp – janitorial avg
 const OVERHEAD_DEFAULT = 0.15;       // 15% general overhead
-const PROFIT_DEFAULT = 0.10;         // 10% profit margin
 
 const DEFAULTS = {
     sqft: 10000,
@@ -248,8 +247,8 @@ export default function ProfitCalculatorTool({ faqs }: { faqs?: { q: string; a: 
                         Our full calculator breaks down bids by room, task, and frequency — with BLS metro-specific wages for your area.
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "profit_calculator")}>Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "profit_calculator")}>View Plans</a>
+                        <a href={`/calculator?sqft=${sqft}&freq=${frequency}&wage=${laborRate}`} className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "profit_calculator")}>Build Proposal with These Numbers →</a>
+                        <a href="/app/login?mode=signup" className="btn btn-secondary" onClick={() => trackCtaClick("Start Free Trial", "profit_calculator")}>Start 60-Day Free Trial</a>
                     </div>
                 </div>
             </section>

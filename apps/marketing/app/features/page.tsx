@@ -269,7 +269,7 @@ export default function FeaturesPage() {
                         }}
                     >
                         <a
-                            href="/pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{
                                 fontSize: "1rem",

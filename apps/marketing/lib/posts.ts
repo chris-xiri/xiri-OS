@@ -443,7 +443,7 @@ export const BLOG_POSTS: BlogPost[] = [
             {
                 heading: "Scenario 2: The Commercial Starter ($5,000–$7,000)",
                 body: "This is the operator targeting small commercial accounts — offices, clinics, small retail. You plan to hire within 2–3 months.\n\n<strong>Business Registration</strong>\n• LLC filing: $50–$500\n• EIN: Free\n• Local business license: $25–$100\n• DBA (if needed): $10–$50\n<strong>Subtotal: $85–$650</strong>\n\n<strong>Insurance</strong>\n• General liability: $800–$1,200\n• Workers' comp (first quarter): $300–$600\n• Surety bond (janitorial): $100–$300\n<strong>Subtotal: $1,200–$2,100</strong>\n\n<strong>Equipment</strong>\n• Commercial upright vacuum: $250–$400\n• Backpack vacuum: $200–$350\n• Mop/bucket w/ wringer: $50–$80\n• Commercial chemicals (case lots): $150–$250\n• Microfiber system: $60–$100\n• PPE (gloves, goggles): $30–$50\n• Signage for vehicle: $100–$300\n<strong>Subtotal: $840–$1,530</strong>\n\n<strong>Marketing & Software</strong>\n• Business cards + brochures: $50–$100\n• Website: $0–$200\n• CRM/bidding software: $0–$50/mo\n• First month advertising: $200–$500\n<strong>Subtotal: $250–$850</strong>\n\n<strong>Total: $2,375–$5,130</strong> (round to ~$5,000–$7,000 with operating buffer)",
-                cta: { text: "Calculate Your Employee Costs →", href: "/tools/employee-cost-estimator" },
+                cta: { text: "Calculate Your Employee Costs →", href: "/tools/employee-cost" },
             },
             {
                 heading: "Scenario 3: The Serious Operator ($8,000–$12,000)",

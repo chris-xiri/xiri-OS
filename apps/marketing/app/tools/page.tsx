@@ -183,18 +183,18 @@ export default function ToolsPage() {
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
                         <a
-                            href="/pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}
                         >
                             Get Started Free →
                         </a>
                         <a
-                            href="/features"
+                            href="/calculator"
                             className="btn btn-secondary"
                             style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}
                         >
-                            Explore Features
+                            Open Full Bid Calculator
                         </a>
                     </div>
                 </div>

@@ -73,7 +73,7 @@ export default async function CityServicePage({
             "@type": "Offer",
             price: "0",
             priceCurrency: "USD",
-            description: "Free plan with unlimited bids",
+            description: "Free Bid plan + 60-day Bid Plus free trial",
         },
         areaServed: {
             "@type": "City",
@@ -136,8 +136,8 @@ export default async function CityServicePage({
                         {t(svc.subtitle)}
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/pricing" className="btn btn-primary">
-                            Start Free →
+                        <a href="/app/login?mode=signup" className="btn btn-primary">
+                            Start 60-Day Free Trial →
                         </a>
                         <a href={`/calculator?state=${city.stateCode}`} className="btn btn-secondary">
                             Try the Calculator
@@ -451,12 +451,11 @@ export default async function CityServicePage({
                             margin: "1rem 0 2rem",
                         }}
                     >
-                        Start free — unlimited bids, PDF proposals, and CRM for up to 10 contacts. No credit
-                        card required.
+                        Start with a 60-day free trial of Bid Plus (or use the free Bid plan forever with up to 3 active bids, PDF proposals, and 5 CRM contacts). No credit card required.
                     </p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
                         <a
-                            href="/pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}
                         >

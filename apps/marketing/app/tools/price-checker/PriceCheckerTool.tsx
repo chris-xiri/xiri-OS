@@ -87,6 +87,10 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
         return { hoursPerCleaning, cleaningsPerMonth, tiers, wage };
     }, [sqft, frequency, wage]);
 
+    useEffect(() => {
+        trackToolUsed("price_checker", { metro: selectedMetro, sqft });
+    }, [selectedMetro, sqft]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const fmt = (v: number) => v.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     return (
@@ -228,8 +232,8 @@ export default function PriceCheckerTool({ faqs }: { faqs?: { q: string; a: stri
                     <h2>Build a <span style={{ color: "#00d4aa" }}>detailed bid</span> for this building</h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>Our full calculator uses room-by-room scope, per-task frequencies, and BLS metro wages to build accurate bids.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "price_checker")}>Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "price_checker")}>View Plans</a>
+                        <a href={`/calculator?sqft=${sqft}&freq=${frequency}&wage=${wage}`} className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "price_checker")}>Generate PDF Proposal for This {sqft.toLocaleString()} Sqft Building →</a>
+                        <a href="/app/login?mode=signup" className="btn btn-secondary" onClick={() => trackCtaClick("Start Free Trial", "price_checker")}>Start 60-Day Free Trial</a>
                     </div>
                 </div>
             </section>

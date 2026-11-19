@@ -24,15 +24,37 @@ function PlanCard({ plan }: { plan: Plan }) {
             </div>
 
             <div style={{ marginBottom: "1.5rem" }}>
-                <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>
-                    {isFree ? "Free" : `$${plan.price}`}
-                </span>
-                {!isFree && <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>}
-                <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
-                    {isFree
-                        ? "forever free"
-                        : `60-day (2 months) free trial · ${formatPrice(plan, "annual")} billed annually`}
-                </div>
+                {plan.slug === "bid_plus" ? (
+                    <>
+                        <div style={{ display: "inline-block", background: "rgba(0, 212, 170, 0.12)", color: "#00d4aa", fontSize: "0.6875rem", fontWeight: 700, padding: "2px 8px", borderRadius: "100px", marginBottom: "0.5rem", letterSpacing: "0.04em" }}>
+                            ⚡ EARLY-BIRD FOUNDER OFFER (SAVE 45%)
+                        </div>
+                        <div>
+                            <span style={{ fontFamily: "var(--font-outfit)", fontSize: "1.375rem", fontWeight: 700, color: "#8b92b3", textDecoration: "line-through", marginRight: "0.5rem" }}>
+                                ${plan.price}
+                            </span>
+                            <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>
+                                $5
+                            </span>
+                            <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>
+                        </div>
+                        <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
+                            60-day (2 months) free trial · or $49/yr (save 55%)
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <span style={{ fontFamily: "var(--font-outfit)", fontSize: "2.75rem", fontWeight: 800, color: "white" }}>
+                            {isFree ? "Free" : `$${plan.price}`}
+                        </span>
+                        {!isFree && <span style={{ color: "#8b92b3", fontSize: "0.875rem" }}>/month</span>}
+                        <div style={{ color: "#00d4aa", fontSize: "0.75rem", fontWeight: 600, marginTop: "4px" }}>
+                            {isFree
+                                ? "forever free"
+                                : `60-day (2 months) free trial · ${formatPrice(plan, "annual")} billed annually`}
+                        </div>
+                    </>
+                )}
             </div>
 
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "0.625rem", flex: 1, padding: 0, margin: 0 }}>
@@ -174,7 +196,7 @@ export default function PricingBlock({
 
             <p style={{ textAlign: "center", marginTop: "2rem", color: "#8b92b3", fontSize: "0.875rem" }}>
                 Need more than 25 users?{" "}
-                <a href="#" style={{ color: "#00d4aa", textDecoration: "underline" }}>
+                <a href="mailto:support@xiri.ai" style={{ color: "#00d4aa", textDecoration: "underline" }}>
                     Contact us
                 </a>{" "}
                 for custom pricing.

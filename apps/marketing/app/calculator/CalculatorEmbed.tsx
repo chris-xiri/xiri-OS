@@ -5,18 +5,18 @@ import { Suspense } from "react";
 
 function CalculatorIframe() {
     const searchParams = useSearchParams();
-    const state = searchParams.get("state") || "";
-    const iframeSrc = state
-        ? `/app/calculator?state=${encodeURIComponent(state)}`
-        : "/app/calculator";
+    const qs = searchParams.toString();
+    const iframeSrc = qs ? `/app/calculator?${qs}` : "/app/calculator";
 
     return (
         <div
             style={{
                 width: "100%",
-                height: "100vh",
+                height: "92vh",
+                minHeight: "760px",
                 overflow: "hidden",
                 background: "#0c0f1a",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
             }}
         >
             <iframe

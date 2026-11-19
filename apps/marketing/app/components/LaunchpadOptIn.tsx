@@ -36,6 +36,13 @@ export default function LaunchpadOptIn({ cityName, compact = false }: LaunchpadO
                 throw new Error(data.error || "Failed to subscribe. Please try again.");
             }
 
+            if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+                (window as any).gtag("event", "generate_lead", {
+                    event_category: "engagement",
+                    event_label: cityName || "launchpad_course",
+                });
+            }
+
             setStatus("success");
             setEmail("");
         } catch (err: any) {
@@ -264,7 +271,7 @@ export default function LaunchpadOptIn({ cityName, compact = false }: LaunchpadO
                 )}
             </div>
 
-            <style jsx>{`
+            <style>{`
                 @keyframes spin {
                     0% { transform: rotate(0deg); }
                     100% { transform: rotate(360deg); }

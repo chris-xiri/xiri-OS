@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "../../components/Navbar";
-import { INDUSTRIES, type Industry } from "../../../lib/industries";
+import { INDUSTRIES } from "../../../lib/industries";
 
 /* ────────── Static params ────────── */
 export function generateStaticParams() {
@@ -25,7 +25,10 @@ export async function generateMetadata({
             description: ind.metaDescription,
             type: "website",
             url: `https://os.xiri.ai/for/${ind.slug}`,
+            siteName: "xiriOS",
+            images: [{ url: "/og-image.png", width: 1200, height: 630, alt: ind.metaTitle }],
         },
+        alternates: { canonical: `https://os.xiri.ai/for/${ind.slug}` },
     };
 }
 
@@ -39,9 +42,26 @@ export default async function IndustryPage({
     const ind = INDUSTRIES.find((i) => i.slug === slug);
     if (!ind) notFound();
 
+    const industryLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: `xiriOS for ${ind.name}`,
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        url: `https://os.xiri.ai/for/${ind.slug}`,
+        description: ind.metaDescription,
+        offers: {
+            "@type": "Offer",
+            price: "0",
+            priceCurrency: "USD",
+            description: "Free Bid plan + 60-day Bid Plus free trial",
+        },
+    };
+
     return (
         <>
             <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(industryLd) }} />
 
             {/* Hero */}
             <section
@@ -70,8 +90,8 @@ export default async function IndustryPage({
                     </p>
 
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/pricing" className="btn btn-primary">
-                            View Plans →
+                        <a href="/app/login?mode=signup" className="btn btn-primary">
+                            Start 60-Day Free Trial →
                         </a>
                         <a href="/calculator" className="btn btn-secondary">
                             Try Free Calculator
@@ -301,8 +321,7 @@ export default async function IndustryPage({
                             marginBottom: "2rem",
                         }}
                     >
-                        Start free with unlimited bids and proposals. No credit card required. Upgrade when
-                        you&apos;re ready for scheduling, timekeeping, and full CRM.
+                        Start with a 60-day free trial of Bid Plus (or stay on the free Bid plan forever with up to 3 active bids and PDF proposals). No credit card required.
                     </p>
                     <div
                         style={{
@@ -313,7 +332,7 @@ export default async function IndustryPage({
                         }}
                     >
                         <a
-                            href="/pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{ fontSize: "1rem", padding: "0.875rem 2.5rem" }}
                         >

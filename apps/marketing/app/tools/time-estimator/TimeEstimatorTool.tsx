@@ -37,6 +37,10 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
         return { hoursPerCleaning, hoursPerCrewMember, cleaningsPerMonth, monthlyHours, monthlyHoursPerCrew };
     }, [sqft, frequency, crews, area.rate]);
 
+    useEffect(() => {
+        trackToolUsed("time_estimator", { sqft, hours_per_cleaning: Number(calc.hoursPerCleaning.toFixed(2)) });
+    }, [sqft, selectedType]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const fmtTime = (hrs: number) => {
         const h = Math.floor(hrs);
         const m = Math.round((hrs - h) * 60);
@@ -185,8 +189,8 @@ export default function TimeEstimatorTool({ faqs }: { faqs?: { q: string; a: str
                     <h2>Need a <span style={{ color: "#00d4aa" }}>full bid</span> with room-by-room scope?</h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>Our full calculator lets you break buildings into individual rooms, each with custom tasks and frequencies.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "time_estimator")}>Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "time_estimator")}>View Plans</a>
+                        <a href={`/calculator?sqft=${sqft}&freq=${frequency}`} className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "time_estimator")}>Price This {sqft.toLocaleString()} Sqft Job in Full Calculator →</a>
+                        <a href="/app/login?mode=signup" className="btn btn-secondary" onClick={() => trackCtaClick("Start Free Trial", "time_estimator")}>Start 60-Day Free Trial</a>
                     </div>
                 </div>
             </section>

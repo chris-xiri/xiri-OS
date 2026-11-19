@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Navbar from "../../components/Navbar";
-import { FEATURES, type Feature } from "../../../lib/features";
+import { FEATURES } from "../../../lib/features";
 
 /* ────────── Static params ────────── */
 export function generateStaticParams() {
@@ -119,7 +119,7 @@ export default async function FeaturePage({
                             marginTop: "2rem",
                         }}
                     >
-                        <a href="/pricing" className="btn btn-primary">
+                        <a href="/app/login?mode=signup" className="btn btn-primary">
                             Get Started Free →
                         </a>
                         <a href="/calculator" className="btn btn-secondary">
@@ -487,7 +487,7 @@ export default async function FeaturePage({
                         }}
                     >
                         <a
-                            href="/pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{
                                 fontSize: "1rem",

@@ -20,11 +20,14 @@ export async function generateMetadata({
 
     return {
         title: `xiriOS vs ${comp.name} — Compare Features & Pricing | xiriOS`,
-        description: `Compare xiriOS and ${comp.name} side by side. ${comp.tagline} Save ${comp.annualSavings}/year switching to xiriOS. Free 14-day trial.`,
+        description: `Compare xiriOS and ${comp.name} side by side. ${comp.tagline} Save ${comp.annualSavings}/year switching to xiriOS. Free 60-day trial.`,
         keywords: comp.seoKeywords.join(", "),
         openGraph: {
             title: `xiriOS vs ${comp.name} — ${comp.tagline}`,
-            description: `Save ${comp.annualSavings}/year. More features, lower price. Free 14-day trial.`,
+            description: `Save ${comp.annualSavings}/year. More features, lower price. Free 60-day trial.`,
+            url: `https://os.xiri.ai/vs/${slug}`,
+            siteName: "xiriOS",
+            images: [{ url: "/og-image.png", width: 1200, height: 630, alt: `xiriOS vs ${comp.name}` }],
         },
         alternates: { canonical: `https://os.xiri.ai/vs/${slug}` },
     };
@@ -39,9 +42,44 @@ export default async function CompetitorPage({
     const comp = getCompetitor(slug);
     if (!comp) notFound();
 
+    const vsJsonLd = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                    { "@type": "ListItem", position: 1, name: "Home", item: "https://os.xiri.ai" },
+                    { "@type": "ListItem", position: 2, name: `xiriOS vs ${comp.name}`, item: `https://os.xiri.ai/vs/${slug}` },
+                ],
+            },
+            {
+                "@type": "FAQPage",
+                mainEntity: [
+                    {
+                        "@type": "Question",
+                        name: `How does xiriOS compare to ${comp.name}?`,
+                        acceptedAnswer: {
+                            "@type": "Answer",
+                            text: `${comp.description} Switching from ${comp.name} (${comp.pricing}) to xiriOS saves cleaning businesses ${comp.annualSavings} per year while providing a free forever Bid plan and a $5/mo early-bird Bid Plus plan.`,
+                        },
+                    },
+                    {
+                        "@type": "Question",
+                        name: `What is missing from ${comp.name} compared to xiriOS?`,
+                        acceptedAnswer: {
+                            "@type": "Answer",
+                            text: comp.weakness,
+                        },
+                    },
+                ],
+            },
+        ],
+    };
+
     return (
         <>
             <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(vsJsonLd) }} />
 
             {/* Hero */}
             <section
@@ -111,7 +149,7 @@ export default async function CompetitorPage({
                             }}
                         >
                             <a
-                                href="#pricing"
+                                href="/app/login?mode=signup"
                                 className="btn btn-primary"
                                 style={{
                                     fontSize: "1.0625rem",
@@ -326,7 +364,7 @@ export default async function CompetitorPage({
                                     ))}
                             </ul>
                             <a
-                                href="/#pricing"
+                                href="/app/login?mode=signup"
                                 className="btn btn-primary"
                                 style={{ width: "100%", marginTop: "1.5rem" }}
                             >
@@ -410,7 +448,7 @@ export default async function CompetitorPage({
                         }}
                     >
                         <a
-                            href="/#pricing"
+                            href="/app/login?mode=signup"
                             className="btn btn-primary"
                             style={{
                                 fontSize: "1.0625rem",

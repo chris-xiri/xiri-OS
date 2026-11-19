@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import Navbar from "../components/Navbar";
-import CheckoutButton from "../components/CheckoutButton";
-import { PLANS, BID_PLUS, formatPrice, type Plan } from "../../lib/plans";
+import { PLANS, BID_PLUS, formatPrice } from "../../lib/plans";
 
 export const metadata: Metadata = {
     title: "Pricing — xiriOS | Janitorial Bidding & Business Management",
     description:
-        `Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from ${formatPrice(BID_PLUS)}. No credit card required. Save 60% vs competitors.`,
+        `Simple, honest pricing for cleaning businesses. Free forever plan for bidding. Paid plans from $5/mo early-bird (regularly ${formatPrice(BID_PLUS)}). 60-day free trial, no credit card required.`,
     keywords:
         "xiriOS pricing, cleaning business software pricing, janitorial software cost, cleaning bidding software price",
     openGraph: {
         title: "Pricing — xiriOS | Janitorial Software Pricing",
-        description: `Simple, honest pricing for cleaning businesses. Free plan forever. Paid plans from ${formatPrice(BID_PLUS)}. Save 60% vs competitors.`,
+        description: `Simple, honest pricing for cleaning businesses. Free plan forever. Paid plans from $5/mo early-bird. Save 60% vs competitors.`,
+        url: "https://os.xiri.ai/pricing",
+        siteName: "xiriOS",
+        images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "xiriOS Pricing" }],
     },
     alternates: { canonical: "https://os.xiri.ai/pricing" },
 };
@@ -19,19 +21,19 @@ export const metadata: Metadata = {
 const FAQ = [
     {
         q: "Is there a free plan?",
-        a: "Yes! The Bid plan is free forever — unlimited bids, PDF proposals, and up to 5 CRM contacts. No credit card required. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts, custom tasks, and full CRM. 60-day (2 months) free trial included.",
+        a: "Yes! The Bid plan is free forever — up to 3 active bids, branded PDF proposals, and up to 5 CRM contacts. No credit card required. Plus, every new account starts with a 60-day (2 months) free trial of Bid Plus (unlimited bids & contacts, custom tasks, and 1-click email proposals — lock in the Early-Bird Founder Rate at $5/mo or $49/yr, regularly $9/mo).",
     },
     {
         q: "Can I switch plans anytime?",
         a: "Absolutely. Upgrade or downgrade at any time. When upgrading, you'll get prorated credit. When downgrading, changes take effect at the end of your billing cycle.",
     },
     {
-        q: "What happens after the free trial?",
-        a: "You'll be prompted to add a payment method. If you don't, your account becomes read-only — you won't lose any data. You can reactivate anytime.",
+        q: "What happens after the 60-day free trial?",
+        a: "If you choose not to subscribe to Bid Plus, your account automatically switches to the free Bid plan (up to 3 active bids and 5 contacts). You never lose your saved estimates or client data, and you can upgrade anytime.",
     },
     {
         q: "Do you offer annual billing?",
-        a: "Yes — save 20% with annual billing. All plans have both monthly and annual options.",
+        a: "Yes — save up to 55% with our Early-Bird Annual rate ($49/yr for Bid Plus) or 20%+ on standard annual billing. All paid plans support both monthly and annual options.",
     },
     {
         q: "Can I add more users to my plan?",
@@ -43,18 +45,32 @@ const FAQ = [
     },
     {
         q: "Is there a contract or commitment?",
-        a: "No contracts, no commitments. Monthly plans can be cancelled anytime. Annual plans are billed upfront with a 30-day money-back guarantee.",
+        a: "No contracts, no commitments. Monthly plans can be cancelled anytime with 1 click. Annual plans are backed by a 30-day money-back guarantee.",
     },
     {
         q: "How does xiriOS compare to CleanGuru or Swept?",
-        a: "We offer more features at a lower price — and our Bid plan is completely free. Unlike Swept or CleanGuru, xiriOS includes professional bidding, PDF proposals, and CRM in every plan. Plus our Bid Plus plan is just $9/mo. See our comparison pages for details.",
+        a: "We offer more features at a fraction of the price — and our Bid plan is completely free. Unlike Swept or CleanGuru, xiriOS includes ISSA 612 room-by-room bidding, BLS metro wages, branded PDF proposals, and CRM in every plan. See our comparison pages for details.",
     },
 ];
+
+const FAQ_LD = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQ.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: {
+            "@type": "Answer",
+            text: f.a,
+        },
+    })),
+};
 
 export default function PricingPage() {
     return (
         <>
             <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(FAQ_LD) }} />
 
             {/* Hero */}
             <section
@@ -80,13 +96,12 @@ export default function PricingPage() {
                     <p
                         style={{
                             fontSize: "1.125rem",
-                            maxWidth: "600px",
+                            maxWidth: "620px",
                             margin: "1rem auto 0",
                             color: "#c4c9e0",
                         }}
                     >
-                        Start free with unlimited bids and proposals. Upgrade when you need
-                        invoicing, scheduling, or full CRM. No credit card required.
+                        Start with a 60-day free trial of Bid Plus (or stay on the free Bid plan forever). Lock in our $5/mo Early-Bird Founder Rate — no credit card required to start.
                     </p>
                 </div>
             </section>
@@ -242,7 +257,7 @@ export default function PricingPage() {
                                     </div>
                                 ) : plan.price === 0 ? (
                                     <a
-                                        href="/calculator"
+                                        href="/app/login?mode=signup"
                                         className="btn btn-secondary"
                                         style={{ width: "100%" }}
                                     >
@@ -480,8 +495,8 @@ export default function PricingPage() {
                             color: "#c4c9e0",
                         }}
                     >
-                        Start your 14-day free trial. No credit card required. Set up in
-                        under 10 minutes.
+                        Start your 60-day (2 months) free trial. No credit card required. Set up in
+                        under 2 minutes.
                     </p>
                     <div
                         style={{

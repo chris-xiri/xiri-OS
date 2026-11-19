@@ -58,6 +58,10 @@ export default function EmployeeCostTool({ faqs }: { faqs?: { q: string; a: stri
         };
     }, [hourlyWage, hoursPerWeek, sutaRate, includeHealth]);
 
+    useEffect(() => {
+        trackToolUsed("employee_cost", { hourly_wage: hourlyWage, effective_rate: Number(calc.effectiveRate.toFixed(2)) });
+    }, [hourlyWage, state]); // eslint-disable-line react-hooks/exhaustive-deps
+
     const fmt = (v: number) => v.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     return (
@@ -196,8 +200,8 @@ export default function EmployeeCostTool({ faqs }: { faqs?: { q: string; a: stri
                     <h2>Use this in your <span style={{ color: "#00d4aa" }}>bid calculations</span></h2>
                     <p style={{ color: "#8b92b3", marginBottom: "2rem" }}>xiriOS automatically factors in payroll taxes and overhead when calculating your bid price.</p>
                     <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
-                        <a href="/calculator" className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "employee_cost")}>Try Full Calculator →</a>
-                        <a href="/pricing" className="btn btn-secondary" onClick={() => trackCtaClick("View Plans", "employee_cost")}>View Plans</a>
+                        <a href={`/calculator?wage=${hourlyWage}`} className="btn btn-primary" onClick={() => trackCtaClick("Try Full Calculator", "employee_cost")}>Use ${hourlyWage.toFixed(2)}/hr in Full Bid Calculator →</a>
+                        <a href="/app/login?mode=signup" className="btn btn-secondary" onClick={() => trackCtaClick("Start Free Trial", "employee_cost")}>Start 60-Day Free Trial</a>
                     </div>
                 </div>
             </section>

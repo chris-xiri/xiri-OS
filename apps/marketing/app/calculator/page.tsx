@@ -109,100 +109,105 @@ export default function CalculatorPage() {
                 }}
             />
 
-            {/* SSR content — visible to AI crawlers that can't render iframes */}
-            <div
-                style={{
-                    position: "absolute",
-                    width: "1px",
-                    height: "1px",
-                    overflow: "hidden",
-                    clip: "rect(0, 0, 0, 0)",
-                    whiteSpace: "nowrap",
-                    borderWidth: 0,
-                }}
-                aria-hidden="true"
-            >
-                <h1>Free Janitorial Bid Calculator — Powered by ISSA 612 Production Rates</h1>
-                <p>
-                    Calculate accurate janitorial cleaning bids in seconds using industry-standard ISSA 612 production
-                    rates. No signup, no download, no cost — just enter your building details and get a data-backed price
-                    range instantly.
-                </p>
-
-                <h2>How the Calculator Works</h2>
-                <ol>
-                    <li>
-                        <strong>Select your building type</strong> — Choose from 15 types including office, medical,
-                        school, retail, restaurant, warehouse, church, gym, and more. Each has a calibrated ISSA
-                        production rate.
-                    </li>
-                    <li>
-                        <strong>Enter building details</strong> — Add square footage, number of floors, restroom count,
-                        and cleaning frequency (1–7 days per week).
-                    </li>
-                    <li>
-                        <strong>Get your bid price</strong> — The calculator computes labor hours using ISSA rates,
-                        applies your wage rate, overhead, and profit margin, and returns a monthly price range.
-                    </li>
-                </ol>
-
-                <h2>Key Features</h2>
-                <ul>
-                    <li>ISSA 612 production rate calculations for 15 building types</li>
-                    <li>Room-by-room scope builder with individual task selection</li>
-                    <li>Task-level frequency control (daily, weekly, monthly, quarterly)</li>
-                    <li>State-based BLS wage data pre-filled by location</li>
-                    <li>Profit margin, overhead, and supply cost modeling</li>
-                    <li>Price range output (±20%) for market flexibility</li>
-                    <li>Modern mobile-first interface — works on any device</li>
-                    <li>100% free — no signup, no download required</li>
-                </ul>
-
-                <h2>Frequently Asked Questions</h2>
-
-                <h3>Is the janitorial bid calculator really free?</h3>
-                <p>
-                    Yes, the xiriOS bid calculator is 100% free with no signup required. You can calculate unlimited bids
-                    instantly. To save bids and generate PDF proposals, create a free account.
-                </p>
-
-                <h3>What are ISSA 612 production rates?</h3>
-                <p>
-                    ISSA 612 Cleaning Times is the industry-standard reference for how long cleaning tasks take per
-                    square foot. It provides production rates (square feet per hour) for different building types and
-                    cleaning tasks, used by professional cleaning companies and facility managers worldwide.
-                </p>
-
-                <h3>Do I need to download anything to use the calculator?</h3>
-                <p>
-                    No. The calculator runs entirely in your web browser — desktop or mobile. No download, no app
-                    install, and no signup required.
-                </p>
-
-                <h3>How accurate is the janitorial bid calculator?</h3>
-                <p>
-                    The calculator uses ISSA 612 production rates calibrated for each building type, floor type ratios,
-                    fixture density, and state-specific BLS wage data. Results are typically within 5–10% of what an
-                    experienced estimator would produce after a full walkthrough.
-                </p>
-
-                <h3>What building types does the calculator support?</h3>
-                <p>
-                    The calculator supports 15 building types including general offices, medical facilities, schools,
-                    retail stores, restaurants, warehouses, churches, gyms, residential homes, and more.
-                </p>
-
-                <h3>How is this different from other janitorial calculators?</h3>
-                <p>
-                    Most janitorial calculators require a paid subscription, a software download, or a signup before you
-                    can use them. The xiriOS calculator is free, runs in your browser, and uses ISSA 612 production rates
-                    — the same industry standard used by the largest facility management companies. It also features a
-                    modern, mobile-first interface designed for use on job sites.
-                </p>
-            </div>
-
-            {/* The actual interactive calculator */}
+            {/* The interactive calculator */}
             <CalculatorEmbed />
+
+            {/* Visibly rendered SEO & GEO guide + FAQ section below the calculator */}
+            <section
+                className="section"
+                style={{
+                    background: "#0c0f1a",
+                    color: "#c4c9e0",
+                    padding: "4rem 1.5rem",
+                    borderTop: "1px solid #2a2f47",
+                }}
+            >
+                <div className="section-inner" style={{ maxWidth: "820px", margin: "0 auto", lineHeight: 1.75 }}>
+                    <h1 style={{ color: "white", fontSize: "2rem", marginBottom: "1rem" }}>
+                        Free Janitorial Bid Calculator — Powered by ISSA 612 Production Rates
+                    </h1>
+                    <p style={{ marginBottom: "2rem" }}>
+                        Calculate accurate janitorial cleaning bids in seconds using industry-standard ISSA 612 production
+                        rates and U.S. Bureau of Labor Statistics (BLS) metro wage data. No signup, no download, no cost —
+                        enter your building details above and export a branded PDF proposal in 60 seconds.
+                    </p>
+
+                    <h2 style={{ color: "white", fontSize: "1.375rem", marginBottom: "1rem" }}>How the Calculator Works</h2>
+                    <ol style={{ paddingLeft: "1.25rem", marginBottom: "2rem", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+                        <li>
+                            <strong style={{ color: "white" }}>Select your building type</strong> — Choose from 15 facility types including office, medical clinic,
+                            school, retail, restaurant, warehouse, church, gym, and more. Each has a calibrated ISSA 612
+                            production rate (sq ft/hr) and restroom fixture density.
+                        </li>
+                        <li>
+                            <strong style={{ color: "white" }}>Enter building details &amp; room scopes</strong> — Add square footage, cleaning frequency (1–7 days per week or one-time),
+                            and customize individual room scopes and task frequencies.
+                        </li>
+                        <li>
+                            <strong style={{ color: "white" }}>Get your bid price &amp; export your PDF proposal</strong> — The calculator computes labor hours using ISSA 612 rates,
+                            applies your local BLS wage rate, payroll tax burden, supplies, overhead, and profit margin, and generates a client-ready PDF proposal.
+                        </li>
+                    </ol>
+
+                    <h2 style={{ color: "white", fontSize: "1.375rem", marginBottom: "1rem" }}>Key Features</h2>
+                    <ul style={{ paddingLeft: "1.25rem", marginBottom: "2.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "0.5rem 1.5rem" }}>
+                        <li>ISSA 612 production rate calculations for 15 building types</li>
+                        <li>Room-by-room scope builder with individual task selection</li>
+                        <li>Task-level frequency control (daily, weekly, monthly, quarterly)</li>
+                        <li>State &amp; metro BLS wage data pre-filled by ZIP code</li>
+                        <li>Profit margin, overhead, payroll tax, and supply cost modeling</li>
+                        <li>Instant branded PDF proposal preview and download</li>
+                        <li>Modern mobile-first interface for on-site walkthroughs</li>
+                        <li>100% free calculator — no signup or download required</li>
+                    </ul>
+
+                    <h2 style={{ color: "white", fontSize: "1.375rem", marginBottom: "1.25rem" }}>Frequently Asked Questions</h2>
+
+                    <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                        <div>
+                            <h3 style={{ color: "white", fontSize: "1.0625rem", marginBottom: "0.25rem" }}>Is the janitorial bid calculator really free?</h3>
+                            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
+                                Yes, the xiriOS bid calculator is 100% free with no signup required. You can calculate unlimited bids
+                                instantly. To save bids and export branded PDF proposals, start your free account (includes a 60-day Bid Plus free trial).
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 style={{ color: "white", fontSize: "1.0625rem", marginBottom: "0.25rem" }}>What are ISSA 612 production rates?</h3>
+                            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
+                                ISSA 612 Cleaning Times is the industry-standard reference for how long cleaning tasks take per
+                                square foot. It provides production rates (square feet per hour) for different building types and
+                                cleaning tasks, used by professional cleaning companies and facility managers worldwide.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 style={{ color: "white", fontSize: "1.0625rem", marginBottom: "0.25rem" }}>Do I need to download anything to use the calculator?</h3>
+                            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
+                                No. The calculator runs entirely in your web browser — desktop or mobile. No download, no app
+                                install, and no signup required.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 style={{ color: "white", fontSize: "1.0625rem", marginBottom: "0.25rem" }}>How accurate is the janitorial bid calculator?</h3>
+                            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
+                                The calculator uses ISSA 612 production rates calibrated for each building type, floor type ratios,
+                                fixture density, and state-specific BLS wage data. Results are typically within 5–10% of what an
+                                experienced estimator would produce after a full walkthrough.
+                            </p>
+                        </div>
+
+                        <div>
+                            <h3 style={{ color: "white", fontSize: "1.0625rem", marginBottom: "0.25rem" }}>What building types does the calculator support?</h3>
+                            <p style={{ margin: 0, fontSize: "0.9375rem" }}>
+                                The calculator supports 15 building types including general offices, medical facilities, schools,
+                                retail stores, restaurants, warehouses, churches, gyms, daycares, auto dealerships, hotels, banks, and residential homes.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
         </>
     );
 }

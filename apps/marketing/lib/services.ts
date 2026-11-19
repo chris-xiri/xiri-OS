@@ -75,7 +75,7 @@ export const SERVICES: ServiceType[] = [
             },
             {
                 q: "How much does commercial cleaning software cost?",
-                a: "xiriOS starts free with unlimited bids. Bid Plus is just $9/mo ($7/mo billed annually) for unlimited contacts and full CRM — a fraction of what competitors like CleanGuru charge.",
+                a: "xiriOS starts free forever (up to 3 active bids, PDF proposals, and 5 contacts) and includes a 60-day free trial of Bid Plus. Bid Plus is just $5/mo Early-Bird (regularly $9/mo) for unlimited bids, contacts, and custom tasks — a fraction of what competitors like CleanGuru charge.",
             },
         ],
         metaTitleTemplate: "Commercial Cleaning Software for {city}, {stateCode} — From $0/mo | xiriOS",

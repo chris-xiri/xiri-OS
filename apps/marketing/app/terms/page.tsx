@@ -53,7 +53,7 @@ export default function TermsPage() {
                         },
                         {
                             heading: "4. Subscription & Billing",
-                            body: "Free Plan: The Bid (free) plan is available indefinitely with limited features.\n\nPaid Plans: Paid subscriptions (Bid Plus, Grow) are billed monthly or annually through Stripe. You will be charged at the beginning of each billing cycle.\n\nFree Trial: New accounts receive a 14-day free trial of the Bid Plus plan. If you do not subscribe before the trial ends, your account will be downgraded to the free Bid plan. No charges will occur without your explicit subscription.\n\nCancellation: You may cancel your subscription at any time from the Settings page. Cancellation takes effect at the end of the current billing period. We do not provide refunds for partial billing periods.",
+                            body: "Free Plan: The Bid (free) plan is available indefinitely with limited features.\n\nPaid Plans: Paid subscriptions (Bid Plus, Grow) are billed monthly or annually through Stripe. You will be charged at the beginning of each billing cycle.\n\nFree Trial: New accounts receive a 60-day free trial of the Bid Plus plan. If you do not subscribe before the trial ends, your account will be downgraded to the free Bid plan. No charges will occur without your explicit subscription.\n\nCancellation: You may cancel your subscription at any time from the Settings page. Cancellation takes effect at the end of the current billing period. We do not provide refunds for partial billing periods.",
                         },
                         {
                             heading: "5. Your Data",
