@@ -77,6 +77,7 @@ const ORGANIZATION_LD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "xiriOS",
+  legalName: "Xiri Inc.",
   url: "https://os.xiri.ai",
   logo: "https://os.xiri.ai/favicon.svg",
   description:
@@ -87,6 +88,7 @@ const ORGANIZATION_LD = {
   ],
   contactPoint: {
     "@type": "ContactPoint",
+    email: "support@xiri.ai",
     contactType: "customer support",
     url: "https://os.xiri.ai",
   },

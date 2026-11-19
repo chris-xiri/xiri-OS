@@ -22,9 +22,26 @@ export const metadata: Metadata = {
 };
 
 export default function LLCSetupGuidePage() {
+    const articleLd = {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        headline: "Cleaning Business LLC Setup & Structure Guide (2026): Sole Prop vs. Single-Member LLC vs. S-Corp",
+        description:
+            "Compare Sole Proprietorship vs. Single-Member LLC vs. S-Corp for your cleaning business. Official .gov links, IRS EIN filing, liability protection, and privacy guide.",
+        author: { "@type": "Organization", name: "xiriOS", url: "https://os.xiri.ai" },
+        publisher: {
+            "@type": "Organization",
+            name: "xiriOS",
+            url: "https://os.xiri.ai",
+            logo: { "@type": "ImageObject", url: "https://os.xiri.ai/favicon.svg" },
+        },
+        mainEntityOfPage: "https://os.xiri.ai/start-cleaning-business/llc-setup",
+    };
+
     return (
         <>
             <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleLd) }} />
 
             {/* Hero */}
             <section
@@ -254,10 +271,32 @@ export default function LLCSetupGuidePage() {
                 </div>
             </section>
 
+            {/* Next Step: Calculator & Workspace CTA */}
+            <section className="section" style={{ background: "#141829", borderTop: "1px solid #2a2f47", borderBottom: "1px solid #2a2f47", padding: "3.5rem 1.5rem", textAlign: "center" }}>
+                <div className="section-inner" style={{ maxWidth: "700px", margin: "0 auto" }}>
+                    <span className="section-label">Step 2: Price Your First Contract</span>
+                    <h2 style={{ color: "white", marginTop: "0.75rem" }}>
+                        Entity chosen? Now build your first{" "}
+                        <span style={{ color: "#00d4aa" }}>commercial cleaning proposal</span>
+                    </h2>
+                    <p style={{ color: "#c4c9e0", margin: "1rem auto 2rem", maxWidth: "560px" }}>
+                        Use our free ISSA 612 bid calculator with local BLS janitor wages to price offices, medical clinics, and retail facilities — and export a branded PDF proposal in 60 seconds.
+                    </p>
+                    <div style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}>
+                        <a href="/calculator" className="btn btn-primary" style={{ padding: "0.875rem 2rem" }}>
+                            Price a Job in the Free Calculator →
+                        </a>
+                        <a href="/app/login?mode=signup" className="btn btn-secondary" style={{ padding: "0.875rem 2rem" }}>
+                            Start 60-Day Free Trial
+                        </a>
+                    </div>
+                </div>
+            </section>
+
             {/* Opt-In Section */}
-            <section className="section" style={{ background: "#0c0f1a", padding: "1rem 1rem 3rem" }}>
+            <section className="section" style={{ background: "#0c0f1a", padding: "2.5rem 1rem 3rem" }}>
                 <div className="section-inner" style={{ maxWidth: "800px", margin: "0 auto" }}>
-                    <LaunchpadOptIn />
+                    <LaunchpadOptIn compact />
                 </div>
             </section>
         </>

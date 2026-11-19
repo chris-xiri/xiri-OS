@@ -4,6 +4,7 @@ import { SERVICES } from "../lib/services";
 import { INDUSTRIES } from "../lib/industries";
 import { BLOG_POSTS } from "../lib/posts";
 import { FEATURES } from "../lib/features";
+import { COMPETITORS } from "../lib/competitors";
 
 const BASE = "https://os.xiri.ai";
 
@@ -15,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
         { url: `${BASE}/pricing`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
         { url: `${BASE}/calculator`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+        { url: `${BASE}/tools`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
         { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
         { url: `${BASE}/features`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
         { url: `${BASE}/privacy`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
@@ -30,9 +32,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     }));
 
     /* ── Competitor comparison pages ── */
-    const competitors = ["swept", "cleanguru", "jobber", "janitorial-manager"];
-    const vsPages: MetadataRoute.Sitemap = competitors.map((c) => ({
-        url: `${BASE}/vs/${c}`,
+    const vsPages: MetadataRoute.Sitemap = COMPETITORS.map((c) => ({
+        url: `${BASE}/vs/${c.slug}`,
         lastModified: now,
         changeFrequency: "monthly" as const,
         priority: 0.7,
@@ -79,6 +80,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     /* ── Start Cleaning Business pSEO pages ── */
     const startupHub: MetadataRoute.Sitemap = [
         { url: `${BASE}/start-cleaning-business`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+        { url: `${BASE}/start-cleaning-business/llc-setup`, lastModified: now, changeFrequency: "monthly" as const, priority: 0.75 },
     ];
     const startupCityPages: MetadataRoute.Sitemap = UNIQUE_CITIES.map((city) => ({
         url: `${BASE}/start-cleaning-business/${city.slug}`,

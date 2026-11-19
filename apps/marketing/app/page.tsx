@@ -4,26 +4,6 @@ import { ACTIVE_PLANS, formatPrice } from "../lib/plans";
 
 const YEAR = 2026; // Hardcoded to avoid hydration mismatch
 
-const ORG_LD = {
-  "@context": "https://schema.org",
-  "@type": "Organization",
-  name: "xiriOS",
-  legalName: "Xiri Inc.",
-  url: "https://os.xiri.ai",
-  logo: "https://os.xiri.ai/og-image.png",
-  description: "Janitorial bidding and business management software for cleaning companies.",
-  sameAs: [
-    "https://www.facebook.com/xaborservices",
-    "https://www.instagram.com/xaborservices",
-    "https://www.linkedin.com/company/xabor",
-  ],
-  contactPoint: {
-    "@type": "ContactPoint",
-    email: "support@xiri.ai",
-    contactType: "customer service",
-  },
-};
-
 const APP_LD = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -46,7 +26,6 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_LD) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(APP_LD) }} />
 
       {/* ============================================================
@@ -335,7 +314,7 @@ export default function Home() {
               <span style={{ color: "#00d4aa" }}>more features, lower price</span>
             </h2>
             <p style={{ marginTop: "1rem" }}>
-              Every plan includes more than what competitors charge 2–5× more for. Start with a 14-day free trial. No credit card required.
+              Every plan includes more than what competitors charge 2–5× more for. Start with a 60-day (2 months) free trial. No credit card required.
             </p>
           </div>
 

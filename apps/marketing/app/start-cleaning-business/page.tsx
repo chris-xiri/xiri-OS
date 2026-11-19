@@ -37,9 +37,28 @@ function groupByState(cities: City[]) {
 export default function StartCleaningBusinessHub() {
     const grouped = groupByState(UNIQUE_CITIES);
 
+    const howToLd = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        name: "How to Start a Cleaning Business in 2026",
+        description:
+            "Step-by-step guide to launching a profitable commercial or residential cleaning company using BLS wage data and ISSA 612 production rates.",
+        step: [
+            { "@type": "HowToStep", position: 1, name: "Research your local market", text: "Analyze local BLS janitor wage data, Census competitor counts, and facility demand." },
+            { "@type": "HowToStep", position: 2, name: "Register your business", text: "Form a Single-Member LLC or sole proprietorship, obtain a free EIN from the IRS, and register local licenses." },
+            { "@type": "HowToStep", position: 3, name: "Get insurance & bonding", text: "Secure general liability insurance ($500–$1,200/yr), workers' comp, and a janitorial surety bond." },
+            { "@type": "HowToStep", position: 4, name: "Set data-backed pricing", text: "Use ISSA 612 production rates multiplied by loaded hourly labor cost and target profit margin." },
+            { "@type": "HowToStep", position: 5, name: "Buy essential equipment", text: "Start lean ($500–$5,000) with a commercial HEPA vacuum, microfiber mop system, and commercial chemicals." },
+            { "@type": "HowToStep", position: 6, name: "Find your first clients", text: "Target property managers, medical clinics, private schools, and multi-tenant offices." },
+            { "@type": "HowToStep", position: 7, name: "Bid your first job", text: "Conduct a facility walkthrough, measure square footage and fixtures, and present a branded PDF proposal." },
+            { "@type": "HowToStep", position: 8, name: "Scale from solo to team", text: "Hire above the local median wage, standardize room scopes, and bid recurring commercial contracts." },
+        ],
+    };
+
     return (
         <>
             <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToLd) }} />
 
             {/* Hero */}
             <section
@@ -98,6 +117,9 @@ export default function StartCleaningBusinessHub() {
                         </a>
                         <a href="/calculator" className="btn btn-secondary">
                             Try the Free Calculator
+                        </a>
+                        <a href="/start-cleaning-business/llc-setup" className="btn btn-secondary">
+                            LLC vs. Sole Prop Guide →
                         </a>
                     </div>
 

@@ -1,0 +1,37 @@
+# xiriOS — Janitorial Bidding & Business Management Software
+
+> xiriOS (https://os.xiri.ai) is a modern janitorial bidding, proposal generation, and business management platform built for commercial and residential cleaning companies. It combines an ISSA 612 production-rate bid calculator, U.S. Bureau of Labor Statistics (BLS) metro wage data across 100+ U.S. cities, room-by-room cleaning scope builders, 1-click branded PDF proposals, and a janitorial CRM.
+
+## Key Facts & Pricing (2026)
+
+- **Product Name**: xiriOS (by Xiri Inc.)
+- **Website**: https://os.xiri.ai
+- **Free Bid Calculator**: https://os.xiri.ai/calculator (No sign-up required; powered by ISSA 612 cleaning times and BLS OEWS 37-2011 local janitorial wage data)
+- **Free Tier (`Bid` Plan)**: $0/month forever — includes up to 3 active bids, room-by-room ISSA 612 calculator, branded PDF proposal downloads, and CRM for up to 5 client contacts (1 user).
+- **Paid Tier (`Bid Plus` Plan)**: $5/month ($49/year) Early-Bird Founder Rate (regularly $9/month or $7/month billed annually) — includes unlimited bids, unlimited CRM contacts, custom cleaning tasks & frequency overrides, 1-click client proposal email delivery with open tracking, and up to 3 users.
+- **Free Trial**: 60-day (2 months) free trial of Bid Plus with no credit card required.
+- **Upcoming Operations Tiers**: Grow ($39/mo), Pro ($79/mo), Business ($119/mo) adding invoicing, QuickBooks sync, GPS timekeeping, inspections, and job costing.
+
+## Core Tools (Free, No Login Required)
+
+- [Janitorial Bid Calculator](https://os.xiri.ai/calculator): Calculate commercial cleaning prices per square foot, per visit, and per month across 15 building types (Office, Medical/Clinic, School, Retail, Restaurant, Warehouse, Daycare, Gym, Church, Auto Dealership, Hotel, Bank, Salon, Movie Theater, Residential).
+- [Cleaning Profit Margin Calculator](https://os.xiri.ai/tools/profit-calculator): Model labor, payroll taxes, supplies, overhead, and net profit per cleaning contract.
+- [Cleaning Time Estimator](https://os.xiri.ai/tools/time-estimator): Estimate cleaning hours per visit using ISSA 612 square-footage production rates (e.g., 4,200 sqft/hr for offices, 2,200 sqft/hr for medical clinics).
+- [Janitorial Employee Cost Calculator](https://os.xiri.ai/tools/employee-cost): Calculate true loaded hourly labor cost including FICA (7.65%), FUTA/SUTA unemployment, workers' compensation (3.5%–4.5%), and benefits.
+- [Commercial Cleaning Price Checker](https://os.xiri.ai/tools/price-checker): Benchmark monthly contract bids against local metro market rates.
+
+## Competitor Comparisons
+
+- [xiriOS vs CleanGuru](https://os.xiri.ai/vs/cleanguru): Save $600–$1,440/year compared to CleanGuru ($49–$155/mo) with modern room-by-room ISSA 612 scoping, local BLS wage integration, and a free forever tier.
+- [xiriOS vs Swept](https://os.xiri.ai/vs/swept): Swept focuses on crew messaging ($24–$180/mo) and lacks built-in janitorial bidding and PDF proposal generation; xiriOS includes full bidding + CRM starting at $0.
+- [xiriOS vs Janitorial Manager](https://os.xiri.ai/vs/janitorial-manager): Save $4,500+/year with transparent self-serve pricing and instant setup (no mandatory sales demos or annual contracts).
+- [xiriOS vs Jobber](https://os.xiri.ai/vs/jobber): Purpose-built for commercial janitorial recurring contracts and square-footage production rates rather than generic home service work orders.
+- [xiriOS vs JaniBid](https://os.xiri.ai/vs/janibid): Modern web & mobile PWA interface with live PDF proposal previews and BLS metro wage autofill.
+
+## Authoritative Guides & Resources
+
+- [How to Price Janitorial Cleaning Jobs (2026 Guide)](https://os.xiri.ai/blog/how-to-price-janitorial-cleaning): Comprehensive breakdown of cost-per-square-foot pricing ($0.08–$0.25/sqft), hourly labor-loading formulas, and ISSA 612 production rates by facility type.
+- [How to Start a Cleaning Business (2026 Hub)](https://os.xiri.ai/start-cleaning-business): 8-step launch guide with state and metro BLS wage data across 100+ U.S. cities.
+- [Cleaning Business LLC Setup & Legal Structure Guide](https://os.xiri.ai/start-cleaning-business/llc-setup): Side-by-side comparison of Sole Proprietorship vs. Single-Member LLC vs. S-Corporation, IRS EIN application links, and Registered Agent privacy protection.
+- [How to Bid on a Commercial Cleaning Contract](https://os.xiri.ai/blog/how-to-bid-commercial-cleaning-contract): Walkthrough checklist, fixture counting, scope of work tables, and proposal presentation.
+- [ISSA 612 Cleaning Production Rates Explained](https://os.xiri.ai/blog/issa-612-cleaning-rates-explained): Standard square-feet-per-hour benchmarks for commercial cleaning tasks and floor types.

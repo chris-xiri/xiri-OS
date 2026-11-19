@@ -26,11 +26,21 @@ export async function generateMetadata({
             title: post.title,
             description: post.metaDescription,
             type: "article",
+            url: `https://os.xiri.ai/blog/${slug}`,
+            siteName: "xiriOS",
+            images: [{ url: "/og-image.png", width: 1200, height: 630, alt: post.title }],
             publishedTime: post.publishedAt,
             modifiedTime: post.updatedAt,
         },
         alternates: { canonical: `https://os.xiri.ai/blog/${slug}` },
     };
+}
+
+function formatInlineMarkdown(text: string): string {
+    return text.replace(
+        /\*\*(.*?)\*\*/g,
+        '<strong style="color: white">$1</strong>'
+    );
 }
 
 export default async function BlogPostPage({
@@ -71,6 +81,32 @@ export default async function BlogPostPage({
         },
     };
 
+    const breadcrumbLd = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://os.xiri.ai" },
+            { "@type": "ListItem", position: 2, name: "Blog", item: "https://os.xiri.ai/blog" },
+            { "@type": "ListItem", position: 3, name: post.title, item: `https://os.xiri.ai/blog/${slug}` },
+        ],
+    };
+
+    const isHowToPost = slug.startsWith("how-to-") || slug.includes("checklist");
+    const howToLd = isHowToPost
+        ? {
+              "@context": "https://schema.org",
+              "@type": "HowTo",
+              name: post.title,
+              description: post.metaDescription,
+              step: post.sections.map((s, idx) => ({
+                  "@type": "HowToStep",
+                  position: idx + 1,
+                  name: s.heading,
+                  text: s.body.replace(/\*\*/g, "").split("\n\n")[0],
+              })),
+          }
+        : null;
+
     return (
         <>
             <Navbar />
@@ -81,6 +117,16 @@ export default async function BlogPostPage({
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+            />
+            {howToLd && (
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{ __html: JSON.stringify(howToLd) }}
+                />
+            )}
 
             {/* Hero */}
             <section
@@ -211,26 +257,78 @@ export default async function BlogPostPage({
                                 {section.heading}
                             </h2>
 
-                            {section.body.split("\n\n").map((para, j) => (
-                                <p
-                                    key={j}
-                                    style={{
-                                        color: "#c4c9e0",
-                                        fontSize: "1rem",
-                                        lineHeight: 1.8,
-                                        marginBottom: "1.25rem",
-                                    }}
-                                    dangerouslySetInnerHTML={{
-                                        __html: para
-                                            .replace(
-                                                /\*\*(.*?)\*\*/g,
-                                                '<strong style="color: white">$1</strong>'
-                                            )
-                                            .replace(/^• /gm, "→ ")
-                                            .replace(/\n/g, "<br />"),
-                                    }}
-                                />
-                            ))}
+                            {section.body.split("\n\n").map((para, j) => {
+                                const lines = para.split("\n").map((l) => l.trim()).filter(Boolean);
+                                const isBulletList = lines.length > 0 && lines.every((l) => l.startsWith("• ") || l.startsWith("- "));
+                                const isNumberedList = lines.length > 0 && lines.every((l) => /^\d+\.\s/.test(l));
+
+                                if (isBulletList) {
+                                    return (
+                                        <ul
+                                            key={j}
+                                            style={{
+                                                color: "#c4c9e0",
+                                                fontSize: "1rem",
+                                                lineHeight: 1.8,
+                                                marginBottom: "1.25rem",
+                                                paddingLeft: "1.5rem",
+                                            }}
+                                        >
+                                            {lines.map((line, liIdx) => (
+                                                <li
+                                                    key={liIdx}
+                                                    style={{ marginBottom: "0.4rem" }}
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: formatInlineMarkdown(line.replace(/^[•-]\s+/, "")),
+                                                    }}
+                                                />
+                                            ))}
+                                        </ul>
+                                    );
+                                }
+
+                                if (isNumberedList) {
+                                    return (
+                                        <ol
+                                            key={j}
+                                            style={{
+                                                color: "#c4c9e0",
+                                                fontSize: "1rem",
+                                                lineHeight: 1.8,
+                                                marginBottom: "1.25rem",
+                                                paddingLeft: "1.5rem",
+                                            }}
+                                        >
+                                            {lines.map((line, liIdx) => (
+                                                <li
+                                                    key={liIdx}
+                                                    style={{ marginBottom: "0.4rem" }}
+                                                    dangerouslySetInnerHTML={{
+                                                        __html: formatInlineMarkdown(line.replace(/^\d+\.\s+/, "")),
+                                                    }}
+                                                />
+                                            ))}
+                                        </ol>
+                                    );
+                                }
+
+                                return (
+                                    <p
+                                        key={j}
+                                        style={{
+                                            color: "#c4c9e0",
+                                            fontSize: "1rem",
+                                            lineHeight: 1.8,
+                                            marginBottom: "1.25rem",
+                                        }}
+                                        dangerouslySetInnerHTML={{
+                                            __html: formatInlineMarkdown(para)
+                                                .replace(/^• /gm, "→ ")
+                                                .replace(/\n/g, "<br />"),
+                                        }}
+                                    />
+                                );
+                            })}
 
                             {section.cta && (
                                 <a
