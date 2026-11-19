@@ -13,6 +13,7 @@ import {
     ROOM_TYPES,
     getDefaultRooms,
     getTaskFrequencyOptions,
+    generateProposal,
     type CalculatorInputs,
     type Frequency,
     type RoomScope,
@@ -25,6 +26,7 @@ import {
     trackCalculatorEmailCaptured,
     trackCalculatorExitIntentShown,
     trackCalculatorExitIntentAccepted,
+    trackProposalGenerated,
 } from "../lib/analytics";
 import "./Calculator.css";
 
@@ -55,6 +57,8 @@ export default function PublicCalculator() {
     const [captureEmail, setCaptureEmail] = useState("");
     const [autoSaved, setAutoSaved] = useState(false);
     const [showExitModal, setShowExitModal] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [previewLoading, setPreviewLoading] = useState(false);
 
     const results = useMemo(() => calculate(inputs, roomScopes), [inputs, roomScopes]);
     const isOneOff = inputs.frequency === "once";
@@ -186,7 +190,7 @@ export default function PublicCalculator() {
     };
 
     // Serialize & save pending bid payload
-    const savePendingBidToStorage = useCallback((targetEmail?: string) => {
+    const savePendingBidToStorage = useCallback(() => {
         const selectedTasks = new Set<string>();
         roomScopes.forEach((r) => r.tasks.forEach((t) => selectedTasks.add(t)));
         const pendingBid = {
@@ -197,10 +201,10 @@ export default function PublicCalculator() {
             selectedTasks: Array.from(selectedTasks),
             results,
             savedAt: new Date().toISOString(),
-            contact: (clientName || clientCompany || clientEmail || clientPhone || targetEmail) ? {
+            contact: (clientName || clientCompany || clientEmail || clientPhone) ? {
                 name: clientName,
                 company: clientCompany,
-                email: targetEmail || clientEmail,
+                email: clientEmail,
                 phone: clientPhone,
             } : null,
         };
@@ -209,6 +213,66 @@ export default function PublicCalculator() {
         } catch { /* storage full */ }
         return pendingBid;
     }, [inputs, roomScopes, priceOverride, selectedState, results, clientName, clientCompany, clientEmail, clientPhone]);
+
+    // ─── Pre-fill from URL Query Parameters (?state=, ?sqft=, ?freq=, ?wage=, ?type=, ?zip=) ───
+    useEffect(() => {
+        if (typeof window === "undefined") return;
+        const params = new URLSearchParams(window.location.search);
+        const stateParam = params.get("state")?.toUpperCase();
+        const zipParam = params.get("zip");
+        const typeParam = params.get("type");
+        const sqftParam = Number(params.get("sqft"));
+        const freqParam = params.get("freq");
+        const wageParam = Number(params.get("wage"));
+
+        const patch: Partial<CalculatorInputs> = {};
+        let targetBuildingType = inputs.buildingTypeId;
+        let targetSqft = inputs.sqft;
+
+        if (stateParam && STATES.some((s) => s.code === stateParam)) {
+            setSelectedState(stateParam);
+            const stateDefs = getStateDefaults(stateParam);
+            if (stateDefs) Object.assign(patch, stateDefs);
+        }
+        if (zipParam) {
+            const cleaned = zipParam.replace(/\D/g, "").slice(0, 5);
+            if (cleaned.length >= 3) {
+                setZipCode(cleaned);
+                const resolved = resolveZip(cleaned);
+                if (resolved) {
+                    setSelectedState(resolved.state);
+                    const stateDefs = getStateDefaults(resolved.state);
+                    if (stateDefs) Object.assign(patch, stateDefs);
+                    if (resolved.metroId) {
+                        setSelectedMetro(resolved.metroId);
+                        const metroDefs = getMetroDefaults(resolved.metroId);
+                        if (metroDefs) Object.assign(patch, metroDefs);
+                    }
+                }
+            }
+        }
+        if (typeParam && BUILDING_TYPES.some((b) => b.id === typeParam)) {
+            patch.buildingTypeId = typeParam;
+            targetBuildingType = typeParam;
+        }
+        if (!isNaN(sqftParam) && sqftParam >= 500 && sqftParam <= 500000) {
+            patch.sqft = sqftParam;
+            targetSqft = sqftParam;
+        }
+        if (freqParam && FREQUENCIES.some((f) => f.value === freqParam)) {
+            patch.frequency = freqParam as Frequency;
+        }
+        if (!isNaN(wageParam) && wageParam >= 7.25 && wageParam <= 65) {
+            patch.wageRate = wageParam;
+        }
+
+        if (Object.keys(patch).length > 0) {
+            setInputs((prev) => ({ ...prev, ...patch }));
+            if (patch.buildingTypeId || patch.sqft) {
+                setRoomScopes(getDefaultRooms(targetBuildingType, targetSqft));
+            }
+        }
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // ─── Real-Time Auto-Save ───
     useEffect(() => {
@@ -239,10 +303,48 @@ export default function PublicCalculator() {
 
     // Save & redirect to signup
     const handleSaveAndSignup = (source = "public_calculator", emailParam?: string) => {
-        savePendingBidToStorage(emailParam);
+        savePendingBidToStorage();
         trackCtaClicked("Save Bid — Start Free Trial", source);
         const emailQuery = emailParam ? `&email=${encodeURIComponent(emailParam)}` : "";
         (window.top || window).location.href = `/app/login?mode=signup${emailQuery}`;
+    };
+
+    // Instant Sample Proposal PDF Preview right inside PublicCalculator
+    const handlePreviewProposal = async () => {
+        if (previewLoading) return;
+        setPreviewLoading(true);
+        try {
+            savePendingBidToStorage();
+            trackCtaClicked("Preview Proposal PDF", "public_calculator");
+            const selectedTasks = new Set<string>();
+            roomScopes.forEach((r) => r.tasks.forEach((t) => selectedTasks.add(t)));
+            const bt = BUILDING_TYPES.find((b) => b.id === inputs.buildingTypeId);
+            const { doc: pdfDoc } = await generateProposal({
+                bidName: `${clientCompany || "Commercial"} — ${bt?.name || "Facility"} (${inputs.sqft.toLocaleString()} sqft)`,
+                companyName: "Your Cleaning Company",
+                contactName: clientName || "Facility Manager",
+                contactCompany: clientCompany || "Client Facility",
+                contactEmail: clientEmail || undefined,
+                contactPhone: clientPhone || undefined,
+                state: selectedState || "",
+                inputs,
+                results,
+                selectedTasks: Array.from(selectedTasks),
+                roomScopes,
+                priceOverride,
+                version: 1,
+                createdAt: new Date().toISOString(),
+                watermark: "SAMPLE PREVIEW",
+            });
+            trackProposalGenerated();
+            const blob = pdfDoc.output("blob");
+            const url = URL.createObjectURL(blob);
+            setPreviewUrl(url);
+        } catch (err) {
+            console.error("Failed to generate sample proposal preview:", err);
+        } finally {
+            setPreviewLoading(false);
+        }
     };
 
     // Quick email capture submit
@@ -708,13 +810,36 @@ export default function PublicCalculator() {
                             </div>
                         </div>
 
-                        {/* Primary Save CTA */}
+                        {/* Live Proposal PDF Preview + Primary Save CTA */}
+                        <button
+                            type="button"
+                            className="calc-btn calc-btn-secondary"
+                            style={{
+                                width: "100%",
+                                textAlign: "center",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "0.5rem",
+                                fontSize: "0.875rem",
+                                padding: "0.75rem 1rem",
+                                cursor: "pointer",
+                                marginTop: "1rem",
+                                borderColor: "rgba(0, 212, 170, 0.35)",
+                                color: "#00d4aa",
+                            }}
+                            onClick={handlePreviewProposal}
+                            disabled={previewLoading}
+                        >
+                            {previewLoading ? "Generating PDF Preview…" : "👁️ Preview 4-Page Client Proposal PDF"}
+                        </button>
+
                         <button
                             className="calc-btn calc-btn-primary calc-save-btn"
-                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.875rem 1.25rem", cursor: "pointer", marginTop: "1rem" }}
+                            style={{ width: "100%", textAlign: "center", display: "block", fontSize: "0.9375rem", padding: "0.875rem 1.25rem", cursor: "pointer", marginTop: "0.625rem" }}
                             onClick={() => handleSaveAndSignup("main_save_btn")}
                         >
-                            Save Bid — Start 60-Day Free Trial →
+                            Save Bid &amp; Export Branded PDF (Free) →
                         </button>
                         <p style={{ color: "#8b92b3", fontSize: "0.75rem", textAlign: "center", marginTop: "0.5rem" }}>
                             No credit card required · Free 60-day Bid Plus access
@@ -730,14 +855,99 @@ export default function PublicCalculator() {
                         <span className="calc-sticky-sqft">{inputs.sqft.toLocaleString()} sqft {buildingType?.name || "Building"}</span>
                         <span className="calc-sticky-price">{fmt(monthlyPrice)}{isOneOff ? " total" : "/mo"}</span>
                     </div>
-                    <button
-                        className="calc-sticky-cta"
-                        onClick={() => handleSaveAndSignup("sticky_bottom_bar")}
-                    >
-                        Save Bid & Download Proposal →
-                    </button>
+                    <div style={{ display: "flex", gap: "0.625rem", alignItems: "center" }}>
+                        <button
+                            type="button"
+                            className="calc-btn calc-btn-secondary"
+                            style={{ fontSize: "0.8125rem", padding: "0.625rem 1rem", cursor: "pointer" }}
+                            onClick={handlePreviewProposal}
+                            disabled={previewLoading}
+                        >
+                            {previewLoading ? "Loading…" : "👁️ Preview PDF"}
+                        </button>
+                        <button
+                            className="calc-sticky-cta"
+                            onClick={() => handleSaveAndSignup("sticky_bottom_bar")}
+                        >
+                            Save Bid &amp; Download Proposal →
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {/* ─── Sample Proposal PDF Preview Modal ─── */}
+            {previewUrl && (
+                <div
+                    className="calc-exit-overlay"
+                    style={{ zIndex: 1100 }}
+                    onClick={() => {
+                        URL.revokeObjectURL(previewUrl);
+                        setPreviewUrl(null);
+                    }}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            width: "92vw",
+                            maxWidth: "960px",
+                            height: "88vh",
+                            background: "#141829",
+                            border: "1px solid rgba(0, 212, 170, 0.3)",
+                            borderRadius: "14px",
+                            display: "flex",
+                            flexDirection: "column",
+                            overflow: "hidden",
+                            boxShadow: "0 24px 64px rgba(0, 0, 0, 0.65)",
+                        }}
+                    >
+                        <div
+                            style={{
+                                padding: "0.875rem 1.25rem",
+                                background: "#0c0f1a",
+                                borderBottom: "1px solid rgba(255,255,255,0.08)",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                                gap: "0.75rem",
+                            }}
+                        >
+                            <div>
+                                <div style={{ color: "white", fontWeight: 700, fontSize: "0.9375rem" }}>
+                                    📄 Client Proposal Preview — {fmt(monthlyPrice)}{isOneOff ? "" : "/mo"}
+                                </div>
+                                <div style={{ color: "#8b92b3", fontSize: "0.75rem" }}>
+                                    Sign up free to put your company name &amp; logo on the cover page and remove the sample watermark
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                                <button
+                                    className="calc-btn calc-btn-primary"
+                                    style={{ fontSize: "0.8125rem", padding: "0.5rem 1rem", cursor: "pointer" }}
+                                    onClick={() => handleSaveAndSignup("pdf_preview_modal")}
+                                >
+                                    Customize &amp; Download Unwatermarked PDF (Free) →
+                                </button>
+                                <button
+                                    className="calc-btn calc-btn-secondary"
+                                    style={{ fontSize: "0.8125rem", padding: "0.5rem 0.75rem", cursor: "pointer" }}
+                                    onClick={() => {
+                                        URL.revokeObjectURL(previewUrl);
+                                        setPreviewUrl(null);
+                                    }}
+                                >
+                                    ✕ Close
+                                </button>
+                            </div>
+                        </div>
+                        <iframe
+                            src={previewUrl}
+                            title="Sample Proposal PDF Preview"
+                            style={{ width: "100%", flex: 1, border: "none", background: "#fff" }}
+                        />
+                    </div>
+                </div>
+            )}
 
             {/* ─── Exit-Intent Recovery Modal ─── */}
             {showExitModal && (

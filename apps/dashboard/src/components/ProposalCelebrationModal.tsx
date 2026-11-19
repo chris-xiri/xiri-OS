@@ -23,6 +23,7 @@ export default function ProposalCelebrationModal({
 }: ProposalCelebrationModalProps) {
     const { profile, subscription } = useAuth();
     const [loading, setLoading] = useState(false);
+    const [billingInterval, setBillingInterval] = useState<"monthly" | "annual">("monthly");
 
     useEffect(() => {
         if (isOpen) {
@@ -51,7 +52,7 @@ export default function ProposalCelebrationModal({
             const result = await createCheckout({
                 companyId: profile.companyId,
                 tier: "bid_plus",
-                interval: "monthly",
+                interval: billingInterval,
                 isEarlyBird: true,
                 successUrl: window.location.origin + "/app/settings?tab=subscription&upgraded=true",
                 cancelUrl: window.location.href,
@@ -90,14 +91,57 @@ export default function ProposalCelebrationModal({
 
                 <div className="celebration-offer-card">
                     <div className="celebration-offer-tag">⚡ EARLY-BIRD FOUNDER OFFER</div>
+                    <div
+                        style={{
+                            display: "inline-flex",
+                            background: "rgba(255,255,255,0.06)",
+                            borderRadius: "8px",
+                            padding: "3px",
+                            marginBottom: "0.75rem",
+                            gap: "4px",
+                        }}
+                    >
+                        <button
+                            type="button"
+                            onClick={() => setBillingInterval("monthly")}
+                            style={{
+                                padding: "4px 12px",
+                                borderRadius: "6px",
+                                border: "none",
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                background: billingInterval === "monthly" ? "#00d4aa" : "transparent",
+                                color: billingInterval === "monthly" ? "#0a0e1a" : "#c4c9e0",
+                            }}
+                        >
+                            Monthly ($5/mo)
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setBillingInterval("annual")}
+                            style={{
+                                padding: "4px 12px",
+                                borderRadius: "6px",
+                                border: "none",
+                                fontSize: "0.75rem",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                                background: billingInterval === "annual" ? "#00d4aa" : "transparent",
+                                color: billingInterval === "annual" ? "#0a0e1a" : "#c4c9e0",
+                            }}
+                        >
+                            Annual ($49/yr · Save 55%)
+                        </button>
+                    </div>
                     <div className="celebration-offer-price">
-                        <span className="price-old">$9/mo</span>
-                        <span className="price-new">$5/mo</span>
-                        <span className="price-badge">SAVE 45%</span>
+                        <span className="price-old">{billingInterval === "monthly" ? "$9/mo" : "$108/yr"}</span>
+                        <span className="price-new">{billingInterval === "monthly" ? "$5/mo" : "$49/yr"}</span>
+                        <span className="price-badge">{billingInterval === "monthly" ? "SAVE 45%" : "SAVE 55%"}</span>
                     </div>
                     <ul className="celebration-offer-list">
                         <li>✓ <strong>Unlimited proposals</strong> (don't get capped at 3)</li>
-                        <li>✓ <strong>Branded PDF exports</strong> for your clients</li>
+                        <li>✓ <strong>1-click email delivery</strong> &amp; client open tracking</li>
                         <li>✓ <strong>Unlimited CRM client contacts</strong></li>
                     </ul>
                 </div>
@@ -107,7 +151,9 @@ export default function ProposalCelebrationModal({
                     onClick={handleUpgrade}
                     disabled={loading}
                 >
-                    {loading ? "Redirecting to Stripe…" : "Lock in $5/mo Early-Bird Deal →"}
+                    {loading
+                        ? "Redirecting to Stripe…"
+                        : `Lock in ${billingInterval === "monthly" ? "$5/mo" : "$49/yr"} Early-Bird Deal →`}
                 </button>
 
                 <button className="celebration-secondary-btn" onClick={onClose}>

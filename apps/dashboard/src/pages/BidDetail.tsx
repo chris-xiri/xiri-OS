@@ -1154,18 +1154,53 @@ export default function BidDetail() {
 
             {/* ─── Proposal Preview Modal ─── */}
             {previewUrl && (
-                <div className="bd-preview-overlay" onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}>
+                <div
+                    className="bd-preview-overlay"
+                    onClick={() => {
+                        URL.revokeObjectURL(previewUrl);
+                        setPreviewUrl(null);
+                        setShowCelebration(true);
+                    }}
+                >
                     <div className="bd-preview-modal" onClick={(e) => e.stopPropagation()}>
                         <div className="bd-preview-header">
                             <span>Proposal Preview (Draft)</span>
                             <div style={{ display: "flex", gap: "0.5rem" }}>
-                                <button className="bd-btn bd-btn-primary bd-btn-sm" onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); handleDownloadPdf(); }}>
+                                <button
+                                    className="bd-btn bd-btn-primary bd-btn-sm"
+                                    onClick={() => {
+                                        URL.revokeObjectURL(previewUrl);
+                                        setPreviewUrl(null);
+                                        handleDownloadPdf();
+                                    }}
+                                >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
                                     </svg>
                                     Download PDF
                                 </button>
-                                <button className="bd-btn bd-btn-secondary bd-btn-sm" onClick={() => { URL.revokeObjectURL(previewUrl); setPreviewUrl(null); }}>
+                                <button
+                                    className="bd-btn bd-btn-accent bd-btn-sm"
+                                    onClick={() => {
+                                        URL.revokeObjectURL(previewUrl);
+                                        setPreviewUrl(null);
+                                        handleSendEmail();
+                                    }}
+                                    disabled={emailSending}
+                                >
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M22 2L11 13" /><path d="M22 2L15 22L11 13L2 9L22 2Z" />
+                                    </svg>
+                                    {emailSending ? "Sending…" : "Send Email"}
+                                </button>
+                                <button
+                                    className="bd-btn bd-btn-secondary bd-btn-sm"
+                                    onClick={() => {
+                                        URL.revokeObjectURL(previewUrl);
+                                        setPreviewUrl(null);
+                                        setShowCelebration(true);
+                                    }}
+                                >
                                     ✕ Close
                                 </button>
                             </div>
